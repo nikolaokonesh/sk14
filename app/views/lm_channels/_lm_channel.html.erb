@@ -1,5 +1,8 @@
-<li>
+<li id="lm_channel_<%= lm_channel.id %>">
   <%= link_to lm_channel do %>
-  <%= lm_channel.name %> <%= lm_channel.description %> - <%= lm_channel.value %>
+    Обновлено - <%= lm_channel.updated_at.strftime("%T %d/%m ") %>
+    <%= lm_channel.name %>
+    <%= lm_channel.description %>
+    - <%= lm_channel.value %>
   <% end %>
 </li>

@@ -2,19 +2,13 @@ class LmChannelsController < ApplicationController
   before_action :set_lm_channel, only: %i[ show update destroy ]
   skip_before_action :verify_authenticity_token
 
-  # GET /lm_channels
-  # GET /lm_channels.json
   def index
     @lm_channels = LmChannel.all
   end
 
-  # GET /lm_channels/1
-  # GET /lm_channels/1.json
   def show
   end
 
-  # POST /lm_channels
-  # POST /lm_channels.json
   def create
     if LmChannel.find_by(name: params[:name]).present?
       @lm_channel = LmChannel.find_by(name: params[:name])
@@ -23,27 +17,21 @@ class LmChannelsController < ApplicationController
       @lm_channel = LmChannel.new(lm_channel_params)
       if @lm_channel.save
         @lm_channel.lm_channel_values.create(value: @lm_channel.value, quality: @lm_channel.quality, dt: @lm_channel.dt)
-        puts "сохранено"
       else
         render json: @lm_channel.errors, status: :unprocessable_entity
-        puts "не сохранено"
+        puts "отказано в создании"
       end
     end
   end
 
-  # PATCH/PUT /lm_channels/1
-  # PATCH/PUT /lm_channels/1.json
   def update
     if @lm_channel.update(lm_channel_params)
       @lm_channel.lm_channel_values.create(value: @lm_channel.value, quality: @lm_channel.quality, dt: @lm_channel.dt)
-      puts "сохранено в обновлении"
     else
-      puts "отправлено на создание"
+      puts "отказано в обновлении"
     end
   end
 
-  # DELETE /lm_channels/1
-  # DELETE /lm_channels/1.json
   def destroy
     @lm_channel.destroy
   end

@@ -1,5 +1,8 @@
-<ul>
-<% @lm_channel.lm_channel_values.each do |lm| %>
-  <%= render lm %>
-<% end %>
+<div class="text-slate-400 block">
+  <h1><%= @lm_channel.description %></h1>
+</div>
+
+<%= turbo_stream_from "lm_channel_values_#{@lm_channel.id}" %>
+<ul id="lm_channel_values">
+  <%= render partial: "lm_channel_values/lm_channel_value", collection: @lm_channel.lm_channel_values.order(created_at: :desc) %>
 </ul>

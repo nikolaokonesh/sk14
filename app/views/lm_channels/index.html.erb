@@ -1,5 +1,4 @@
-<ul>
-<% @lm_channels.each do |lm| %>
-  <%= render lm %>
-<% end %>
+<%= turbo_stream_from "lm_channels" %>
+<ul id="lm_channels">
+  <%= render partial: "lm_channels/lm_channel", collection: @lm_channels %>
 </ul>

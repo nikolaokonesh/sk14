@@ -1,3 +1,5 @@
-<li>
+<li id="lm_channel_value_<%= lm_channel_value.id %>">
   <%= lm_channel_value.value %>
+  <%= lm_channel_value.created_at.strftime("%d/%m %T") %>
+  <%= lm_channel_value.lm_channel_id %>
 </li>
