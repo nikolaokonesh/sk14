@@ -3,7 +3,7 @@ class LmChannelsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    @lm_channels = LmChannel.all
+    @lm_channels = LmChannel.where(prefix: "tp5")
   end
 
   def show
@@ -44,6 +44,6 @@ class LmChannelsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def lm_channel_params
-      params.require(:lm_channel).permit(:name, :number, :description, :active, :value, :quality, :dt)
+      params.require(:lm_channel).permit(:name, :number, :prefix, :description, :active, :value, :quality, :dt)
     end
 end

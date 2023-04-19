@@ -3,6 +3,7 @@ class CreateLmChannels < ActiveRecord::Migration[7.0]
     create_table :lm_channels do |t|
       t.string :name
       t.integer :number
+      t.string :prefix
       t.string :description
       t.boolean :active
       # LmChannelValue создает при каждом обновлении

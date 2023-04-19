@@ -37,6 +37,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_074727) do
   create_table "lm_channels", force: :cascade do |t|
     t.string "name"
     t.integer "number"
+    t.string "prefix"
     t.string "description"
     t.boolean "active"
     t.string "value"
