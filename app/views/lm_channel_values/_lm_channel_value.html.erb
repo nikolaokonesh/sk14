@@ -1,5 +1,7 @@
 <li id="lm_channel_value_<%= lm_channel_value.id %>">
   <%= lm_channel_value.value %>
   <%= lm_channel_value.created_at.strftime("%T %d/%m") %>
+  <span class="<%= lm_channel_value.quality == 'Ok' ? '' : 'rounded-full bg-red-400 absolute p-1' %>"></span>
+
   <%#= lm_channel_value.lm_channel_id %>
 </li>

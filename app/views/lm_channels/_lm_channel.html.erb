@@ -1,6 +1,7 @@
 <li id="lm_channel_<%= lm_channel.id %>">
   <%= link_to lm_channel do %>
-    <%= lm_channel.description.slice(4..).chomp('кгссм').chomp('т/ч') %>
+    <%= lm_channel.description.chomp('кгссм').chomp('т/ч') %>
     - <%= lm_channel.value %>
+    <span class="<%= lm_channel.quality == 'Ok' ? '' : 'rounded-full bg-red-400 absolute p-1' %>"></span>
   <% end %>
 </li>
