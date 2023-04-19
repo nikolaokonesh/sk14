@@ -3,7 +3,7 @@ class LmChannelsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    @lm_channels = LmChannel.where(prefix: "tp5")
+    @lm_channels_tp5 = LmChannel.where(prefix: "tp5").order(number: :desc)
   end
 
   def show

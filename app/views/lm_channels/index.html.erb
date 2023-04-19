@@ -1,4 +1,6 @@
 <%= turbo_stream_from "lm_channels" %>
-<ul id="lm_channels">
-  <%= render partial: "lm_channels/lm_channel", collection: @lm_channels %>
-</ul>
+<div id="lm_channels">
+  <ul>
+    <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp5 %>
+  </ul>
+</div>
