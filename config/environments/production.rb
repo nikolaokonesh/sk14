@@ -2,7 +2,7 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.secret_key_base = Rails.application.credentials[Rails.env.to_sym][:secret_key_base]
+  config.secret_key_base = Rails.application.credentials.production.secret_key_base
   # Code is not reloaded between requests.
   config.cache_classes = true
 

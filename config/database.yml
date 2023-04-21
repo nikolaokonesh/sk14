@@ -79,8 +79,9 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# password: <%= Rails.application.credentials[Rails.env.to_sym][:db][:password] %>
 production:
   <<: *default
   database: sk14_production
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:db][:password] %>
+  username: <%= Rails.application.credentials.production.db.username %>
+  password: <%= Rails.application.credentials.production.db.password %>
