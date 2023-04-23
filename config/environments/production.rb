@@ -5,6 +5,7 @@ Rails.application.configure do
   config.secret_key_base = Rails.application.credentials.production.secret_key_base
   # Code is not reloaded between requests.
   config.cache_classes = true
+  config.hosts = "sk14.ru"
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
