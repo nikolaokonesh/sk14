@@ -29,6 +29,7 @@ module Sk14
     # in config/environments, which are processed later.
     #
     config.time_zone = "Srednekolymsk"
+    config.i18n.default_locale = :ru
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Don't generate system test files.
