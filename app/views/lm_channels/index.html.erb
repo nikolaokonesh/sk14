@@ -2,12 +2,12 @@
 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
   Показатели тепловых пунктов
 </h2>
-<div id="lm_channels" class="grid grid-cols-3 gap-8 mb-8">
+<div class="grid grid-cols-3 gap-8 mb-8">
   <div class="w-64 p-2">
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №2</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp2">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp2 %>
     </ul>
   </div>
@@ -15,7 +15,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №3</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp3">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp3 %>
     </ul>
   </div>
@@ -23,7 +23,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №4</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp4">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp4 %>
     </ul>
   </div>
@@ -31,7 +31,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №5</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp5">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp5 %>
     </ul>
   </div>
@@ -39,7 +39,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №6</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp6">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp6 %>
     </ul>
   </div>
@@ -47,7 +47,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Теплопункт №7</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_tp7">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp7 %>
     </ul>
   </div>
@@ -55,12 +55,12 @@
 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
   Показатели котельных
 </h2>
-<div id="lm_channels" class="grid grid-cols-4">
+<div class="grid grid-cols-4">
   <div class="w-64 p-2">
     <div class="text-slate-500 font-bold block">
       <h1>Котельная "Южная"</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_ktU">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_ktu %>
     </ul>
   </div>
@@ -68,7 +68,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Котельная №6</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_kt6">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_kt6 %>
     </ul>
   </div>
@@ -76,7 +76,7 @@
     <div class="text-slate-500 font-bold block">
       <h1>Котельная "Анкудинская"</h1>
     </div>
-    <ul>
+    <ul id="lm_channel_kt4">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_kt4 %>
     </ul>
   </div>
