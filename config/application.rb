@@ -28,7 +28,7 @@ module Sk14
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    config.time_zone = "Srednekolymsk"
+    config.time_zone = "Asia/Srednekolymsk"
     config.i18n.default_locale = :ru
     # config.eager_load_paths << Rails.root.join("extras")
 
