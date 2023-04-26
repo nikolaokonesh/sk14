@@ -1,82 +1,65 @@
 <%= turbo_stream_from "lm_channels" %>
 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-  Показатели тепловых пунктов
+  Тепловые пункты
 </h2>
-<div class="grid grid-cols-3 gap-8 mb-8">
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №2</h1>
-    </div>
-    <ul id="lm_channel_tp2">
+
+<div class="grid lg:grid-cols-3 grid-cols-1 gap-8 mb-8">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №2</div>
+    <ul id="lm_channel_tp2" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp2 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №3</h1>
-    </div>
-    <ul id="lm_channel_tp3">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №3</div>
+    <ul id="lm_channel_tp3" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp3 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №4</h1>
-    </div>
-    <ul id="lm_channel_tp4">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №4</div>
+    <ul id="lm_channel_tp4" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp4 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №5</h1>
-    </div>
-    <ul id="lm_channel_tp5">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №5</div>
+    <ul id="lm_channel_tp5" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp5 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №6</h1>
-    </div>
-    <ul id="lm_channel_tp6">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №6</div>
+    <ul id="lm_channel_tp6" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp6 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Теплопункт №7</h1>
-    </div>
-    <ul id="lm_channel_tp7">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Теплопункт №7</div>
+    <ul id="lm_channel_tp7" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_tp7 %>
     </ul>
   </div>
 </div>
 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-  Показатели котельных
+  Котельные
 </h2>
-<div class="grid grid-cols-4">
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Котельная "Южная"</h1>
-    </div>
-    <ul id="lm_channel_ktU">
+<div class="grid lg:grid-cols-3 grid-cols-1 gap-8 mb-8">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Котельная "Южная"</div>
+    <ul id="lm_channel_ktU" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_ktu %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Котельная №6</h1>
-    </div>
-    <ul id="lm_channel_kt6">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Котельная №6</div>
+    <ul id="lm_channel_kt6" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_kt6 %>
     </ul>
   </div>
-  <div class="w-64 p-2">
-    <div class="text-slate-500 font-bold block">
-      <h1>Котельная "Анкудинская"</h1>
-    </div>
-    <ul id="lm_channel_kt4">
+  <div class="p-4 w-full bg-white rounded-xl shadow-md">
+    <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Котельная "Анкудинская"</div>
+    <ul id="lm_channel_kt4" class="mt-2 text-slate-500">
       <%= render partial: "lm_channels/lm_channel", collection: @lm_channels_kt4 %>
     </ul>
   </div>
