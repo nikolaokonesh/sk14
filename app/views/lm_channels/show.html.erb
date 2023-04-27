@@ -5,5 +5,5 @@
 
 <%= turbo_stream_from "lm_channel_values_#{@lm_channel.id}" %>
 <ul id="lm_channel_values">
-  <%= render partial: "lm_channel_values/lm_channel_value", collection: @lm_channel.lm_channel_values.order(created_at: :desc) %>
+  <%= render partial: "lm_channel_values/lm_channel_value", collection: @lm_channel_values %>
 </ul>

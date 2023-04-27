@@ -15,6 +15,7 @@ class LmChannelsController < ApplicationController
   end
 
   def show
+    @lm_channel_values = @lm_channel.lm_channel_values.order(created_at: :desc).where("created_at >= ?", 3.days.ago)
   end
 
   def create
