@@ -3,7 +3,7 @@
   <div class="w-max">
     <div class="p-4 w-96 bg-white rounded-xl shadow-md">
       <div class="uppercase tracking-wide text-2xl text-indigo-500 font-semibold">
-        <%= tp_channel_prefix_name_helper(@lm_channel) %>
+        <%= t(@lm_channel.prefix) %>
       </div>
       <%= turbo_stream_from "lm_channels" %>
       <ul id="lm_channel_<%= @lm_channel.prefix %>" class="mt-2 text-slate-500">

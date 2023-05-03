@@ -29,5 +29,14 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
-en:
+ru:
   hello: "Hello world"
+  tp2: "Теплопункт №2"
+  tp3: "Теплопункт №3"
+  tp4: "Теплопункт №4"
+  tp5: "Теплопункт №5"
+  tp6: "Теплопункт №6"
+  tp7: "Теплопункт №7"
+  ktU: "Котельная «Южная»"
+  kt6: "Котельная «№6»"
+  kt4: "Котельная «Анкудинская»"
