@@ -1,0 +1,8 @@
+<div class="p-4 w-full bg-white rounded-xl shadow-md">
+  <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+    <%= t(lm_block.prefix) %>
+  </div>
+  <ul id="lm_block_<%= lm_block.prefix %>" class="mt-2 text-slate-500">
+    <%= render @lm_channel.where(prefix: lm_block.prefix, active: true) %>
+  </ul>
+</div>

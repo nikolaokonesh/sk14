@@ -6,7 +6,7 @@ class LmChannel < ApplicationRecord
   has_many :lm_channel_values
 
   after_create_commit do
-    broadcast_append_to "lm_channels", target: "lm_channel_#{self.prefix}", partial: "lm_channels/lm_channel", locals: { lm_channel: self }
+    broadcast_append_to "lm_channels", target: "lm_block_#{self.prefix}", partial: "lm_channels/lm_channel", locals: { lm_channel: self }
   end
 
   after_update_commit do

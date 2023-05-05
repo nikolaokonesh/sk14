@@ -3,15 +3,8 @@ class LmChannelsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    @lm_channels_tp2 = LmChannel.where(prefix: "tp2", active: true).order(number: :desc)
-    @lm_channels_tp3 = LmChannel.where(prefix: "tp3", active: true).order(number: :desc)
-    @lm_channels_tp4 = LmChannel.where(prefix: "tp4", active: true).order(number: :desc)
-    @lm_channels_tp5 = LmChannel.where(prefix: "tp5", active: true).order(number: :desc)
-    @lm_channels_tp6 = LmChannel.where(prefix: "tp6", active: true).order(number: :desc)
-    @lm_channels_tp7 = LmChannel.where(prefix: "tp7", active: true).order(number: :desc)
-    @lm_channels_tku = LmChannel.where(prefix: "ktU", active: true).order(number: :desc)
-    @lm_channels_kt6 = LmChannel.where(prefix: "kt6", active: true).order(number: :desc)
-    @lm_channels_kt4 = LmChannel.where(prefix: "kt4", active: true).order(number: :desc)
+    @lm_blocks = LmChannel.select(:prefix).distinct.order(prefix: :asc)
+    @lm_channel = LmChannel.order(number: :desc)
   end
 
   def show
