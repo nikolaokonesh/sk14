@@ -1,8 +1,11 @@
 <%= turbo_stream_from "lm_channels" %>
-<h2 class="hidden text-2xl pb-2 font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-  Тепловые пункты
-</h2>
 
-<div class="grid lg:grid-cols-3 grid-cols-1 gap-8 mb-8">
-  <%= render partial: "lm_channels/lm_block", collection: @lm_blocks %>
+<div class="container my-8 px-6 mx-auto">
+  <section class="mb-32 text-gray-800">
+    <div class="grid lg:grid-cols-3 gap-6 xl:gap-x-12">
+      <%= render partial: "lm_channels/lm_block", collection: @lm_blocks %>
+    </div>
+  </section>
 </div>
+
+

@@ -1,8 +1,8 @@
-<div class="p-4 w-full bg-white rounded-xl shadow-md">
-  <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-    <%= t(lm_block.prefix) %>
+<div class="mb-6 lg:mb-0 min-w-full">
+  <div>
+    <h5 class="text-lg text-center text-slate-600 font-bold mb-3"><%= t(lm_block.prefix) %></h5>
+    <div id="lm_block_<%= lm_block.prefix %>" class="flex flex-col">
+      <%= render @lm_channel.where(prefix: lm_block.prefix, active: true) %>
+    </div>
   </div>
-  <ul id="lm_block_<%= lm_block.prefix %>" class="mt-2 text-slate-500">
-    <%= render @lm_channel.where(prefix: lm_block.prefix, active: true) %>
-  </ul>
 </div>

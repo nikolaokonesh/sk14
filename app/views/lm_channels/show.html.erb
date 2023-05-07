@@ -1,8 +1,7 @@
-<%= link_to 'Назад', root_path, class: 'bg-indigo-400 text-white rounded px-1 hover:bg-indigo-500 border-l-4 border-indigo-300 hover:border-indigo-400' %>
-<div class="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8 ">
-  <div class="w-max">
-    <div class="p-4 w-96 bg-white rounded-xl shadow-md">
-      <div class="uppercase tracking-wide text-2xl text-indigo-500 font-semibold">
+<div class="grid lg:grid-cols-3 grid-cols-1 gap-8 mt-8 ">
+  <div class="w-full">
+    <div class="p-4  border-b">
+      <div class="uppercase tracking-wide text-2xl text-slate-600 font-semibold">
         <%= t(@lm_channel.prefix) %>
       </div>
       <%= turbo_stream_from "lm_channels" %>
@@ -13,8 +12,8 @@
   </div>
 
   <div>
-    <div class="p-4 w-96 bg-white rounded-xl shadow-md">
-      <div class="uppercase tracking-wide text-lg text-indigo-400 font-semibold"><%= @lm_channel.description %></div>
+    <div class="p-4">
+      <div class="uppercase tracking-wide text-lg text-slate-500 font-semibold"><%= @lm_channel.description %></div>
       <%= turbo_stream_from "lm_channel_values_#{@lm_channel.id}" %>
       <ul id="lm_channel_values"  class="mt-2 text-slate-500">
         <%= render partial: "lm_channel_values/lm_channel_value", collection: @lm_channel_values %>
@@ -22,3 +21,4 @@
     </div>
   </div>
 </div>
+

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sk14</title>
+    <title>Sk14.Ru</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,13 +12,13 @@
   </head>
 
   <body class="bg-slate-100">
-    <%= render 'shared/navbar' %>
-    <main class="container mx-auto mt-28 mb-28 px-5 flex">
+    <main class="container mx-auto mt-2 mb-2 px-5">
       <div class="grid grid-cols-1">
-        <div class="">
+        <div>
           <%= yield %>
         </div>
       </div>
     </main>
+    <%= render 'shared/navbar' %>
   </body>
 </html>
