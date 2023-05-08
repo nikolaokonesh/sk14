@@ -1,9 +1,11 @@
-<%= link_to lm_channel, id: "lm_channel_#{lm_channel.id}", class: 'border-b dark:border-neutral-500 grid grid-cols-2 text-slate-500 hover:text-slate-600' do %>
-  <div class="whitespace-nowrap px-2 py-1 font-medium">
-    <%= lm_channel.description.chomp('кгссм').chomp('т/ч') %>
-  </div>
-  <div class="whitespace-nowrap px-2 py-1 mx-auto">
-    <%= lm_channel.value %>
-    <span class="<%= lm_channel.quality == 'Ok' ? '' : 'rounded-full bg-red-400 absolute p-1' %>"></span>
-  </div>
-<% end %>
+<div id="lm_channel_<%= lm_channel.id%>">
+  <%= link_to lm_channel, class: 'border-b dark:border-neutral-500 grid grid-cols-2 text-slate-500 hover:text-slate-600' do %>
+    <div class="whitespace-nowrap px-2 py-1 font-medium">
+      <%= lm_channel.description.chomp('кгссм').chomp('т/ч') %>
+    </div>
+    <div class="whitespace-nowrap px-2 py-1 mx-auto">
+      <%= lm_channel.value %>
+      <span class="<%= lm_channel.quality == 'Ok' ? '' : 'rounded-full bg-red-400 absolute p-1' %>"></span>
+    </div>
+  <% end %>
+</div>
