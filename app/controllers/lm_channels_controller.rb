@@ -6,6 +6,7 @@ class LmChannelsController < ApplicationController
     @lm_blocks = LmChannel.select(:prefix).distinct.order(prefix: :asc)
     @lm_channel = LmChannel.order(number: :desc)
     @last_updated_channel = LmChannel.order(:updated_at).last.updated_at
+    gidroposting
   end
 
   def show
@@ -41,6 +42,12 @@ class LmChannelsController < ApplicationController
   end
 
   private
+
+    def gidroposting
+      allrivers = Faraday.new.get('https://allrivers.info/gauge/kolyma-srednekolymsk').body
+      @gidropost = Nokogiri::HTML(allrivers)
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_lm_channel
       @lm_channel = LmChannel.friendly.find(params[:id])

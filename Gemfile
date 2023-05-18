@@ -83,3 +83,6 @@ gem "bcrypt_pbkdf", "~> 1.1"
 gem "ed25519", "~> 1.3"
 
 gem "active_link_to", "~> 1.0"
+
+gem "nokogiri", "~> 1.14"
+gem "faraday", "~> 2.7"
