@@ -1,26 +1,13 @@
 <%= turbo_stream_from "lm_channels" %>
 
+<div id="last_update_channel">
+  <%= render partial: "lm_channels/last_update_channel", locals: {last_update_channel: @last_updated_channel} %>
+</div>
+
 <div class="container my-8 px-6 mx-auto">
   <section class="text-gray-800">
     <div class="grid lg:grid-cols-3 gap-6 xl:gap-x-12">
       <%= render partial: "lm_channels/lm_block", collection: @lm_blocks %>
     </div>
   </section>
-</div>
-
-<div id="last_update_channel">
-  <%= render partial: "lm_channels/last_update_channel", locals: {last_update_channel: @last_updated_channel} %>
-</div>
-
-<div class="my-2">
-  <% @gidropost.css("h1.mb-2").each do |title| %>
-    <h5 class="text-lg text-slate-600">
-      <%= title.content %>
-    </h5>
-  <% end %>
-  <ul>
-    <% @gidropost.css(".list-item").each do |gidro| %>
-      <li class="border-b text-slate-500"><%= gidro.content %></li>
-    <% end %>
-  </ul>
 </div>
