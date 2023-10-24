@@ -1,3 +1,11 @@
+# ========================!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# ВНИМАНИЕ!!!! Для продакш деплой надо ввести в консоли:
+# $ ssh-add ~/.ssh/id_ed25519
+# $ cap production deploy
+#
+# ========================!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.

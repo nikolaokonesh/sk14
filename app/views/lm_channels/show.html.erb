@@ -13,7 +13,7 @@
 
   <div>
     <div class="p-4">
-      <div class="uppercase tracking-wide text-lg text-slate-500 font-semibold"><%= @lm_channel.description %></div>
+      <div class="uppercase tracking-wide text-lg text-slate-500 font-semibold"><%= t(@lm_channel.description) %></div>
       <%= turbo_stream_from "lm_channel_values_#{@lm_channel.id}" %>
       <ul id="lm_channel_values"  class="mt-2 text-slate-500">
         <%= render partial: "lm_channel_values/lm_channel_value", collection: @lm_channel_values %>
