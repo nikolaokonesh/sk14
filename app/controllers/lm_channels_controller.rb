@@ -5,7 +5,7 @@ class LmChannelsController < ApplicationController
   def index
     @lm_blocks = LmChannel.select(:prefix).distinct.order(prefix: :asc)
     @lm_channel = LmChannel.order(number: :desc)
-    @last_updated_channel = LmChannel.order(:updated_at).last.updated_at
+    @last_updated_channel = LmChannel.order(:updated_at).last
   end
 
   def show
