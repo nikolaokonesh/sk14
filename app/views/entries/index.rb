@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+class Views::Entries::Index < Views::Base
+  def initialize(entries:, pagy:, params:, query:)
+    @entries = entries
+    @pagy = pagy
+    @params = params
+    @query = query
+  end
+
+  def page_title = "Лента"
+  def layout = Layout
+
+  def view_template
+    if authenticated?
+      turbo_stream_from :entries
+    end
+    render Components::Menu::Header.new(query: @query)
+    div(class: "w-full") do
+      render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+    end
+  end
+end

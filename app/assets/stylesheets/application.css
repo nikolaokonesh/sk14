@@ -1,0 +1,122 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.turbo-progress-bar {
+  background: linear-gradient(to right, #ff7676, #ffc7c7, #ff5959);
+  background-size: 200% auto;
+  height: 2px;
+  animation: gradient-shift 0.5s linear infinite;
+}
+
+/* #posts_list_for_broadcast {
+  overflow-anchor: auto;
+}
+.post-card {
+  overflow-anchor: none;
+} */
+
+@keyframes border-shimmer {
+  0% { 
+    box-shadow: 0 4px 4px -1px rgb(255, 157, 0);
+  }
+  25% { 
+    box-shadow: 0 4px 4px -1px rgba(62, 255, 52, 0.5);
+  }
+  50% { 
+    box-shadow: 0 4px 4px -1px rgba(26, 114, 255, 0.3);
+  }
+  75% { 
+    box-shadow: 0 4px 4px -1px rgba(255, 0, 0, 0.7);
+  }
+  100% { 
+  }
+}
+
+.animate-shimmer-bottom {
+  animation: border-shimmer 20s ease-out forwards;
+}
+
+.comment-card {
+  scroll-margin-bottom: 100px;
+}
+
+html, body {
+  scroll-snap-type: y proximity;
+}
+
+input, textaera {
+  scroll-margin-bottom: 20vh;
+}
+
+@layer components {
+  .animate-bounce-short {
+    animation: bounce 1s ease-in-out 3;
+  }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Анимация выделения комментария */
+@keyframes flash-fade-out {
+  0% { background-color: var(--flash-color, rgba(59, 130, 246, 0.2)); }
+  100% { background-color: transparent;}
+}
+.animate-flash {
+  animation: flash-fade-out 2.5s ease-out forward;
+}
+
+/* Анимация появления и затухания фона */
+@keyframes comment-appear-glow {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    background-color: var(--flash-color, rgba(59, 130, 246, 0.2));
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: var(--flash-color, rgba(59, 130, 246, 0.2));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: transparent;
+  }
+}
+.comment-appear-active {
+  animation: comment-appear-glow 5s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.2s ease-out forwards;
+}

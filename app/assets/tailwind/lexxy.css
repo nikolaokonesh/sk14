@@ -1,0 +1,70 @@
+lexxy-editor, .lexxy-editor__content, .lexxy-content {
+  --lexxy-editor-rows: 0h;
+  ul,
+  ol {
+    list-style: revert;
+    margin: revert;
+    padding: 0;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: revert;
+    font-weight: revert;
+  }
+  strong {
+    font-weight: revert;
+  }
+  em {
+    font-style: revert;
+  }
+  color: revert;
+  background-color: revert;
+  table, th, td {
+    background-color: revert !important;
+  }
+}
+
+.comment_editor {
+  .lexxy-editor__content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+lexxy-toolbar {
+  color: revert;
+  .lexxy-editor__toolbar-button {
+    color: revert;
+    background: none;
+    @media(any-hover: hover) {
+      &:hover:not([aria-disabled="true"]) {
+        background: revert;
+      }
+    }
+    &:is(:active):not([aria-disabled="true"]), &[aria-pressed="true"] {
+      background-color: revert;
+
+      &:hover {
+        background-color: revert;
+      }
+    }
+  }
+}
+
+.lexxy-editor__toolbar-overflow-menu {
+  @apply bg-base-300;
+}
+
+.lexxy-editor__content {
+  @apply pt-5;
+}
+
+.lexxy-prompt-menu {
+  width: 100%;
+  left: 0 !important;
+  margin-top: -15px !important;
+}
+.edit_form_comment .lexxy-prompt-menu {
+  width: 100%;
+  top: -105px !important;
+  left: 0 !important;
+}

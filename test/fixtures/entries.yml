@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  entryable: one
+  entryable_type: Entryable
+
+two:
+  user: two
+  entryable: two
+  entryable_type: Entryable

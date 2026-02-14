@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  keyword: MyString
+  entry: one
+  tag: one
+  frequency: 1
+
+two:
+  keyword: MyString
+  entry: two
+  tag: two
+  frequency: 1

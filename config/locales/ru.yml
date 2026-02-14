@@ -1,0 +1,74 @@
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+ru:
+  unauthorized:
+    default: "У вас нет прав доступа к этой странице!"
+  activerecord:
+    attributes:
+      user:
+        first_name: "Имя"
+        last_name: "Фамилия"
+        bio: "Коротко о вас"
+        org: "Место работы"
+        prof: "Профессия или хобби"
+        email: "Эл. почта"
+        phone: "Номер телефона"
+        bgcolor: "Цветовая тема профиля"
+        slug: "Ваша ссылка"
+        avatar: "Аватар"
+        avatar_purge: "Удалить аватар"
+      channel:
+        title: "Название канала"
+        subtitle: "Сокращенное название"
+        body_channel: "Описание"
+        commentator: "Комментарии"
+        comment_progress: "Вопрос - Ответ"
+        date_show: "Показать дату публикации"
+        logo: "Логотип"
+        ad: "Объявления"
+        afisha: "Афиша"
+        content: "Контент"
+        news: "Новости"
+        shop: "Товары"
+      post:
+        title: "Заголовок"
+        content: "Содержание"
+        subtitle: "Сокращенное название"
+        top: "Закреплено"
+        top_at: "в ТОП'е до даты:"
+
+    errors:
+      models:
+        user/avatar:
+          attributes:
+            avatar:
+              max_size_error: "Размер изображения не должен превышать 5 мегабайт"
+  posts: "Объявления"
+  trash: "Удаленные"
