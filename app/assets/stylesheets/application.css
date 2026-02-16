@@ -120,3 +120,6 @@ input, textaera {
 .animate-fade-in-up {
   animation: fade-in-up 0.2s ease-out forwards;
 }
+
+.no_scrollbar::-webkit-scrollbar { display: none;}
+.no_scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1,23 +1,22 @@
-# ==> app/lib/keyword_extractor.rb <==
+# app/lib/keyword_extractor.rb
 class KeywordExtractor
-  BLACK_LIST = %w[
-    состояние цена фото звонить писать номер город район
-    вчера сегодня завтра очень хорошо плохой хороший
-    просто только этот тот который сообщения звонки
-    доставка самовывоз бартер обмен уместен торг
-    в наличии под заказ срочно объявление
-    пожалуйста спасибо привет здравствуйте добрый день
-    полный комплект коробка чек гарантия оригинал
-    состоянии идеальном отличном б/у новый пользовались
-    реальному покупателю скидка возможен небольшой
-    вопросы личку ватсап старый телеграм личку
-    связи переездом срочностью может после
+  # Расширенный список слов-паразитов для объявлений
+  STOP_WORDS = %w[
+    этот очень меня тебе чтобы если когда только было будет есть был были
+    фото видео цена рубль рубля рублей цена звоните пишите номер телефон
+    состояние хороший отличный новый бу подержанный срочно торг обмен
+    просьба добрый день здравствуйте привет пожалуйста спасибо через
+    могу можно нельзя один два три пять десять много мало самый очень
+    какой такой который весь свой наш ваш ихний его ее ваш
+    вообще просто прямо сейчас здесь там тут где куда откуда
+    внимание осмотр самовывоз доставка область район город улица
   ].freeze
 
   def self.call(text)
     return [] if text.blank?
 
     clean_text = ActionController::Base.helpers.strip_tags(text.to_s).downcase
+    # Берем слова от 4 букв, исключая цифры и спецсимволы
     words = clean_text.scan(/[а-яё]{4,}/)
 
     intents = []
@@ -25,19 +24,21 @@ class KeywordExtractor
     intent_map = ListingsDictionary.stemmed_map
 
     words.each do |word|
-      next if BLACK_LIST.include?(word)
-
       stem = RussianStemmer.stem(word)
-      next if BLACK_LIST.any? { |bad| bad.start_with?(stem) || stem.start_with?(bad) }
 
+      # 1. Если это "Намерение" (Продажа/Покупка) - берем всегда
       if (base_intent = intent_map[stem])
         intents << base_intent
-      else
-        objects[word] += 1
+      # 2. Если слова нет в словаре И оно не в стоп-листе - это кандидат в "Предметы"
+      elsif !STOP_WORDS.include?(word) && !STOP_WORDS.include?(stem)
+        objects[stem] += 1
       end
     end
 
+    # Сортируем предметы по частоте (самые важные вперед)
     top_objects = objects.sort_by { |_, count| -count }.first(3).map(&:first)
-    (intents.uniq + top_objects).uniq.first(5)
+
+    # Итого: Намерения + топ-3 предмета (всего не более 6 тегов)
+    (intents.uniq + top_objects).uniq.first(6)
   end
 end

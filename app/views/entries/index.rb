@@ -16,8 +16,10 @@ class Views::Entries::Index < Views::Base
       turbo_stream_from :entries
     end
     render Components::Menu::Search.new(query: @query)
-    div(class: "w-full") do
-      render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+    turbo_frame_tag :entries_list, target: "_top" do
+      div(class: "w-full") do
+        render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+      end
     end
   end
 end

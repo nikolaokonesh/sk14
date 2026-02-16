@@ -9,10 +9,14 @@ class EntriesController < ApplicationController
     # Живой поиск
     if params[:query].present?
       keywords = params[:query].to_s.downcase.scan(/[а-яёa-z0-9]+/i)
-      stems = keywords.map { |w| RussianStemmer.stem(w) }.uniq
-      @entries = @entries.joins("JOIN posts ON entries.entryable_id = posts.id")
-      stems.each do |stem|
-        @entries = @entries.where("posts.title LIKE :s OR entries.tags_list LIKE :s", s: "%#{stem}%")
+      stems = keywords.map { |w| RussianStemmer.stem(w) }.reject(&:blank?).uniq
+      if stems.any?
+        @entries = @entries.joins("JOIN posts ON entries.entryable_id = posts.id")
+        stems.each do |stem|
+          @entries = @entries.where(
+            "LOWER(posts.title) LIKE :s OR LOWER(entries.tags_list) LIKE :s",
+            s: "%#{stem}%")
+        end
       end
     end
 

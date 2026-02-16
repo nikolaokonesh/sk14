@@ -10,8 +10,15 @@ Rails.application.routes.draw do
       resources :trash, only: %i[index show update], module: :entries
     end
   end
-  resources :tags, only: %i[index show]
+
+  resources :tags, only: %i[index show] do
+    collection do
+      resources :search, only: :index, module: :tags
+    end
+  end
+
   resources :subscriptions, only: [ :create, :destroy ]
+
   resources :notifications, only: [ :index ] do
     collection do
        post :mark_all_as_read
@@ -30,6 +37,7 @@ Rails.application.routes.draw do
 
   resource :auth, only: %i[show create destroy], controller: :auth
   resource :auth_verification, only: %i[show create], controller: :auth_verification
+
   resources :users, except: %i[index new]
   namespace :user do
     resources :name, only: %i[index update]

@@ -19,7 +19,7 @@ class Components::Posts::Card < Phlex::HTML
       div(tabindex: 0, role: "button", class: "absolute -mt-4 px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
       ul(tabindex: -1, class: "dropdown-content menu bg-base-300 z-10 rounded-box w-52 p-2 shadow-sm") do
         li do
-          a(href: edit_entry_path(@post.entry), data: { turbo_frame: "entry_modal" }) { "Редактировать" }
+          a(href: edit_entry_path(@post.entry)) { "Редактировать" }
         end
         li do
           if @post.entry.trash == true
@@ -34,7 +34,7 @@ class Components::Posts::Card < Phlex::HTML
 
   def content
     plain truncate(@post.title, length: 200, omission: "... Читать далее")
-    a(href: link_to_post_helper(@post), data: { turbo_frame: "_top" }) do
+    a(href: link_to_post_helper(@post)) do
       span(aria_hidden: "true", class: "absolute inset-0") { }
     end
   end
