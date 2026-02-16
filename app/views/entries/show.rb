@@ -23,6 +23,7 @@ class Views::Entries::Show < Views::Base
         span(class: "ml-2 text-sm text-slate-500") { "Внимание! Cкоро будет удален навсегда." }
       end
 
+      
       # snap-y snap-proximity scroll-smooth Это для залипания
       div(class: "snap-start") do
         div(class: "chat chat-start items-end pb-4 m-1") do
