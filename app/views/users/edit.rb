@@ -25,7 +25,8 @@ class Views::Users::Edit < Views::Base
               render_form_field(f, :email, "Email") do
                 f.email_field :email,
                   class: "input input-bordered w-full",
-                  required: true
+                  required: true,
+                  disabled: true
               end
 
               render_form_field(f, :name, "Имя и Фамилия") do

@@ -15,6 +15,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::TurboFrameTag
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::CurrentPage
+  include Phlex::Rails::Helpers::ActionName
   # include Phlex::Rails::Helpers::LinkTo
   # include Phlex::Rails::Helpers::ImageTag
   include Phlex::Rails::Helpers::ButtonTo

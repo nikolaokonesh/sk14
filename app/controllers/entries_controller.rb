@@ -45,10 +45,9 @@ class EntriesController < ApplicationController
 
     if @entry.save
       Entries::Streams::CreateJob.perform_later(@entry.id)
-      flash.now[:success] = "Пост успешно создан"
+      flash[:success] = "Пост успешно создан"
       respond_to do |format|
         format.html { redirect_to @entry }
-        format.turbo_stream { render Views::Entries::Streams::Create.new(entry: @entry, message: flash.now[:success]), layout: false }
       end
     else
       render Views::Entries::Form.new(entry: @entry), status: :unprocessable_entity
@@ -59,11 +58,8 @@ class EntriesController < ApplicationController
     authorize! :update, @entry
     if @entry.update(entry_params)
       Entries::Streams::UpdateJob.perform_later(@entry.id)
-      flash.now[:success] = "Пост успешно обновлён"
-      respond_to do |format|
-        format.html { redirect_to @entry, status: :see_other }
-        format.turbo_stream { render Views::Entries::Streams::Update.new(entry: @entry, message: flash.now[:success]), layout: false }
-      end
+      flash[:success] = "Пост успешно обновлён"
+      redirect_to @entry, status: :see_other
     else
       @entry.entryable.reload if @entry.entryable.content.blank?
       render Views::Entries::Form.new(entry: @entry), status: :unprocessable_entity

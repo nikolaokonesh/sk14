@@ -2,7 +2,7 @@ class User::NameController < ApplicationController
   before_action :set_user, only: %i[ index update ]
   def index
     if @user.name.blank?
-      render Views::Users::Name::Edit.new(user: @user)
+      render Views::Auth::Name.new(user: @user)
     else
       flash[:success] = "Вы ввели свое имя как #{@user.name.full}!"
       redirect_to user_path(@user)
@@ -15,7 +15,7 @@ class User::NameController < ApplicationController
         flash[:success] = "Привет, #{@user.name.full}!"
         redirect_to root_path
       else
-        render Views::Users::Name::Edit.new(user: @user), status: :unprocessable_entity
+        render Views::Auth::Name.new(user: @user), status: :unprocessable_entity
       end
     else
       flash[:success] = "Вы ввели свое имя как #{@user.name.full}!"

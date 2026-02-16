@@ -15,7 +15,7 @@ class Views::Entries::Index < Views::Base
     if authenticated?
       turbo_stream_from :entries
     end
-    render Components::Menu::Header.new(query: @query)
+    render Components::Menu::Search.new(query: @query)
     div(class: "w-full") do
       render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
     end

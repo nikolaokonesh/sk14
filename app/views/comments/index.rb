@@ -25,7 +25,7 @@ class Views::Comments::Index < Views::Base
         # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
         # 2. relative нужен для позиционирования кнопки
         div(id: dom_id(@entry.root, :comments_list),
-            class: "pt-4 max-h-[71svh] overflow-y-auto",
+            class: "pt-4 h-[71svh] overflow-y-auto",
             data: { controller: "autoscroll infinite-scroll" }) do
           @direction.present? ? render_direction_fragment : render_full_page
 
@@ -50,7 +50,7 @@ class Views::Comments::Index < Views::Base
           end
         end
         # snap-end snap-always Это для залипания
-        div(class: "snap-end snap-always") { }
+        div(class: "snap-end") { }
       end
     end
   end

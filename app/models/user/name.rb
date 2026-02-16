@@ -6,7 +6,7 @@ module User::Name
       if name.present?
         name.familiar
       else
-        email.split("@").first
+        slug
       end
     end
 
@@ -14,7 +14,7 @@ module User::Name
       if name.present?
         name.full
       else
-        email.split("@").first
+        slug
       end
     end
   end

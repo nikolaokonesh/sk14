@@ -85,8 +85,3 @@ gem "openssl", "~> 3.3"
 gem "phlex-rails", "~> 2.4"
 gem "faker", "~> 3.6"
 gem "bullet", group: "development"
-
-gem "dry-rails", "~> 0.7.0"
-gem "dry-monads", "~> 1.9"
-gem "dry-validation", "~> 1.11"
-gem "dry-operation", "~> 1.1"

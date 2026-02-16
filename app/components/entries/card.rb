@@ -27,7 +27,7 @@ class Components::Entries::Card < Phlex::HTML
           data: { controller: "auth-visibility #{(@highlight ? "highlight" : nil)}",
                   auth_visibility_author_id_value: @entry.user_id },
           class: "chat chat-start items-end") do
-        div(class: "chat-image avatar sticky bottom-3 self-end") do
+        div(class: "chat-image avatar sticky bottom-16 self-end") do
           div(class: "w-10 rounded-full") do
             if @is_last_in_group
               render Components::Users::Avatar.new(user: @entry.user)

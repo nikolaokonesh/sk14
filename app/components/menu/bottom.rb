@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Components::Menu::Index < Components::Base
+class Components::Menu::Bottom < Components::Base
   def view_template
     a(href: root_path, class: "mx-auto p-2 active:text-red-500") { lucide_icon("home") }
     a(href: tags_path, class: "mx-auto p-2 active:text-red-500") { lucide_icon("tag") }

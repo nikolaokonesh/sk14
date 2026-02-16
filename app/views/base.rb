@@ -7,13 +7,14 @@ class Views::Base < Components::Base
 
   def around_template
     render layout.new(page_info) do
-      main(class: "w-full md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-grow") do
-        div(class: "flex flex-col w-full") do
-          div(class: "flex-1 scroll-smooth") do
-            super
-          end
-          render Components::Shared::Flash.new
-          turbo_frame_tag "entry_modal", refresh: "morph", data: { turbo_permanent: true }
+      main(class: "w-full md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
+        navbar do
+          div(class: "flex items-center sticky top-0 bg-base-300 z-10") { render Components::Menu::Header.new }
+        end
+        super
+        render Components::Shared::Flash.new
+        navbar do
+          div(class: "flex items-center sticky bottom-0 bg-base-300") { render Components::Menu::Bottom.new }
         end
       end
     end
@@ -28,7 +29,11 @@ class Views::Base < Components::Base
   end
 
   def navbar(&block)
-    return if current_page?(auth_path) || current_page?(auth_verification_path) || controller_name == "name"
-    yield(block)
+    axcluded_controllers = %w[name auth auth_verification tags]
+    axcluded_actions = %w[new edit show]
+
+    return if controller_name.in?(axcluded_controllers) ||
+              action_name.in?(axcluded_actions)
+    yield
   end
 end
