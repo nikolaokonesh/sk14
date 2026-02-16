@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-class Views::Tags::Search < Views::Base
+class Views::Tags::Search < Components::Base
   def initialize(categories:, counts:, query:)
     @categories = categories
     @counts = counts
     @query = query
   end
-
-  def page_title = "Лента"
-  def layout = Layout
 
   def view_template
     turbo_frame_tag "popular_tags" do
@@ -34,7 +31,7 @@ class Views::Tags::Search < Views::Base
         href: root_path(query: value),
         class: "btn btn-sm rounded-full whitespace-nowrap #{active_class}",
         data: {
-          turbo_frame: "entries_list",
+          turbo_frame: "_top",
           search_target: "tag",
           action: "click->search#set_query",
           search_value: value || ""

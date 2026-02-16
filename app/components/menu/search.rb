@@ -1,6 +1,8 @@
 class Components::Menu::Search < Components::Base
-  def initialize(query:)
+  def initialize(query:, categories:, counts:)
     @query = query
+    @categories = categories
+    @counts = counts
   end
 
   def view_template
@@ -28,13 +30,11 @@ class Components::Menu::Search < Components::Base
           end
         end
         div(class: "mt-4") do
-          turbo_frame_tag "popular_tags",
-            src: search_index_path(query: @query),
-            loading: :lazy do
-            div(class: "flex gap-2 px-4 animate-pulse") do
-              4.times { div(class: "h-8 w-20 bg-base-200 rounded-full") }
-            end
-          end
+          render Views::Tags::Search.new(
+            categories: @categories,
+            counts: @counts,
+            query: @query
+          )
         end
       end
     end

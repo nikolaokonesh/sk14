@@ -3,12 +3,13 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
+    @query = params[:query]
     # Ищем только активные посты через Entry
     @entries = Entry.active.includes([ :user, entryable: [ :entry ] ]).where(entryable_type: "Post").recent
 
     # Живой поиск
-    if params[:query].present?
-      keywords = params[:query].to_s.downcase.scan(/[а-яёa-z0-9]+/i)
+    if @query.present?
+      keywords = @query.to_s.downcase.scan(/[а-яёa-z0-9]+/i)
       stems = keywords.map { |w| RussianStemmer.stem(w) }.reject(&:blank?).uniq
       if stems.any?
         @entries = @entries.joins("JOIN posts ON entries.entryable_id = posts.id")
@@ -20,8 +21,28 @@ class EntriesController < ApplicationController
       end
     end
 
+    categories = ListingsDictionary::ACTIONS.keys
+    counts_hash = Tag.where(name: categories)
+                 .joins(:entries)
+                 .merge(Entry.active.where(entryable_type: "Post"))
+                 .group(:name)
+                 .count
+
+    sorted_counts = counts_hash.sort_by { |_name, count| -count }.reject { |_name, count| count.zero? }
+
+    @visible_cateories = sorted_counts.map(&:first)
+
+    @counts = counts_hash
+
     @pagy, @entries = pagy_countless(@entries)
-    render Views::Entries::Index.new(entries: @entries, pagy: @pagy, params: params[:page], query: params[:query])
+    render Views::Entries::Index.new(
+      entries: @entries,
+      pagy: @pagy,
+      params: params[:page],
+      query: @query,
+      categories: @visible_cateories,
+      counts: @counts
+    )
   end
 
   def show

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  def initialize(entries:, pagy:, params:, query:)
+  def initialize(entries:, pagy:, params:, query:, categories:, counts:)
     @entries = entries
     @pagy = pagy
     @params = params
     @query = query
+    @categories = categories
+    @counts = counts
   end
 
   def page_title = "Лента"
@@ -15,7 +17,9 @@ class Views::Entries::Index < Views::Base
     if authenticated?
       turbo_stream_from :entries
     end
-    render Components::Menu::Search.new(query: @query)
+
+    render Components::Menu::Search.new(query: @query, categories: @categories, counts: @counts)
+
     turbo_frame_tag :entries_list, target: "_top" do
       div(class: "w-full") do
         render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)

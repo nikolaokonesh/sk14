@@ -11,11 +11,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tags, only: %i[index show] do
-    collection do
-      resources :search, only: :index, module: :tags
-    end
-  end
+  resources :tags, only: %i[index show]
 
   resources :subscriptions, only: [ :create, :destroy ]
 
