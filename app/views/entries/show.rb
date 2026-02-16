@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
 class Views::Entries::Show < Views::Base
-  def initialize(entry:, params_comment_id: nil)
+  def initialize(entry:, comments:, pagy: nil, direction: nil, highlight_id: nil, frame_id: nil, has_prev: false, has_next: false, button_down: false)
     @entry = entry
-    @params_comment_id = params_comment_id
+    @comments = comments
+    @pagy = pagy
+    @direction = direction
+    @highlight_id = highlight_id.to_i
+    @frame_id = frame_id
+    @has_prev = has_prev
+    @has_next = has_next
+    @button_down = button_down
   end
+
 
   def page_title = truncate(@entry.title, length: 50, omission: "...")
   def layout = Layout
@@ -23,7 +31,6 @@ class Views::Entries::Show < Views::Base
         span(class: "ml-2 text-sm text-slate-500") { "Внимание! Cкоро будет удален навсегда." }
       end
 
-      
       # snap-y snap-proximity scroll-smooth Это для залипания
       div(class: "snap-start") do
         div(class: "chat chat-start items-end pb-4 m-1") do
@@ -67,10 +74,15 @@ class Views::Entries::Show < Views::Base
         end
         # Лента комментариев
         header(class: "p-3 sticky top-0 z-5 bg-base-200 border-b font-semibold") { "Комментарии" }
-        turbo_frame_tag :comments, src: entry_comments_path(@entry.root, comment_id: @params_comment_id), refresh: "morph", target: "_top",
-          class: "flex flex-col", loading: "lazy" do
-          render Components::Pagination::Skeleton.new
-        end
+        render Views::Comments::Index.new(entry: @entry,
+                                          comments: @comments,
+                                          pagy: @pagy,
+                                          direction: @direction,
+                                          highlight_id: @highlight_id,
+                                          frame_id: @frame_id,
+                                          has_prev: @has_prev,
+                                          has_next: @has_next,
+                                          button_down: @button_down)
       end
     end
   end

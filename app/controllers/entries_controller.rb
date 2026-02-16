@@ -2,6 +2,8 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
+  include CommentsLoader
+
   def index
     @query = params[:query]
     # Ищем только активные посты через Entry
@@ -35,6 +37,7 @@ class EntriesController < ApplicationController
     @counts = counts_hash
 
     @pagy, @entries = pagy_countless(@entries)
+
     render Views::Entries::Index.new(
       entries: @entries,
       pagy: @pagy,
@@ -49,7 +52,18 @@ class EntriesController < ApplicationController
     if @entry.trash == true
       redirect_to root_path, notice: "Пост был удалён..."
     else
-      render Views::Entries::Show.new(entry: @entry, params_comment_id: params[:comment_id])
+      load_comments_for(@entry)
+      render Views::Entries::Show.new(
+        entry: @entry,
+        direction: params[:direction],
+        highlight_id: params[:comment_id],
+        frame_id: params[:frame_id],
+        comments: @comments,
+        pagy: @pagy,
+        has_prev: @has_prev,
+        has_next: @has_next,
+        button_down: @button_down
+      )
     end
   end
 

@@ -3,53 +3,24 @@ class CommentsController < ApplicationController
   before_action :set_comment, only: %i[ edit update destroy cancel_edit ]
   before_action :set_entry
 
+  include CommentsLoader
+
   def index
-    @limit = 20
-    ref_id = params[:ref_id].to_i || nil
+    return redirect_to entry_path(@entry.root, comment_id: params[:comment_id]) if request.headers["Turbo-Frame"].nil?
 
-    if request.headers["Turbo-Frame"].nil?
-      return redirect_to entry_path(@entry.root, comment_id: params[:comment_id])
-    end
+    load_comments_for(@entry)
 
-    if params[:comment_id].present? && params[:direction].blank?
-      # 1. Точка вохода из уведомления
-      @target_comment = @entry.comments.find(params[:comment_id])
-      @before_comments = @entry.comments.where("id < ?", @target_comment.id)
-                              .order(id: :desc).limit(@limit).to_a.reverse
-      @after_comments = @entry.comments.where("id > ?", @target_comment.id)
-                              .order(id: :asc).limit(@limit).to_a
-
-      @comments = @before_comments + [ @target_comment ] + @after_comments
-
-      @pagy_has_prev = @before_comments.size >= @limit
-      @pagy_has_next = @after_comments.size >= @limit
-
-      @button_down = true
-    elsif params[:direction] == "prev"
-      # Scroll вверх (старые)
-      scope = @entry.comments.where("id < ?", ref_id).order(id: :desc)
-      @pagy, @comments = pagy_countless(scope, limit: @limit)
-      @comments = @comments.reverse
-    elsif params[:direction] == "next"
-      # Scroll вниз (новые)
-      scope = @entry.comments.where("id > ?", ref_id).order(id: :asc)
-      @pagy, @comments = pagy_countless(scope, limit: @limit)
-    else
-      scope = @entry.comments.order(id: :asc)
-      count = scope.count
-      initial_page = count.zero? ? 1 : (count.fdiv(20)).ceil
-      @pagy, @comments = pagy_countless(scope, limit: @limit, page: initial_page)
-    end
-
-    render Views::Comments::Index.new(entry: @entry,
-                                      comments: @comments,
-                                      pagy: @pagy,
-                                      direction: params[:direction],
-                                      highlight_id: params[:comment_id],
-                                      frame_id: params[:frame_id],
-                                      has_prev: @pagy_has_prev,
-                                      has_next: @pagy_has_next,
-                                      button_down: @button_down)
+    render Views::Comments::Index.new(
+      entry: @entry,
+      comments: @comments,
+      pagy: @pagy,
+      direction: params[:direction],
+      highlight_id: params[:comment_id],
+      frame_id: params[:frame_id],
+      has_prev: @pagy_has_prev,
+      has_next: @pagy_has_next,
+      button_down: @button_down
+    ), layout: false
   end
 
   def edit

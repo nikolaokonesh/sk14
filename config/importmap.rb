@@ -12,4 +12,4 @@ pin "@rails/request.js", to: "@rails--request.js.js" # @0.0.12
 pin "@stimulus-components/auto-submit", to: "@stimulus-components--auto-submit.js" # @6.0.0
 pin "@stimulus-components/notification", to: "@stimulus-components--notification.js" # @3.0.0
 pin "stimulus-use" # @0.52.3
-pin "@hotwired/hotwire-native-bridge", to: "@hotwired--hotwire-native-bridge.js" # @1.2.2
+# pin "@hotwired/hotwire-native-bridge", to: "@hotwired--hotwire-native-bridge.js" # @1.2.2

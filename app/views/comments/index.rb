@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Views::Comments::Index < Views::Base
+class Views::Comments::Index < Components::Base
   def initialize(entry:, comments:, pagy: nil, direction: nil, highlight_id: nil, frame_id: nil, has_prev: false, has_next: false, button_down: false)
     @entry = entry
     @comments = comments
@@ -12,9 +12,6 @@ class Views::Comments::Index < Views::Base
     @pagy_has_next = has_next
     @button_down = button_down
   end
-
-  def page_title = "Комментарии поста #{@entry.id}"
-  def layout = Layout
 
   def view_template
     turbo_frame_tag :comments, refresh: "morph" do
