@@ -6,10 +6,10 @@ class Components::Comments::Form::Create < Phlex::HTML
   include Phlex::Rails::Helpers::Tag
   register_value_helper :lucide_icon
 
-  def initialize(entry:, comment: Comment.new, pagy_has_next:, pagy:)
+  def initialize(entry:, comment: Comment.new, has_next:, pagy:)
     @entry = entry
     @comment = comment
-    @pagy_has_next = pagy_has_next
+    @has_next = has_next
     @pagy = pagy
   end
 
@@ -52,6 +52,6 @@ class Components::Comments::Form::Create < Phlex::HTML
   end
 
   def go_to_latest
-    @pagy&.next || @pagy_has_next ? "turbo:submit-end->reply#goToLatest" : ""
+    @pagy&.next || @has_next ? "turbo:submit-end->reply#goToLatest" : ""
   end
 end

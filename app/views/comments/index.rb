@@ -8,8 +8,8 @@ class Views::Comments::Index < Components::Base
     @direction = direction
     @highlight_id = highlight_id.to_i
     @frame_id = frame_id
-    @pagy_has_prev = has_prev
-    @pagy_has_next = has_next
+    @has_prev = has_prev
+    @has_next = has_next
     @button_down = button_down
   end
 
@@ -43,7 +43,7 @@ class Views::Comments::Index < Components::Base
         if current_user
           # reply_controller внутри Form::Create.rb
           div(id: "new_comment_form", class: "flex-none sticky bottom-0 bg-base-100 p-4 pb-safe z-10") do
-            render Components::Comments::Form::Create.new(entry: @entry, pagy_has_next: @pagy_has_next, pagy: @pagy)
+            render Components::Comments::Form::Create.new(entry: @entry, has_next: @has_next, pagy: @pagy)
           end
         end
         # snap-end snap-always Это для залипания
@@ -54,8 +54,8 @@ class Views::Comments::Index < Components::Base
 
   def render_full_page
     # Frame подгрузки ВВЕРХ
-    # if (@highlight_id > 0 && @pagy_has_prev) || (@direction == "prev" && @pagy&.next)
-    if @pagy_has_prev || (@pagy && @pagy.page > 1)
+    # if (@highlight_id > 0 && @has_prev) || (@direction == "prev" && @pagy&.next)
+    if @has_prev || (@pagy && @pagy.page > 1)
       render_load_frame(:prev, @comments.first)
     end
 
@@ -66,7 +66,7 @@ class Views::Comments::Index < Components::Base
       render_comment(comment, last)
     end
     # Frame подгрузки ВНИЗ
-    if @pagy&.next || @pagy_has_next || (@highlight_id > 0 && @direction.nil?) || (@highlight_id > 0 && @pagy_has_next) || (@direction == "next" && @pagy&.next)
+    if @pagy&.next || @has_next || (@highlight_id > 0 && @direction.nil?) || (@highlight_id > 0 && @has_next) || (@direction == "next" && @pagy&.next)
       render_load_frame(:next, @comments.last)
     end
 
