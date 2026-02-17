@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["badge"]
 
   connect() {
-    this.setupObserver()
     this.notificationsActive = false
 
     // 1. Находим контейнер (это сам элемент контроллера)
@@ -30,28 +29,13 @@ export default class extends Controller {
     }
   }
 
-  setupObserver() {
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          this.badgeTarget.classList.add("hidden")
-        } else {
-          this.badgeTarget.classList.remove("hidden")
-        }
-      })
-    }, { threshold: 0.1 })
-
-    const lastChild = document.querySelector(".last-comment")
-    if (lastChild) this.observer.observe(lastChild)
-  }
-
   disable_click() {
     this.element.style.pointerEvents = "none"
     this.element.classList.add("opacity-50", "cursor-wait")
   }
 
   disconnect() {
-    if (this.observer) this.observer.disconnect()
+    this.observer.disconnect()
   }
 
   handleMutation(mutations) {
@@ -113,6 +97,8 @@ export default class extends Controller {
 
   handleScroll() {
     if (this.isNearBottom()) {
+      const goToLatest = this.element.querySelector("#go_to_latest")
+      goToLatest.classList.add("hidden")
       this.hideBadge()
     }
   }

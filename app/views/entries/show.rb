@@ -19,7 +19,7 @@ class Views::Entries::Show < Views::Base
 
   def view_template
     turbo_stream_from :entries
-    div(class: "snap-y snap-proximity scroll-smooth w-full") do
+    div(id: dom_id(@entry, :show_container), class: "scroll-smooth w-full") do
       if @entry.trash == true
         div(class: "flex items-center mt-5") do
           div(class: "bg-red-500 inline p-1 m-2") { "Удалено" }

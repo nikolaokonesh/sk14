@@ -38,6 +38,18 @@ class Views::Comments::Index < Components::Base
               span(class: "ml-1 text-xs font-bold") { "новое" }
             end
           end
+
+          if @button_down.present?
+            a(
+              href: entry_comments_path(@entry),
+              class: "fixed bottom-24 right-6 btn btn-circle btn-secondary shadow-xl z-50",
+              id: "go_to_latest",
+              data: {
+                turbo_frame: "comments",
+                action: "click->autoscroll#disable_click"
+              }
+            ) { lucide_icon("chevrons-down") }
+          end
         end
         # Форма ввода комментария (прижата к низу)
         if current_user
@@ -68,19 +80,6 @@ class Views::Comments::Index < Components::Base
     # Frame подгрузки ВНИЗ
     if @pagy&.next || @has_next
       render_load_frame(:next, @comments.last)
-    end
-
-    if @button_down.present?
-      a(
-        href: entry_comments_path(@entry),
-        class: "fixed bottom-24 right-6 btn btn-circle btn-secondary shadow-xl z-50",
-        id: "go_to_latest",
-        data: {
-          autoscroll_target: "badge",
-          turbo_frame: "comments",
-          action: "click->autoscroll#disable_click"
-        }
-      ) { lucide_icon("chevrons-down") }
     end
   end
 
