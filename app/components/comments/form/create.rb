@@ -25,13 +25,22 @@ class Components::Comments::Form::Create < Phlex::HTML
       end
     end
 
+    needs_scroll = if @has_next.present?
+      true
+    else
+      false
+    end
+
     form_with(model: [ @entry, @comment ],
       id: "comment_from_container",
       class: "flex items-end gap-2",
-      data: { controller: "reset-form", action: "turbo:submit-start->reset-form#prepareSubmission
-                                                 turbo:submit-end->reset-form#reset
-                                                 turbo:submit-end->reply#submitEnd
-                                                 #{go_to_latest}" }) do |f|
+      data: {
+        controller: "reset-form",
+        go_to_latest: needs_scroll.to_s,
+        action: "turbo:submit-start->reset-form#prepareSubmission
+                 turbo:submit-end->reset-form#reset
+                 turbo:submit-end->reply#submitEnd"
+        }) do |f|
       # render Components::Comments::Toolbar.new
       f.hidden_field :parent_id, data: { reply_target: "input" }
 
@@ -49,9 +58,5 @@ class Components::Comments::Form::Create < Phlex::HTML
         lucide_icon("send", size: 18)
       end
     end
-  end
-
-  def go_to_latest
-    @pagy&.next || @has_next ? "turbo:submit-end->reply#goToLatest" : ""
   end
 end

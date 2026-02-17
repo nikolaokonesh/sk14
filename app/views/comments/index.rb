@@ -62,11 +62,11 @@ class Views::Comments::Index < Components::Base
     @comments.each_with_index do |comment, i|
       # Проверка на группу для начальной загрузки
       next_c = @comments[i + 1]
-      last = next_c.nil? || next_c.user_id != comment.user_id
-      render_comment(comment, last)
+      last = next_c.nil? && !@has_next # || next_c.user_id != comment.user_id
+      render_comment(comment, last, last ? "last-comment" : "")
     end
     # Frame подгрузки ВНИЗ
-    if @pagy&.next || @has_next || (@highlight_id > 0 && @direction.nil?) || (@highlight_id > 0 && @has_next) || (@direction == "next" && @pagy&.next)
+    if @pagy&.next || @has_next
       render_load_frame(:next, @comments.last)
     end
 
@@ -75,10 +75,12 @@ class Views::Comments::Index < Components::Base
         href: entry_comments_path(@entry),
         class: "fixed bottom-24 right-6 btn btn-circle btn-secondary shadow-xl z-50",
         id: "go_to_latest",
-        data: { turbo_frame: "comments", action: "click->autoscroll#disable_click" }
-      ) do
-        lucide_icon("chevrons-down")
-      end
+        data: {
+          autoscroll_target: "badge",
+          turbo_frame: "comments",
+          action: "click->autoscroll#disable_click"
+        }
+      ) { lucide_icon("chevrons-down") }
     end
   end
 
@@ -97,11 +99,11 @@ class Views::Comments::Index < Components::Base
     end
   end
 
-  def render_comment(comment, last)
+  def render_comment(comment, last, extra_class = "")
     is_target = (comment.id == @highlight_id)
 
     target_classes = is_target ? "js-highlighted-comment" : ""
-    render Components::Comments::Card.new(entry: comment, is_last_in_group: last, class_target: target_classes) do |card|
+    render Components::Comments::Card.new(entry: comment, is_last_in_group: last, class_target: "#{target_classes} #{extra_class}") do |card|
       card.card_comment
     end
   end

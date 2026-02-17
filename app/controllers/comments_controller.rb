@@ -17,8 +17,8 @@ class CommentsController < ApplicationController
       direction: params[:direction],
       highlight_id: params[:comment_id],
       frame_id: params[:frame_id],
-      has_prev: @pagy_has_prev,
-      has_next: @pagy_has_next,
+      has_prev: @has_prev || false,
+      has_next: @has_next || false,
       button_down: @button_down
     ), layout: false
   end

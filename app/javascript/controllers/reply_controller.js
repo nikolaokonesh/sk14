@@ -25,15 +25,21 @@ export default class extends Controller {
 
   submitEnd(event) {
     if (event.detail.success) {
-      this.close()
+      const lastComment = document.querySelector(".last-comment")
+
+      if (lastComment) {
+        this.close()
+      } else {
+        this.goToLatest()
+      }
     }
   }
 
   goToLatest(event) {
-    if (event.detail.success) {
-      const baseUrl = window.location.pathname
-      const frame = document.getElementById("comments")
-      frame.src = baseUrl + "/comments"
+    const frame = document.getElementById("comments")
+    if (frame) {
+      const baseUrl = window.location.pathname.replace(/\/$/, "")
+      frame.src = `${baseUrl}/comments`
     }
   }
 

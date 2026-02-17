@@ -11,7 +11,7 @@ class Views::Comments::Streams::Create < Phlex::HTML
 
   def view_template
     turbo_stream.append dom_id(@entry.root, :comments_list) do
-      render Components::Comments::Card.new(entry: @entry, is_last_in_group: true, highlight: true) { |card| card.card_comment }
+      render Components::Comments::Card.new(entry: @entry, is_last_in_group: true, highlight: true, class_target: "last-comment") { |card| card.card_comment }
     end
 
     if @previous_comment && @previous_comment.user_id == @entry.user_id
