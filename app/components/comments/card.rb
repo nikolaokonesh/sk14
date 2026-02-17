@@ -38,7 +38,7 @@ class Components::Comments::Card < Phlex::HTML
 
   def content
     # plain "#{@entry.root.entryable.id}" Это ID Поста
-    div(id: "content_comment_#{@comment.id}") do
+    div(id: "content_comment_#{@comment.id}", class: "p-2") do
       render Components::Entries::Content.new(entry: @comment)
     end
   end
@@ -61,13 +61,13 @@ class Components::Comments::Card < Phlex::HTML
         time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
         nav
       end
-      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble max-w-[99%]", ("before:hidden" unless @is_last_in_group), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 max-w-[99%]", ("before:hidden" unless @is_last_in_group), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         if @comment.entry.parent.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
             data: { turbo_frame: "comments", action: "click->autoscroll#disable_click" }
           ) do
-            div(class: "flex flex-col overflow-hidden bg-base-200 border-l-4 border-primary px-4 py-2 rounded-r-lg shadow-sm") do
+            div(class: "flex flex-col overflow-hidden bg-base-200 border-l-4 border-primary px-4 py-2") do
               span(class: "text-primary text-sm font-bold truncate") { @comment.entry.parent.user.username }
               span(class: "text-base-content/70 text-xs truncate") { truncate(@comment.entry.parent.entryable.content.to_plain_text.to_s, length: 50, omission: "...") }
             end
@@ -75,11 +75,17 @@ class Components::Comments::Card < Phlex::HTML
         end
         content
       end
-      div(class: "chat-footer opacity-50", data: { action: "click->reply#trigger",
-                                                   reply_id_param: @comment.entry.id,
-                                                   reply_author_param: @entry.user.username,
-                                                   reply_text_param: truncate(@comment.content.to_plain_text.to_s, length: 50, omission: "...") }) do
-        span { "Ответить" }
+      div(class: "chat-footer opacity-50",
+          data: {
+            action: "click->reply#trigger",
+            reply_id_param: @comment.entry.id,
+            reply_author_param: @entry.user.username,
+            reply_text_param: truncate(@comment.content.to_plain_text.to_s,
+            length: 50,
+            omission: "...")
+          }
+      ) do
+        span(class: "cursor-pointer") { "Ответить" }
       end
     end
   end

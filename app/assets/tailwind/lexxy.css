@@ -58,6 +58,11 @@ lexxy-toolbar {
   @apply pt-5;
 }
 
+.lexxy-content p:has(action-text-attachment) {
+  margin: 0;
+  display: inline !important;
+}
+
 .lexxy-prompt-menu {
   width: 100%;
   left: 0 !important;

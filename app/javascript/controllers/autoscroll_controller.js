@@ -98,7 +98,9 @@ export default class extends Controller {
   handleScroll() {
     if (this.isNearBottom()) {
       const goToLatest = this.element.querySelector("#go_to_latest")
-      goToLatest.classList.add("hidden")
+      if (goToLatest) {
+        goToLatest.classList.add("hidden")
+      }
       this.hideBadge()
     }
   }

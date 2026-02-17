@@ -74,8 +74,9 @@ class Views::Comments::Index < Components::Base
     @comments.each_with_index do |comment, i|
       # Проверка на группу для начальной загрузки
       next_c = @comments[i + 1]
-      last = next_c.nil? && !@has_next # || next_c.user_id != comment.user_id
-      render_comment(comment, last, last ? "last-comment" : "")
+      is_last_in_group = (i == @comments.size - 1) || (next_c && next_c.user_id != comment.user_id) # next_c.nil? && !@has_next # || next_c.user_id != comment.user_id
+      is_the_very_end = (i == @comments.size - 1) && !@has_next && !@pagy&.next
+      render_comment(comment, is_last_in_group, is_the_very_end ? "last-comment" : "")
     end
     # Frame подгрузки ВНИЗ
     if @pagy&.next || @has_next
@@ -102,7 +103,11 @@ class Views::Comments::Index < Components::Base
     is_target = (comment.id == @highlight_id)
 
     target_classes = is_target ? "js-highlighted-comment" : ""
-    render Components::Comments::Card.new(entry: comment, is_last_in_group: last, class_target: "#{target_classes} #{extra_class}") do |card|
+    render Components::Comments::Card.new(
+      entry: comment,
+      is_last_in_group: last,
+      class_target: "#{target_classes} #{extra_class}"
+    ) do |card|
       card.card_comment
     end
   end

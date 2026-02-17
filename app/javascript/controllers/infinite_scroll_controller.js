@@ -24,9 +24,9 @@ export default class extends Controller {
   }
 
   flash(el) {
-    el.classList.add("ring-4", "ring-primary", "bg-primary/20", "transition-all", "duration-1000")
+    el.classList.add("bg-primary/30", "transition-all", "duration-1000")
     setTimeout(() => {
-      el.classList.remove("ring-4", "ring-primary", "bg-primary/20")
+      el.classList.remove("bg-primary/30")
     }, 3000)
   }
 
