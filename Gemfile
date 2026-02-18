@@ -67,7 +67,7 @@ end
 
 gem "tailwindcss-rails", "~> 4.4"
 gem "friendly_id", "~> 5.5"
-gem "pagy", "~> 9.4"
+gem "pagy", "~> 43.2"
 gem "name_of_person", "~> 1.1"
 gem "validate_url", "~> 1.0"
 gem "active_link_to", "~> 1.0"
