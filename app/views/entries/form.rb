@@ -20,7 +20,7 @@ class Views::Entries::Form < Views::Base
             else
               fields.label :content, "Содержание", class: "mx-2"
             end
-            fields.lexxy_rich_text_area :content, placeholder: "Добавить описание", require: true, rows: 5, class: "lexxy-content pb-4 shadow-sm rounded-md mt-2"
+            fields.rich_text_area :content, placeholder: "Добавить описание", require: true, rows: 5, class: "lexxy-content pb-4 shadow-sm rounded-md mt-2"
           end
         end
         form.hidden_field :entryable_type, value: "Post"

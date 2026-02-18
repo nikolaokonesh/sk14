@@ -29,7 +29,7 @@ class Views::Base < Components::Base
   end
 
   def navbar(&block)
-    axcluded_controllers = %w[name auth auth_verification tags]
+    axcluded_controllers = %w[name auth auth_verification tags feeds trash]
     axcluded_actions = %w[new edit show]
 
     return if controller_name.in?(axcluded_controllers) ||
