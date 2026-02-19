@@ -22,7 +22,7 @@ class Views::Comments::Index < Components::Base
         # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
         # 2. relative нужен для позиционирования кнопки
         div(id: dom_id(@entry.root, :comments_list),
-            class: "pt-4 h-[71svh] overflow-y-auto",
+            class: "pt-4 h-[71svh] overflow-y-auto overflow-x-visible no-scrollbar",
             data: { controller: "autoscroll infinite-scroll" }) do
           @direction.present? ? render_direction_fragment : render_full_page
 
@@ -71,12 +71,12 @@ class Views::Comments::Index < Components::Base
       render_load_frame(:prev, @comments.first)
     end
 
-    @comments.each_with_index do |comment, i|
+    comment_groups = @comments.chunk { |c| c.user_id }.to_a
+
+    comment_groups.each_with_index do |(user_id, group), index|
       # Проверка на группу для начальной загрузки
-      next_c = @comments[i + 1]
-      is_last_in_group = (i == @comments.size - 1) || (next_c && next_c.user_id != comment.user_id) # next_c.nil? && !@has_next # || next_c.user_id != comment.user_id
-      is_the_very_end = (i == @comments.size - 1) && !@has_next && !@pagy&.next
-      render_comment(comment, is_last_in_group, is_the_very_end ? "last-comment" : "")
+      is_last_group = (index == comment_groups.size - 1) && !@has_next
+      render_group(user_id, group, is_last_group)
     end
     # Frame подгрузки ВНИЗ
     if @pagy&.next || @has_next
@@ -84,14 +84,51 @@ class Views::Comments::Index < Components::Base
     end
   end
 
+  private
+
+  def render_group(user_id, group, is_last_group)
+    group_starter_id = dom_id(group.first)
+    group_wrapper_id = "group_#{group_starter_id}"
+    bubbles_id = "bubbles_container_#{group_starter_id}"
+    div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: user_id },
+        class: "chat chat-start comment-card group items-end m-1") do
+      div(class: "chat-image avatar self-stretch flex items-end") do
+        div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
+          render Components::Users::Avatar.new(user: group.first.user)
+        end
+      end
+      div(
+        id: bubbles_id,
+        class: "chat-bubble bg-base-300 p-0 max-w-[99%] flex flex-col gap-0.5"
+      ) do
+        group.each_with_index do |comment, i|
+          is_first = (i == 0)
+          is_last = (i == group.size - 1)
+          is_the_very_last = is_last_group && is_last
+
+          render_comment(comment, is_first, is_last, is_the_very_last)
+        end
+      end
+    end
+  end
+
   def render_direction_fragment
     turbo_frame_tag(@frame_id, refresh: "morph") do
+      comment_groups = @comments.chunk { |c| c.user_id }.to_a
+
       if @direction == "prev"
         render_load_frame(:prev, @comments.first) if @pagy&.next
-        @comments.each { |c| render_comment(c, true) }
+        comment_groups.each do |user_id, group|
+          render_group(user_id, group, false)
+        end
       end
       if @direction == "next"
-        @comments.each { |c| render_comment(c, true) }
+        comment_groups.each_with_index do |(user_id, group), index|
+          is_last_in_fragment = (index == comment_groups.size - 1)
+          is_the_very_last_group = is_last_in_fragment && !@has_next
+
+          render_group(user_id, group, is_the_very_last_group)
+        end
         if @comments.size >= 20
           render_load_frame(:next, @comments.last)
         end
@@ -99,14 +136,16 @@ class Views::Comments::Index < Components::Base
     end
   end
 
-  def render_comment(comment, last, extra_class = "")
+  def render_comment(comment, is_first, is_last, is_the_very_last)
     is_target = (comment.id == @highlight_id)
-
+    is_the_very_last_classes = is_the_very_last ? "last-comment" : ""
     target_classes = is_target ? "js-highlighted-comment" : ""
+
     render Components::Comments::Card.new(
       entry: comment,
-      is_last_in_group: last,
-      class_target: "#{target_classes} #{extra_class}"
+      is_first: is_first,
+      is_last: is_last,
+      class_target: "#{target_classes} #{is_the_very_last_classes}"
     ) do |card|
       card.card_comment
     end

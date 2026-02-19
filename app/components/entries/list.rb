@@ -12,8 +12,13 @@ class Components::Entries::List < Phlex::HTML
     div(class: "w-full") do
       div(id: "entries", class: "grid grid-cols-1 gap-3 px-2") do
         if @entries.any?
-          @entries.each do |entry|
-            render Components::Entries::Card.new(entry: entry)
+          @entries.each_with_index do |entry, i|
+            prev_by_time = @entries[i + 1]
+            next_by_time = i > 0 ? @entries[i - 1] : nil
+
+            is_first = prev_by_time.nil? || prev_by_time.user_id != entry.user_id
+            is_last = next_by_time.nil? || next_by_time.user_id != entry.user_id
+            render Components::Entries::Card.new(entry: entry, is_first: is_first, is_last: is_last)
           end
         else
           p(class: "text-center my-10") { "Нет никаких объявлений..." }

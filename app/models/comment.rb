@@ -12,28 +12,29 @@ class Comment < ApplicationRecord
   private
 
   def broadcast_to_create_chat
-    broadcast_prepend_to :entries_all,
-      target: "entries_all",
-      renderable: Components::Entries::Card.new(entry: entry, highlight: true),
+    broadcast_render_to(
+      [ entry.root, :comments ],
+      renderable: Views::Comments::Streams::Create.new(entry: entry),
       layout: false
+    )
 
-    broadcast_append_to [ entry.root, :comments ],
-      target: [ entry.root, :comments_list ],
-      renderable: Components::Comments::Card.new(entry: entry, is_last_in_group: true, highlight: true, class_target: "last-comment") { |card| card.card_comment },
-      layout: false
-    previous_comment = entry.root.replies.where.not(id: entry.id).last
-    if previous_comment && previous_comment.user_id == entry.user_id
-      broadcast_replace_to [ entry.root, :comments ],
-        target: "entry_#{previous_comment.id}",
-        renderable: Components::Comments::Card.new(entry: previous_comment, is_last_in_group: false) { |card| card.card_comment },
-        layout: false
-    end
+    # broadcast_append_to [ entry.root, :comments ],
+    #   target: [ entry.root, :comments_list ],
+    #   renderable: Components::Comments::Card.new(entry: entry, is_last_in_group: true, highlight: true, class_target: "last-comment") { |card| card.card_comment },
+    #   layout: false
+    # previous_comment = entry.root.replies.where.not(id: entry.id).last
+    # if previous_comment && previous_comment.user_id == entry.user_id
+    #   broadcast_replace_to [ entry.root, :comments ],
+    #     target: "entry_#{previous_comment.id}",
+    #     renderable: Components::Comments::Card.new(entry: previous_comment, is_last_in_group: false) { |card| card.card_comment },
+    #     layout: false
+    # end
   end
 
   def broadcast_to_update_chat
     broadcast_replace_to [ entry.root, :comments ],
       target: "entry_#{entry.id}",
-      renderable: Components::Comments::Card.new(entry: entry, is_last_in_group: true, highlight: true) { |card| card.card_comment },
+      renderable: Components::Comments::Card.new(entry: entry, highlight: true) { |card| card.card_comment },
       layout: false
   end
 

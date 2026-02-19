@@ -31,12 +31,12 @@ class CommentsController < ApplicationController
   end
 
   def cancel_edit
-    render turbo_stream: turbo_stream.replace(@comment.entry, renderable: Components::Comments::Card.new(entry: @comment.entry, is_last_in_group: true) { |c| c.card_comment })
+    render turbo_stream: turbo_stream.replace(@comment.entry, renderable: Components::Comments::Card.new(entry: @comment.entry) { |c| c.card_comment })
   end
 
   def update
     if @comment.update(comment_params)
-      render turbo_stream: turbo_stream.replace(@comment.entry, renderable: Components::Comments::Card.new(entry: @comment.entry, is_last_in_group: true, highlight: true) { |c| c.card_comment })
+      render turbo_stream: turbo_stream.replace(@comment.entry, renderable: Components::Comments::Card.new(entry: @comment.entry, highlight: true) { |c| c.card_comment })
     else
       @comment.reload if @comment.content.blank?
       respond_to do |format|
@@ -69,12 +69,10 @@ class CommentsController < ApplicationController
     end
 
     @comment.build_entry(user: Current.user, parent: parent)
-    previous_comment = @entry.root.replies.where.not(id: @comment.entry.id).last
 
     if @comment.save
       respond_to do |format|
-        format.turbo_stream { render Views::Comments::Streams::Create.new(entry: @comment.entry,
-                                  previous_comment: previous_comment), layout: false }
+        format.turbo_stream { render Views::Comments::Streams::Create.new(entry: @comment.entry), layout: false }
         format.html { redirect_to post_path(@entry.root), notice: "Комментарий добавлен" }
       end
     else

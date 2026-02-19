@@ -51,6 +51,31 @@ class Entry < ApplicationRecord
 
   validate :root_consctancy, on: :update, if: :root_id_changed?
 
+  def first_in_group?
+    return true if parent_id.nil?
+
+    prev_entry = parent.replies
+                       .where("created_at < ?", created_at)
+                       .order(created_at: :asc)
+                       .last
+
+    prev_entry.nil? || prev_entry.user_id != user_id
+  end
+
+  def last_in_group?
+    next_entry = parent&.replies
+                       &.where("created_at > ?", created_at)
+                       &.order(created_at: :asc)
+                       &.first
+
+    next_entry.nil? || next_entry.user_id != user_id
+  end
+
+  def group_starter
+    entries = root.descendants.where("id <= ?", id).order(id: :desc).limit(50).to_a
+    entries.slice_when { |a, b| a.user_id != b.user_id }.first.last
+  end
+
   private
 
   def enqueue_keyword_extraction

@@ -9,12 +9,13 @@ class Components::Comments::Card < Phlex::HTML
   register_value_helper :lucide_icon
   register_value_helper :current_user_id
 
-  def initialize(entry:, highlight: false, is_last_in_group: true, class_target: nil)
+  def initialize(entry:, highlight: false, class_target: "", is_first: nil, is_last: nil)
     @entry = entry
     @comment = entry.entryable
     @highlight = highlight
-    @is_last_in_group = is_last_in_group
     @class_target = class_target
+    @is_first = is_first.nil? ? @entry.first_in_group? : is_first
+    @is_last = is_last.nil? ? @entry.last_in_group? : is_last
   end
 
   def view_template
@@ -48,20 +49,14 @@ class Components::Comments::Card < Phlex::HTML
         data: { controller: "auth-visibility chat-visibility #{(@highlight ? "highlight" : nil)}",
                 auth_visibility_author_id_value: @entry.user_id,
                 chat_visibility_target: "chat" },
-        class: "chat chat-start comment-card items-end m-1 #{@class_target}") do
-      div(class: "chat-image avatar sticky bottom-2 self-end", data: { chat_visibility_target: "avatar" }) do
-        div(class: "w-10 rounded-full") do
-          if @is_last_in_group
-            render Components::Users::Avatar.new(user: @entry.user)
-          end
-        end
-      end
+        class: "chat chat-start comment-card group items-end m-1  #{@is_first ? "mt-3" : "-mt-1"} #{@class_target}") do
       div(class: "chat-header flex items-center") do
-        span(class: "pr-3", data: { chat_visibility_target: "username" }) { sanitize(strip_tags(@entry.user.username)) }
-        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
+        span(class: "pr-3", data: { chat_visibility_target: "username" }) {
+          sanitize(strip_tags(@entry.user.username)) if @is_first
+        }
         nav
       end
-      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 max-w-[99%]", ("before:hidden" unless @is_last_in_group), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble bg-base-100 p-0 before:hidden rounded-bl-none  max-w-[99%]", (@is_first ? "rounded-tl-none" : ""), (!@is_last ? "mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         if @comment.entry.parent.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
@@ -85,7 +80,8 @@ class Components::Comments::Card < Phlex::HTML
             omission: "...")
           }
       ) do
-        span(class: "cursor-pointer") { "Ответить" }
+        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
+        span(class: "cursor-pointer px-2") { lucide_icon("message-square-reply", size: 16) }
       end
     end
   end
