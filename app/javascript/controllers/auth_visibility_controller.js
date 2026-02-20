@@ -8,7 +8,9 @@ export default class extends Controller {
   connect() {
     const currentUserId = document.body.dataset.currentUserId
     if (currentUserId && currentUserId === this.authorIdValue) {
-      this.controlsTarget.classList.remove("hidden")
+      if (this.hasControlsTarget) {
+        this.controlsTarget.classList.remove("hidden")
+      }
     }
   }
 }

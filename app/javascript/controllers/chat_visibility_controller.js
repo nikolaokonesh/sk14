@@ -9,11 +9,19 @@ export default class extends Controller {
     const currentUserId = document.body.dataset.currentUserId
     const authorId = this.element.dataset.authVisibilityAuthorIdValue
     if (currentUserId && currentUserId === authorId) {
-      this.chatTarget.classList.add("chat-end")
-      this.chatTarget.classList.remove("chat-start")
-      this.avatarTarget.classList.add("hidden")
-      this.usernameTarget.classList.add("hidden")
-      this.bgcolorTarget.classList.add("dark:bg-violet-900", "bg-violet-300")
+      if (this.hasChatTarget) {
+        this.chatTarget.classList.add("chat-end")
+        this.chatTarget.classList.remove("chat-start")
+      }
+      if (this.hasAvatarTarget) {
+        this.avatarTarget.classList.add("hidden")
+      }
+      if (this.hasUsernameTarget) {
+        this.usernameTarget.classList.add("hidden")
+      }
+      if (this.hasBgcolorTarget) {
+        this.bgcolorTarget.classList.add("dark:bg-violet-900", "bg-violet-300")
+      }
     }
   }
 }

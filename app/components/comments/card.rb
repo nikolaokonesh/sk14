@@ -23,7 +23,7 @@ class Components::Comments::Card < Phlex::HTML
   end
 
   def nav
-    span(class: "hidden dropdown dropdown-left dropdown-center",
+    span(class: "hidden dropdown dropdown-left dropdown-end",
         data: { auth_visibility_target: "controls" }) do
       div(tabindex: 0, role: "button", class: "px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
       ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 z-50 shadow-sm") do
@@ -49,14 +49,13 @@ class Components::Comments::Card < Phlex::HTML
         data: { controller: "auth-visibility chat-visibility #{(@highlight ? "highlight" : nil)}",
                 auth_visibility_author_id_value: @entry.user_id,
                 chat_visibility_target: "chat" },
-        class: "chat chat-start comment-card group items-end m-1  #{@is_first ? "mt-3" : "-mt-1"} #{@class_target}") do
+        class: "chat chat-start comment-card group items-end #{@class_target}") do
       div(class: "chat-header flex items-center") do
-        span(class: "pr-3", data: { chat_visibility_target: "username" }) {
+        span(class: "pr-3 text-base", data: { chat_visibility_target: "username" }) {
           sanitize(strip_tags(@entry.user.username)) if @is_first
         }
-        nav
       end
-      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble bg-base-100 p-0 before:hidden rounded-bl-none  max-w-[99%]", (@is_first ? "rounded-tl-none" : ""), (!@is_last ? "mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 max-w-[98%]", (@is_first ? "rounded-tl-none" : ""), (!@is_last ? "before:hidden rounded-bl-none mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         if @comment.entry.parent.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
@@ -70,18 +69,17 @@ class Components::Comments::Card < Phlex::HTML
         end
         content
       end
-      div(class: "chat-footer opacity-50",
+      div(class: "chat-footer") do
+        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
+        span(class: "cursor-pointer px-2",
           data: {
             action: "click->reply#trigger",
             reply_id_param: @comment.entry.id,
             reply_author_param: @entry.user.username,
             reply_text_param: truncate(@comment.content.to_plain_text.to_s,
             length: 50,
-            omission: "...")
-          }
-      ) do
-        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
-        span(class: "cursor-pointer px-2") { lucide_icon("message-square-reply", size: 16) }
+            omission: "...") }) { lucide_icon("message-square-reply", size: 16) }
+        nav
       end
     end
   end

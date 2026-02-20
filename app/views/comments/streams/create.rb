@@ -40,14 +40,14 @@ class Views::Comments::Streams::Create < Phlex::HTML
     bubbles_id = "bubbles_container_#{dom_id(entry)}"
     div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: entry.user_id },
         class: "chat chat-start comment-card group items-end m-1") do
-      div(class: "chat-image avatar self-stretch flex items-end") do
+      div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
         div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
           render Components::Users::Avatar.new(user: entry.user)
         end
       end
       div(
         id: bubbles_id,
-        class: "chat-bubble bg-base-300 p-0 max-w-[99%] flex flex-col gap-0.5"
+        class: "flex flex-col -ml-2 -mb-4"
       ) do
         render_bubble(entry, is_first: true, is_last: true, class_target: "last-comment", highlight: true)
       end

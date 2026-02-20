@@ -32,7 +32,7 @@ class Views::Entries::Show < Views::Base
       end
 
       # snap-y snap-proximity scroll-smooth Это для залипания
-      div(class: "chat chat-start items-end pb-4 m-1") do
+      div(class: "chat chat-start items-end pb-4 m-1 shadow-xl") do
         div(class: "chat-image avatar sticky bottom-2 self-end") do
           div(class: "w-10 rounded-full") do
             a(href: user_path(@entry.user)) do
@@ -72,7 +72,6 @@ class Views::Entries::Show < Views::Base
         div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
       end
       # Лента комментариев
-      header(class: "p-3 sticky top-0 z-5 bg-base-200 border-b font-semibold") { "Комментарии" }
       render Views::Comments::Index.new(entry: @entry,
                                         comments: @comments,
                                         pagy: @pagy,
