@@ -71,9 +71,21 @@ class Entry < ApplicationRecord
     next_entry.nil? || next_entry.user_id != user_id
   end
 
-  def group_starter
-    entries = root.descendants.where("id <= ?", id).order(id: :desc).limit(50).to_a
-    entries.slice_when { |a, b| a.user_id != b.user_id }.first.last
+  def group_anchor_id
+    last_interruption_time = Entry.active
+         .where(root_id: root_id)
+         .where(entryable_type: entryable_type)
+         .where.not(user_id: user_id)
+         .where("created_at < ?", created_at)
+         .order(created_at: :desc)
+         .pick(:created_at)
+    query = Entry.active
+                 .where(root_id: root_id)
+                 .where(user_id: user_id)
+                 .where(entryable_type: entryable_type)
+    query = query.where("created_at > ?", last_interruption_time) if last_interruption_time
+
+    query.order(created_at: :asc).pick(:id) || id
   end
 
   private

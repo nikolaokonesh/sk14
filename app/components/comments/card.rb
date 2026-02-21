@@ -56,7 +56,7 @@ class Components::Comments::Card < Phlex::HTML
         }
       end
       div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 max-w-[98%]", (@is_first ? "rounded-tl-none" : ""), (!@is_last ? "before:hidden rounded-bl-none mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
-        if @comment.entry.parent.entryable_type == "Comment"
+        if @comment.entry.parent&.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
             data: { turbo_frame: "comments", action: "click->autoscroll#disable_click" }

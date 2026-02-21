@@ -87,9 +87,9 @@ class Views::Comments::Index < Components::Base
   private
 
   def render_group(user_id, group, is_last_group)
-    group_starter_id = dom_id(group.first)
-    group_wrapper_id = "group_#{group_starter_id}"
-    bubbles_id = "bubbles_container_#{group_starter_id}"
+    anchor = group.first
+    group_wrapper_id = "group_entry_#{anchor.id}"
+    bubbles_id = is_last_group ? "group_bubbles_entry_#{anchor.group_anchor_id}" : nil
     div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: user_id },
         class: "chat chat-start comment-card group items-end m-1 mt-6") do
       div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
