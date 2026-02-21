@@ -31,6 +31,22 @@ class Entry < ApplicationRecord
   #          class_name: "Entry",
   #          foreign_key: :parent_id
 
+  has_many :reactions, dependent: :destroy
+
+  def reaction_summary
+    reactions.group(:content).count
+  end
+
+  def reacted_with?(user, emoji)
+    return false unless user
+
+    reactions.exists?(user: user, content: emoji)
+  end
+
+  def current_reaction_for(user)
+    reactions.find_by(user: user)
+  end
+
   # считывание участников ветки
   def participants
     User.where(id: descendants.pluck(:user_id).uniq)

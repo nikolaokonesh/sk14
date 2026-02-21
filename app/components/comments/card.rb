@@ -39,14 +39,19 @@ class Components::Comments::Card < Phlex::HTML
 
   def content
     # plain "#{@entry.root.entryable.id}" Это ID Поста
-    div(id: "content_comment_#{@comment.id}", class: "p-2") do
+    div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2",
+      data: { action: "click->reactions#togglePicker" }) do
       render Components::Entries::Content.new(entry: @comment)
+      div(class: "picker-container absolute -top-10 hidden animate-in zoom-in duration-150 z-10", data: { reactions_target: "picker" }) do
+        render Components::Reactions::Picker.new(entry: @entry)
+      end
+      render Components::Reactions::List.new(entry: @entry)
     end
   end
 
   def card_comment
     div(id: dom_id(@entry),
-        data: { controller: "auth-visibility chat-visibility #{(@highlight ? "highlight" : nil)}",
+        data: { controller: "auth-visibility chat-visibility reactions #{(@highlight ? "highlight" : nil)}",
                 auth_visibility_author_id_value: @entry.user_id,
                 chat_visibility_target: "chat" },
         class: "chat chat-start comment-card group items-end #{@class_target}") do

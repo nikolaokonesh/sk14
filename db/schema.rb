@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_212436) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_21_081408) do
   create_table "access_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
@@ -143,6 +143,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_212436) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "reactions", force: :cascade do |t|
+    t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.integer "entry_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["entry_id", "content"], name: "index_reactions_on_entry_id_and_content"
+    t.index ["entry_id"], name: "index_reactions_on_entry_id"
+    t.index ["user_id", "entry_id", "content"], name: "index_reactions_on_user_id_and_entry_id_and_content", unique: true
+    t.index ["user_id"], name: "index_reactions_on_user_id"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -217,6 +229,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_212436) do
   add_foreign_key "entries", "users"
   add_foreign_key "entry_keywords", "entries"
   add_foreign_key "entry_keywords", "tags"
+  add_foreign_key "reactions", "entries"
+  add_foreign_key "reactions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "user_avatars", "users"

@@ -8,7 +8,7 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "lexxy", to: "lexxy.js"
 pin "@rails/actiontext", to: "actiontext.esm.js"
 pin "@rails/activestorage", to: "activestorage.esm.js"
-pin "@rails/request.js", to: "@rails--request.js.js" # @0.0.12
+pin "@rails/request.js", to: "@rails--request.js.js" # @0.0.13
 pin "@stimulus-components/auto-submit", to: "@stimulus-components--auto-submit.js" # @6.0.0
 pin "@stimulus-components/notification", to: "@stimulus-components--notification.js" # @3.0.0
 pin "stimulus-use" # @0.52.3

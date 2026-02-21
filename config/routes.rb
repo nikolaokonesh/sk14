@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     collection do
       resources :trash, only: %i[index show update], module: :entries
     end
+    resources :reactions, only: [] do
+      post :toggle, on: :collection
+    end
   end
 
   resources :tags, only: %i[index show]

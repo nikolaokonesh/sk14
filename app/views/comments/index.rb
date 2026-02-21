@@ -22,7 +22,7 @@ class Views::Comments::Index < Components::Base
         # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
         # 2. relative нужен для позиционирования кнопки
         div(id: dom_id(@entry.root, :comments_list),
-            class: "pt-4 h-[71svh] overflow-y-auto overflow-x-visible no-scrollbar",
+            class: "pt-4 h-[75svh] overflow-y-auto overflow-x-visible no-scrollbar",
             data: { controller: "autoscroll infinite-scroll" }) do
           @direction.present? ? render_direction_fragment : render_full_page
 
@@ -54,7 +54,7 @@ class Views::Comments::Index < Components::Base
         # Форма ввода комментария (прижата к низу)
         if current_user
           # reply_controller внутри Form::Create.rb
-          div(id: "new_comment_form", class: "flex-none sticky bottom-0 bg-base-100 p-4 pb-safe z-10") do
+          div(id: "new_comment_form", class: "flex-none sticky bottom-0 bg-base-200 p-4 pb-safe z-10") do
             render Components::Comments::Form::Create.new(entry: @entry, has_next: @has_next, pagy: @pagy)
           end
         end
@@ -91,7 +91,7 @@ class Views::Comments::Index < Components::Base
     group_wrapper_id = "group_entry_#{anchor.id}"
     bubbles_id = is_last_group ? "group_bubbles_entry_#{anchor.group_anchor_id}" : nil
     div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: user_id },
-        class: "chat chat-start comment-card group items-end m-1 mt-6") do
+        class: "chat chat-start comment-card items-end m-1 mt-6") do
       div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
         div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
           render Components::Users::Avatar.new(user: group.first.user)
