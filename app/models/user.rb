@@ -50,7 +50,7 @@ class User < ApplicationRecord
   has_many :comments, through: :entries, source: :entryable, source_type: "Comment"
 
   def trash_size
-    self.entries.where(entryable_type: "Post").diactive.count
+    self.entries.where(entryable_type: "Post").inactive.count
   end
   def entries_size
     self.entries.where(entryable_type: "Post").active.count

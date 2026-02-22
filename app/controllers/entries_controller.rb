@@ -20,7 +20,7 @@ class EntriesController < ApplicationController
       pagy: @pagy,
       params: params[:page],
       query: @query,
-      categories: @visible_cateories,
+      categories: @visible_categories,
       counts: @counts
     )
   end

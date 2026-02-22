@@ -7,7 +7,7 @@ class Entry < ApplicationRecord
 
   scope :recent, -> { order(created_at: :desc) }
   scope :active, -> { where(trash: false) }
-  scope :diactive, -> { where(trash: true) }
+  scope :inactive, -> { where(trash: true) }
 
   # Иерархия
   belongs_to :user, touch: true

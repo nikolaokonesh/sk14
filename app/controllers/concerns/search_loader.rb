@@ -28,7 +28,7 @@ module SearchLoader
 
     sorted_counts = counts_hash.sort_by { |_name, count| -count }.reject { |_name, count| count.zero? }
 
-    @visible_cateories = sorted_counts.map(&:first)
+    @visible_categories = sorted_counts.map(&:first)
 
     @counts = counts_hash
   end

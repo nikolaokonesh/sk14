@@ -21,8 +21,6 @@ class Components::Entries::Card < Phlex::HTML
   end
 
   def view_template
-    @avatar = @entry.user.avatar.updated_at.to_s if @entry.user.avatar.present?
-    @username = @entry.user.username
     div(id: dom_id(@entry),
         data: { controller: "auth-visibility #{(@highlight ? "highlight" : nil)}",
                 auth_visibility_author_id_value: @entry.user_id },
@@ -46,7 +44,7 @@ class Components::Entries::Card < Phlex::HTML
           end
         end
       end
-      div(class: [ "chat-bubble max-w-[99%]", ("before:hidden" unless @is_first), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(class: [ "chat-bubble max-w-[99%] rounded-none", ("before:hidden" unless @is_first), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         case @entry.entryable
         when Post
           render Components::Posts::Card.new(post: @entry.entryable) do |card|

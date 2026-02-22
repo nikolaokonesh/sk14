@@ -1,6 +1,6 @@
 class Entries::TrashController < ApplicationController
   def index
-    @entries = Current.user.entries.diactive.recent
+    @entries = Current.user.entries.inactive.recent
     @pagy, @entries = pagy_countless(@entries)
     render Views::Users::Show.new(user: Current.user, entries: @entries, pagy: @pagy, params: params[:page])
   end
