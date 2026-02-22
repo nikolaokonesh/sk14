@@ -46,6 +46,7 @@ class Components::Comments::Card < Phlex::HTML
       if authenticated?
         div(class: "picker-container absolute -top-10 hidden animate-in zoom-in duration-150 z-10", data: { reactions_target: "picker" }) do
           render Components::Reactions::Picker.new(entry: @entry)
+          button_reply_comment
         end
         render Components::Reactions::List.new(entry: @entry)
       end
@@ -79,17 +80,7 @@ class Components::Comments::Card < Phlex::HTML
       end
       div(class: "chat-footer") do
         time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
-        if authenticated?
-          span(class: "cursor-pointer px-2",
-            data: {
-              action: "click->reply#trigger",
-              reply_id_param: @comment.entry.id,
-              reply_author_param: @entry.user.username,
-              reply_text_param: truncate(@comment.content.to_plain_text.to_s,
-              length: 50,
-              omission: "...") }) { lucide_icon("message-square-reply", size: 16) }
-          nav
-        end
+        nav
       end
     end
   end
@@ -112,6 +103,22 @@ class Components::Comments::Card < Phlex::HTML
         a(href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.id), data: { turbo_frame: "_top" }) do
           span(aria_hidden: "true", class: "absolute inset-0") { }
         end
+      end
+    end
+  end
+
+  def button_reply_comment
+    if authenticated?
+      span(class: "cursor-pointer absolute right-0 p-2 btn",
+        data: {
+          action: "click->reply#trigger",
+          reply_id_param: @comment.entry.id,
+          reply_author_param: @entry.user.username,
+          reply_text_param: truncate(@comment.content.to_plain_text.to_s,
+          length: 50,
+          omission: "...") }) do
+        raw lucide_icon("message-square-reply", size: 20)
+        p { "Ответить" }
       end
     end
   end

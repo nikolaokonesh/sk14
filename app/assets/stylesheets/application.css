@@ -34,16 +34,16 @@
 
 @keyframes border-shimmer {
   0% { 
-    box-shadow: 0 4px 4px -1px rgb(255, 157, 0);
+    box-shadow: 0 2px 0 0 rgb(255, 157, 0);
   }
   25% { 
-    box-shadow: 0 4px 4px -1px rgba(62, 255, 52, 0.5);
+    box-shadow: 0 2px 0 0 rgba(62, 255, 52);
   }
   50% { 
-    box-shadow: 0 4px 4px -1px rgba(26, 114, 255, 0.3);
+    box-shadow: 0 2px 0 0 rgba(26, 114, 255);
   }
   75% { 
-    box-shadow: 0 4px 4px -1px rgba(255, 0, 0, 0.7);
+    box-shadow: 0 2px 0 0 rgba(255, 0, 0);
   }
   100% { 
   }
