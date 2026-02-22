@@ -20,8 +20,6 @@ class Views::Entries::Streams::Update < Phlex::HTML
     end
 
     if @message
-      turbo_stream.update "entry_modal", ""
-
       turbo_stream.update :flash do
         render Components::Shared::Flash.new
       end

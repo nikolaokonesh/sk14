@@ -8,6 +8,7 @@ class Components::Comments::Card < Phlex::HTML
   include Phlex::Rails::Helpers::DOMID
   register_value_helper :lucide_icon
   register_value_helper :current_user_id
+  register_value_helper :authenticated?
 
   def initialize(entry:, highlight: false, class_target: "", is_first: nil, is_last: nil)
     @entry = entry
@@ -42,10 +43,12 @@ class Components::Comments::Card < Phlex::HTML
     div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2",
       data: { action: "click->reactions#togglePicker" }) do
       render Components::Entries::Content.new(entry: @comment)
-      div(class: "picker-container absolute -top-10 hidden animate-in zoom-in duration-150 z-10", data: { reactions_target: "picker" }) do
-        render Components::Reactions::Picker.new(entry: @entry)
+      if authenticated?
+        div(class: "picker-container absolute -top-10 hidden animate-in zoom-in duration-150 z-10", data: { reactions_target: "picker" }) do
+          render Components::Reactions::Picker.new(entry: @entry)
+        end
+        render Components::Reactions::List.new(entry: @entry)
       end
-      render Components::Reactions::List.new(entry: @entry)
     end
   end
 
@@ -76,15 +79,17 @@ class Components::Comments::Card < Phlex::HTML
       end
       div(class: "chat-footer") do
         time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
-        span(class: "cursor-pointer px-2",
-          data: {
-            action: "click->reply#trigger",
-            reply_id_param: @comment.entry.id,
-            reply_author_param: @entry.user.username,
-            reply_text_param: truncate(@comment.content.to_plain_text.to_s,
-            length: 50,
-            omission: "...") }) { lucide_icon("message-square-reply", size: 16) }
-        nav
+        if authenticated?
+          span(class: "cursor-pointer px-2",
+            data: {
+              action: "click->reply#trigger",
+              reply_id_param: @comment.entry.id,
+              reply_author_param: @entry.user.username,
+              reply_text_param: truncate(@comment.content.to_plain_text.to_s,
+              length: 50,
+              omission: "...") }) { lucide_icon("message-square-reply", size: 16) }
+          nav
+        end
       end
     end
   end

@@ -3,7 +3,11 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update ]
 
   def show
-    @entries = @user.entries.active.where(entryable_type: "Post").recent
+    @entries = @user.entries
+                    .active
+                    .includes(user: { avatar: { avatar_attachment: :blob } }, entryable: :entry)
+                    .where(entryable_type: "Post")
+                    .recent
     @pagy, @entries = pagy_countless(@entries)
     render Views::Users::Show.new(user: @user, entries: @entries, pagy: @pagy, params: params[:page])
   end

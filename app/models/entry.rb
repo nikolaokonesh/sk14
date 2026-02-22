@@ -49,7 +49,7 @@ class Entry < ApplicationRecord
 
   # считывание участников ветки
   def participants
-    User.where(id: descendants.pluck(:user_id).uniq)
+    User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
     # user_ids = [ user_id ] + comments.pluck("entries.user_id")
     # User.where(id: user_ids.uniq)
   end
@@ -65,7 +65,7 @@ class Entry < ApplicationRecord
   # Если это корень, проставляем root_id = id после создания
   after_create :set_self_as_root, unless: :root_id?
 
-  validate :root_consctancy, on: :update, if: :root_id_changed?
+  validate :root_consistency, on: :update, if: :root_id_changed?
 
   def first_in_group?
     return true if parent_id.nil?
@@ -116,7 +116,7 @@ class Entry < ApplicationRecord
   end
 
   def active?
-    trash == false
+    !trash
   end
 
   def set_root_from_parent
@@ -130,7 +130,7 @@ class Entry < ApplicationRecord
     update_column(:root_id, id)
   end
 
-  def root_consctancy
+  def root_consistency
     errors.add(:root_id, "cannot be changed once set root_id")
   end
 end

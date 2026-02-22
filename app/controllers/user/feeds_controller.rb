@@ -6,6 +6,7 @@ class User::FeedsController < ApplicationController
     tag_ids = @user.followed_tag_ids
 
     @entries = Entry.active
+                    .includes(user: { avatar: { avatar_attachment: :blob } }, entryable: :entry)
                     .left_outer_joins(:tags)
                     .where("entries.user_id IN (?) OR tags.id IN (?)", user_ids, tag_ids)
                     .where(entryable_type: "Post")

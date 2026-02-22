@@ -20,8 +20,6 @@ class Views::Entries::Streams::Destroy < Phlex::HTML
 
     turbo_stream.remove dom_id(@entry)
 
-    turbo_stream.update "entry_modal", ""
-
     if @message
       turbo_stream.update :flash do
         render Components::Shared::Flash.new

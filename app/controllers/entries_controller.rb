@@ -8,7 +8,10 @@ class EntriesController < ApplicationController
   def index
     @query = params[:query]
     # Ищем только активные посты через Entry
-    @entries = Entry.active.includes([ :user, entryable: [ :entry ] ]).where(entryable_type: "Post").recent
+    @entries = Entry.active
+                    .includes([ user: { avatar: { avatar_attachment: :blob } }, entryable: [ :entry ] ])
+                    .where(entryable_type: "Post")
+                    .recent
 
     # Живой поиск
     load_search_for
@@ -26,7 +29,7 @@ class EntriesController < ApplicationController
   end
 
   def show
-    if @entry.trash == true
+    if @entry.trash?
       redirect_to root_path, notice: "Пост был удалён..."
     else
       load_comments_for(@entry)
@@ -84,13 +87,15 @@ class EntriesController < ApplicationController
 
   def destroy
     authorize! :destroy, @entry
-    @entry.trash = true
-    @entry.save
-    Entries::Streams::DestroyJob.perform_later(@entry.id)
-    flash.now[:notice] = "Пост перемещен в удаленные посты"
-    respond_to do |format|
-      format.html { redirect_to trash_path(@entry), status: :see_other }
-      format.turbo_stream { render Views::Entries::Streams::Destroy.new(entry: @entry, message: flash.now[:notice]), layout: false }
+    if @entry.update(trash: true)
+      Entries::Streams::DestroyJob.perform_later(@entry.id)
+      flash[:alert] = "Пост перемещен в удаленные посты"
+      respond_to do |format|
+        format.html { redirect_to trash_path(@entry), status: :see_other }
+        format.turbo_stream { render Views::Entries::Streams::Destroy.new(entry: @entry, message: flash[:alert]), layout: false }
+      end
+    else
+      redirect_to @entry, alert: @entry.errors.full_messages.to_sentence
     end
   end
 

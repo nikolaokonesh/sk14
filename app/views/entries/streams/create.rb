@@ -14,8 +14,6 @@ class Views::Entries::Streams::Create < Phlex::HTML
     end
 
     if @message
-      turbo_stream.update "entry_modal", ""
-
       turbo_stream.update :flash do
         div(id: "flashing_#{@entry.id}", data: { turbo_permanent: true }) { render Components::Shared::Flash.new }
       end
