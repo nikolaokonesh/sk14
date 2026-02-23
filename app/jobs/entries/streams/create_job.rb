@@ -11,6 +11,8 @@ class Entries::Streams::CreateJob < ApplicationJob
       layout: false
     )
 
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries_tags_query)
+
     entry.tags.find_each do |tag|
       Turbo::StreamsChannel.broadcast_refresh_to(:tag, tag.id)
     end

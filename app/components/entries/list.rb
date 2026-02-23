@@ -31,6 +31,7 @@ class Components::Entries::List < Phlex::HTML
     end
 
     render Components::Pagination::ScrollableList.new(entries: @entries, pagy: @pagy) if @params
+    div(class: "snap-end") { }
   end
 
   private

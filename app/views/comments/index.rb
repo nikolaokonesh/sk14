@@ -26,18 +26,7 @@ class Views::Comments::Index < Components::Base
             data: { controller: "autoscroll infinite-scroll" }) do
           @direction.present? ? render_direction_fragment : render_full_page
 
-          # Кнопка должна быть ПОСЛЕДНЕЙ внутри этого div
-          button(id: "new_message_badge",
-            class: "hidden fixed bottom-18 right-4 chat chat-end z-50", # right-4 чтобы не прилипало к краю
-            data: {
-              action: "click->autoscroll#scrollToBottom",
-              autoscroll_target: "badge"
-            }) do
-            div(class: "chat-bubble chat-bubble-secondary flex px-2 min-w-0 shadow-lg cursor-pointer") do
-              span { lucide_icon("arrow-down", class: "size-5") }
-              span(class: "ml-1 text-xs font-bold") { "новое" }
-            end
-          end
+          render Components::Entries::ButtonNewBadge.new
 
           if @button_down.present?
             a(
@@ -91,7 +80,7 @@ class Views::Comments::Index < Components::Base
     group_wrapper_id = "group_entry_#{anchor.id}"
     bubbles_id = is_last_group ? "group_bubbles_entry_#{anchor.group_anchor_id}" : nil
     div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: user_id },
-        class: "chat chat-start comment-card items-end m-1 mt-6") do
+        class: "chat chat-start entry-card items-end m-1 mt-6") do
       div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
         div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
           render Components::Users::Avatar.new(user: group.first.user)
@@ -164,7 +153,7 @@ class Views::Comments::Index < Components::Base
         frame_id: id),
       loading: :lazy,
       target: "_top",
-      class: "card-comment",
+      class: "card-entry",
       refresh: "morph") do
       render Components::Pagination::Skeleton.new
     end

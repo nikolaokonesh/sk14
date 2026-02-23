@@ -2,7 +2,7 @@ class Components::Entries::Group < Components::Base
   def initialize(
       user:,
       bubbles_id: nil,
-      wrapper_class: "chat chat-start items-end m-1",
+      wrapper_class: "chat chat-start entry-card items-end m-1",
       wrapper_data: {},
       avatar_data: {},
       bubbles_class: "flex flex-col -ml-2",

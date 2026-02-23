@@ -29,7 +29,7 @@ class Components::Entries::Card < Phlex::HTML
     div(id: dom_id(@entry),
         data: { controller: "auth-visibility #{(@highlight ? 'highlight' : nil)}",
                 auth_visibility_author_id_value: @entry.user_id },
-        class: [ "chat chat-start items-end #{@class_target}", ("-mt-3" unless @is_last) ]) do
+        class: [ "chat chat-start entry-card items-end #{@class_target}", ("" unless @is_last) ]) do
       if @show_avatar
         div(class: "chat-image avatar sticky bottom-16 self-end") do
           div(class: "w-10 rounded-full") do
@@ -39,8 +39,10 @@ class Components::Entries::Card < Phlex::HTML
       end
 
       div(class: "chat-header flex items-center") do
-        span(class: "pr-3 text-base") { sanitize(strip_tags(@entry.user.username)) if @is_first }
-        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
+        div(class: "bg-base-200 py-1.5 px-2") do
+          div(class: "text-base") { sanitize(strip_tags(@entry.user.username)) if @is_first }
+          div(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
+        end
         time do
           case @entry.entryable
           when Post
@@ -64,7 +66,7 @@ class Components::Entries::Card < Phlex::HTML
         end
       end
 
-      div(class: "chat-footer opacity-50") { @entry.tags_list }
+      div(class: "chat-footer opacity-50 bg-base-200 px-2") { @entry.tags_list }
     end
   end
 end

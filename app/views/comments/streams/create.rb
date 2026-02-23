@@ -46,7 +46,7 @@ class Views::Comments::Streams::Create < Phlex::HTML
       user: entry.user,
       group_wrapper_id: group_wrapper_id,
       bubbles_id: bubbles_id,
-      wrapper_class: "chat chat-start comment-card group items-end m-1",
+      wrapper_class: "chat chat-start entry-card group items-end m-1",
       wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: entry.user_id },
       avatar_data: { chat_visibility_target: "avatar" },
       bubbles_class: "flex flex-col -ml-2 -mb-4",

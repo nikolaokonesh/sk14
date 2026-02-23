@@ -58,7 +58,11 @@ class Views::Entries::Streams::Create < Phlex::HTML
     anchor = entry.group_anchor_id
     group_wrapper_id = "group_entry_#{anchor}"
     bubbles_id = "group_bubbles_entry_#{anchor}"
-    render Components::Entries::Group.new(user: entry.user, group_wrapper_id: group_wrapper_id, bubbles_id: bubbles_id) do
+    render Components::Entries::Group.new(
+      user: entry.user,
+      group_wrapper_id: group_wrapper_id,
+      bubbles_id: bubbles_id
+    ) do
       render Components::Entries::Card.new(
         entry: entry,
         highlight: true,

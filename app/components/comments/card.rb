@@ -58,7 +58,7 @@ class Components::Comments::Card < Phlex::HTML
         data: { controller: "auth-visibility chat-visibility reactions #{(@highlight ? "highlight" : nil)}",
                 auth_visibility_author_id_value: @entry.user_id,
                 chat_visibility_target: "chat" },
-        class: "chat chat-start comment-card group items-end #{@class_target}") do
+        class: "chat chat-start entry-card group items-end #{@class_target}") do
       div(class: "chat-header flex items-center") do
         span(class: "pr-3 text-base", data: { chat_visibility_target: "username" }) {
           sanitize(strip_tags(@entry.user.username)) if @is_first

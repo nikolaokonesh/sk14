@@ -61,13 +61,13 @@ export default class extends Controller {
           hasPaginationInNotes = true
           return
         }
-        const commentNode = node.classList.contains("comment-card") ? node : node.querySelector(".comment-card")
+        const entryNode = node.classList.contains("entry-card") ? node : node.querySelector(".entry-card")
 
-        if (commentNode) {
-          if (commentNode.closest('turbo-frame[id^="load_"]')) return
-          const allComments = Array.from(this.scrollContainer.querySelectorAll(".comment-card"))
-          const lastInDom = allComments[allComments.length - 1]
-          if (commentNode === lastInDom || commentNode.contains(lastInDom)) {
+        if (entryNode) {
+          if (entryNode.closest('turbo-frame[id^="load_"]')) return
+          const allEntries = Array.from(this.scrollContainer.querySelectorAll(".entry-card"))
+          const lastInDom = allEntries[allEntries.length - 1]
+          if (entryNode === lastInDom || entryNode.contains(lastInDom)) {
             isLastElement = true
           }
 
