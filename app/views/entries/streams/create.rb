@@ -12,7 +12,6 @@ class Views::Entries::Streams::Create < Phlex::HTML
   def view_template
     prev_entry = Entry.active
                       .where(entryable_type: "Post")
-                      .where(root_id: @entry.root_id)
                       .where.not(id: @entry.id)
                       .order(created_at: :asc)
                       .last
@@ -21,7 +20,6 @@ class Views::Entries::Streams::Create < Phlex::HTML
 
     if is_same_author
       target_id = "group_bubbles_entry_#{prev_entry.group_anchor_id}"
-      puts "<=============================================================================#{target_id}"
       turbo_stream.append(target_id) do
         render Components::Entries::Card.new(
           entry: @entry,
@@ -43,7 +41,6 @@ class Views::Entries::Streams::Create < Phlex::HTML
       end
     else
       turbo_stream.append :entries do
-        puts "<=============================================================================turbo_stream entries"
         render_group_container(@entry)
       end
     end
@@ -61,7 +58,7 @@ class Views::Entries::Streams::Create < Phlex::HTML
     anchor = entry.group_anchor_id
     group_wrapper_id = "group_entry_#{anchor}"
     bubbles_id = "group_bubbles_entry_#{anchor}"
-    render Components::Entries::Group.new(user: entry.user_id, group_wrapper_id: group_wrapper_id, bubbles_id: bubbles_id) do
+    render Components::Entries::Group.new(user: entry.user, group_wrapper_id: group_wrapper_id, bubbles_id: bubbles_id) do
       render Components::Entries::Card.new(
         entry: entry,
         highlight: true,

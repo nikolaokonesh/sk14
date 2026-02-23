@@ -88,22 +88,26 @@ class Entry < ApplicationRecord
   end
 
   def group_anchor_id
-    scope = Entry.active
-         .where(entryable_type: self.entryable_type)
-         .where(root_id: self.root_id)
+    scope = Entry.active.where(entryable_type: entryable_type)
+
+    scope = if entryable_type == "Comment"
+      scope.where(root_id: root_id)
+    else
+      scope.where(parent_id: nil)
+    end
 
     last_interruption_time = scope
-         .where.not(user_id: self.user_id)
-         .where("created_at < ?", self.created_at)
-         .order(created_at: :desc)
-         .pick(:created_at)
-    query = scope.where(user_id: self.user_id)
+                            .where.not(user_id: user_id)
+                            .where("created_at < ?", created_at)
+                            .order(created_at: :desc)
+                            .pick(:created_at)
+    query = scope.where(user_id: user_id)
 
     if last_interruption_time
       query = query.where("created_at > ?", last_interruption_time)
     end
 
-    query.order(created_at: :asc).pick(:id) || self.id
+    query.order(created_at: :asc).pick(:id) || id
   end
 
   private

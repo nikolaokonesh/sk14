@@ -21,8 +21,8 @@ class Components::Entries::Group < Components::Base
 
   def view_template
     div(id: @group_wrapper_id, class: @wrapper_class, data: @wrapper_data) do
-      div(class: "chat-image avatar  self-stretch flex items-and", data: @avatar_data) do
-        div(class: "w-10 rounded-full transition-all #{@avatar_sticky_class}") do
+      div(class: "chat-image avatar flex items-and  #{@avatar_sticky_class}", data: @avatar_data) do
+        div(class: "w-10 rounded-full transition-all") do
           render Components::Users::Avatar.new(user: @user)
         end
       end
