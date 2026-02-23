@@ -4,19 +4,18 @@ class Entries::Streams::DestroyJob < ApplicationJob
   def perform(entry_id)
     entry = Entry.find_by(id: entry_id)
 
-    Turbo::StreamsChannel.broadcast_render_to(
-      :entries,
-      renderable: Views::Entries::Streams::Destroy.new(entry: entry),
-      layout: false
-    )
+    return unless entry
+
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries)
+
     entry.tags.find_each do |tag|
-      Turbo::StreamsChannel.broadcast_remove_to(
-        :tag, tag.id,
-        target: "entry_#{entry_id}"
-      )
+      Turbo::StreamsChannel.broadcast_refresh_to(:tag, tag.id)
     end
-    Turbo::StreamsChannel.broadcast_refresh_to(
-      :tags
-    )
+
+    entry.user.followed_users.find_each do |user|
+      Turbo::StreamsChannel.broadcast_refresh_to(:user, user.id)
+    end
+
+    Turbo::StreamsChannel.broadcast_refresh_to(:tags)
   end
 end

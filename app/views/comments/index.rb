@@ -138,7 +138,7 @@ class Views::Comments::Index < Components::Base
 
   def render_comment(comment, is_first, is_last, is_the_very_last)
     is_target = (comment.id == @highlight_id)
-    is_the_very_last_classes = is_the_very_last ? "last-comment" : ""
+    is_the_very_last_classes = is_the_very_last ? "last-entry" : ""
     target_classes = is_target ? "js-highlighted-comment" : ""
 
     render Components::Comments::Card.new(

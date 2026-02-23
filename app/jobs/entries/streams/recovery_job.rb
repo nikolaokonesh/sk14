@@ -3,23 +3,17 @@ class Entries::Streams::RecoveryJob < ApplicationJob
 
   def perform(entry_id)
     entry = Entry.find_by(id: entry_id)
+    
+    return unless entry
 
-    Turbo::StreamsChannel.broadcast_replace_to(
-      :entries,
-      target: "entry_#{entry_id}",
-      renderable: Components::Entries::Card.new(entry: entry, highlight: true),
-      layout: false
-    )
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries)
+
     entry.tags.find_each do |tag|
-      Turbo::StreamsChannel.broadcast_replace_to(
-        :tag, tag.id,
-        target: "entry_#{entry_id}",
-        renderable: Components::Entries::Card.new(entry: entry, highlight: true),
-        layout: false
-      )
+      Turbo::StreamsChannel.broadcast_refresh_to(:tag, tag.id)
     end
-    Turbo::StreamsChannel.broadcast_refresh_to(
-      :tags
-    )
+
+    entry.user.followed_users.find_each do |user|
+
+    Turbo::StreamsChannel.broadcast_refresh_to(:tags)
   end
 end

@@ -21,7 +21,7 @@ class Views::Comments::Streams::Create < Phlex::HTML
     if is_same_author
       target_id = "group_bubbles_entry_#{prev_entry.group_anchor_id}"
       turbo_stream.append(target_id) do
-        render_bubble(@entry, is_first: false, is_last: true, class_target: "last-comment", highlight: true)
+        render_bubble(@entry, is_first: false, is_last: true, class_target: "last-entry", highlight: true)
       end
 
       turbo_stream.replace(dom_id(prev_entry)) do
@@ -41,19 +41,16 @@ class Views::Comments::Streams::Create < Phlex::HTML
   def render_group_container(entry)
     group_wrapper_id = entry.group_anchor_id
     bubbles_id = "group_bubbles_entry_#{group_wrapper_id}"
-    div(id: "group_entry_#{group_wrapper_id}", data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: entry.user_id },
-        class: "chat chat-start comment-card group items-end m-1") do
-      div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
-        div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
-          render Components::Users::Avatar.new(user: entry.user)
-        end
-      end
-      div(
-        id: bubbles_id,
-        class: "flex flex-col -ml-2 -mb-4"
-      ) do
-        render_bubble(entry, is_first: true, is_last: true, class_target: "last-comment", highlight: true)
-      end
+    render Components::Entries::Group.new(
+      user: entry.user,
+      bubbles_id: bubbles_id,
+      wrapper_class: "chat chat-start comment-card group items-end m-1",
+      wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: entry.user_id },
+      avatar_data: { chat_visibility_target: "avatar" },
+      bubbles_class: "flex flex-col -ml-2 -mb-4",
+      avatar_sticky_class: "sticky bottom-2"
+    ) do
+      render_bubble(entry, is_first: true, is_last: true, class_target: "last-entry", highlight: true)
     end
   end
 

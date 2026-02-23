@@ -4,27 +4,16 @@ class Entries::Streams::UpdateJob < ApplicationJob
   def perform(entry_id)
     entry = Entry.find_by(id: entry_id)
 
-    Turbo::StreamsChannel.broadcast_update_to(
-      :entries,
-      target: "content_entry_#{entry_id}",
-      renderable: Components::Entries::Content.new(entry: entry),
-      layout: false
-    )
+    return unless entry
 
-    Turbo::StreamsChannel.broadcast_replace_to(
-      :entries,
-      target: "entry_#{entry_id}",
-      renderable: Components::Entries::Card.new(entry: entry, highlight: true),
-      layout: false
-    )
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries)
 
     entry.tags.find_each do |tag|
-      Turbo::StreamsChannel.broadcast_replace_to(
-        :tag, tag.id,
-        target: "entry_#{entry_id}",
-        renderable: Components::Entries::Card.new(entry: entry, highlight: true),
-        layout: false
-      )
+      Turbo::StreamsChannel.broadcast_refresh_to(:tag, tag.id)
+    end
+
+    entry.user.followed_users.find_each do |user|
+      Turbo::StreamsChannel.broadcast_refresh_to(:user, user.id)
     end
   end
 end

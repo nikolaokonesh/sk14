@@ -22,7 +22,9 @@ class Views::Entries::Index < Views::Base
 
     turbo_frame_tag :entries_list, target: "_top" do
       div(class: "w-full") do
-        render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+        div(id: "entries_scroll", class: "h-[75svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "infinite-scroll" }) do
+          render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+        end
       end
     end
   end

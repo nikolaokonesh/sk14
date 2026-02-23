@@ -25,9 +25,9 @@ export default class extends Controller {
 
   submitEnd(event) {
     if (event.detail.success) {
-      const lastComment = document.querySelector(".last-comment")
+      const lastEntry = document.querySelector(".last-entry")
 
-      if (lastComment) {
+      if (lastEntry) {
         this.close()
       } else {
         this.goToLatest()
