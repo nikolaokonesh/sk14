@@ -1,4 +1,4 @@
-class Components::Entries::Group < Phlex::HTML
+class Components::Entries::Group < Components::Base
   def initialize(
       user:,
       bubbles_id: nil,
@@ -19,7 +19,7 @@ class Components::Entries::Group < Phlex::HTML
     @group_wrapper_id = group_wrapper_id
   end
 
-  def view_template(&block)
+  def view_template
     div(id: @group_wrapper_id, class: @wrapper_class, data: @wrapper_data) do
       div(class: "chat-image avatar  self-stretch flex items-and", data: @avatar_data) do
         div(class: "w-10 rounded-full transition-all #{@avatar_sticky_class}") do
@@ -27,7 +27,7 @@ class Components::Entries::Group < Phlex::HTML
         end
       end
       div(id: @bubbles_id, class: @bubbles_class) do
-        yield
+        yield if block_given?
       end
     end
   end

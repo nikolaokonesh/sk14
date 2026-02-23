@@ -39,10 +39,12 @@ class Views::Comments::Streams::Create < Phlex::HTML
   private
 
   def render_group_container(entry)
-    group_wrapper_id = entry.group_anchor_id
-    bubbles_id = "group_bubbles_entry_#{group_wrapper_id}"
+    anchor = entry.group_anchor_id
+    group_wrapper_id = "group_entry_#{anchor}"
+    bubbles_id = "group_bubbles_entry_#{anchor}"
     render Components::Entries::Group.new(
       user: entry.user,
+      group_wrapper_id: group_wrapper_id,
       bubbles_id: bubbles_id,
       wrapper_class: "chat chat-start comment-card group items-end m-1",
       wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: entry.user_id },

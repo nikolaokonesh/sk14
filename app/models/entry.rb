@@ -88,20 +88,22 @@ class Entry < ApplicationRecord
   end
 
   def group_anchor_id
-    last_interruption_time = Entry.active
-         .where(root_id: root_id)
-         .where(entryable_type: entryable_type)
-         .where.not(user_id: user_id)
-         .where("created_at < ?", created_at)
+    scope = Entry.active
+         .where(entryable_type: self.entryable_type)
+         .where(root_id: self.root_id)
+
+    last_interruption_time = scope
+         .where.not(user_id: self.user_id)
+         .where("created_at < ?", self.created_at)
          .order(created_at: :desc)
          .pick(:created_at)
-    query = Entry.active
-                 .where(root_id: root_id)
-                 .where(user_id: user_id)
-                 .where(entryable_type: entryable_type)
-    query = query.where("created_at > ?", last_interruption_time) if last_interruption_time
+    query = scope.where(user_id: self.user_id)
 
-    query.order(created_at: :asc).pick(:id) || id
+    if last_interruption_time
+      query = query.where("created_at > ?", last_interruption_time)
+    end
+
+    query.order(created_at: :asc).pick(:id) || self.id
   end
 
   private
