@@ -34,7 +34,7 @@ class Components::Posts::Card < Phlex::HTML
   end
 
   def content
-    div(class: "group cursor-pointer p-2") do
+    div(class: "group cursor-pointer") do
       plain truncate(@post.title, length: 200, omission: "... Читать далее")
       a(href: link_to_post_helper(@entry)) do
         span(aria_hidden: "true", class: "absolute inset-0") { }

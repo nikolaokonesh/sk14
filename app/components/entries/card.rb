@@ -39,7 +39,7 @@ class Components::Entries::Card < Phlex::HTML
       end
 
       div(class: "chat-header flex items-center") do
-        div(class: "bg-base-200 py-1.5 px-2") do
+        div(class: "bg-base-200 px-1.5") do
           div(class: "text-base") { sanitize(strip_tags(@entry.user.username)) if @is_first }
           div(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
         end

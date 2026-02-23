@@ -41,7 +41,11 @@ class Components::Entries::List < Phlex::HTML
     group_wrapper_id = "group_entry_#{anchor.id}"
     bubbles_id = is_last_group ? "group_bubbles_entry_#{anchor.group_anchor_id}" : nil
 
-    render Components::Entries::Group.new(user: group.first.user, group_wrapper_id: group_wrapper_id, bubbles_id: bubbles_id) do
+    render Components::Entries::Group.new(
+      user: group.first.user,
+      group_wrapper_id: group_wrapper_id,
+      bubbles_id: bubbles_id
+    ) do
       group.each_with_index do |entry, i|
         is_first = (i == 0)
         is_last = (i == group.size - 1)

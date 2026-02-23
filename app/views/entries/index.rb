@@ -25,7 +25,7 @@ class Views::Entries::Index < Views::Base
 
     turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
       div(class: "w-full snap-start scroll-smooth") do
-        div(class: "h-[69svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
+        div(class: "h-[66svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
           render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
           render Components::Entries::ButtonNewBadge.new
           div(class: "snap-end") { }

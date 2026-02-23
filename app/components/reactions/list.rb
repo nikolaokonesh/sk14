@@ -11,7 +11,7 @@ class Components::Reactions::List < Components::Base
 
         button(
           class: [
-            "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border transition-all active:scale-90",
+            "flex items-center gap-1 px-2 py-0.5 rounded-full text-base border transition-all active:scale-90",
             is_active ? "bg-primary/20 border-primary text-primary" : "bg-base-200 border-transparent"
           ],
           data: { action: "click->reactions#select", reactions_content_param: emoji, reactions_entry_id_param: @entry.id }

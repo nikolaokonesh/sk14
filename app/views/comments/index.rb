@@ -62,10 +62,10 @@ class Views::Comments::Index < Components::Base
 
     comment_groups = @comments.chunk { |c| c.user_id }.to_a
 
-    comment_groups.each_with_index do |(user_id, group), index|
+    comment_groups.each_with_index do |(_user_id, group), index|
       # Проверка на группу для начальной загрузки
       is_last_group = (index == comment_groups.size - 1) && !@has_next
-      render_group(user_id, group, is_last_group)
+      render_group(group, is_last_group)
     end
     # Frame подгрузки ВНИЗ
     if @pagy&.next || @has_next
@@ -75,28 +75,27 @@ class Views::Comments::Index < Components::Base
 
   private
 
-  def render_group(user_id, group, is_last_group)
+  def render_group(group, is_last_group)
     anchor = group.first
     group_wrapper_id = "group_entry_#{anchor.id}"
     bubbles_id = is_last_group ? "group_bubbles_entry_#{anchor.group_anchor_id}" : nil
-    div(id: group_wrapper_id, data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: user_id },
-        class: "chat chat-start entry-card items-end m-1 mt-6") do
-      div(class: "chat-image avatar self-stretch flex items-end", data: { chat_visibility_target: "avatar" }) do
-        div(class: "w-10 rounded-full sticky bottom-2 transition-all") do
-          render Components::Users::Avatar.new(user: group.first.user)
-        end
-      end
-      div(
-        id: bubbles_id,
-        class: "flex flex-col -ml-2 -mb-4"
-      ) do
-        group.each_with_index do |comment, i|
-          is_first = (i == 0)
-          is_last = (i == group.size - 1)
-          is_the_very_last = is_last_group && is_last
 
-          render_comment(comment, is_first, is_last, is_the_very_last)
-        end
+    render Components::Entries::Group.new(
+      user: anchor.user,
+      group_wrapper_id: group_wrapper_id,
+      bubbles_id: bubbles_id,
+      wrapper_class: "chat chat-start entry-card items-end m-1 mt-6",
+      wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: anchor.user_id },
+      avatar_data: { chat_visibility_target: "avatar" },
+      bubbles_class: "flex flex-col -ml-2 -mb-4",
+      avatar_sticky_class: "sticky bottom-2"
+    ) do
+      group.each_with_index do |comment, i|
+        is_first = (i == 0)
+        is_last = (i == group.size - 1)
+        is_the_very_last = is_last_group && is_last
+
+        render_comment(comment, is_first, is_last, is_the_very_last)
       end
     end
   end
@@ -107,16 +106,16 @@ class Views::Comments::Index < Components::Base
 
       if @direction == "prev"
         render_load_frame(:prev, @comments.first) if @pagy&.next
-        comment_groups.each do |user_id, group|
-          render_group(user_id, group, false)
+        comment_groups.each do |_user_id, group|
+          render_group(group, false)
         end
       end
       if @direction == "next"
-        comment_groups.each_with_index do |(user_id, group), index|
+        comment_groups.each_with_index do |(_user_id, group), index|
           is_last_in_fragment = (index == comment_groups.size - 1)
           is_the_very_last_group = is_last_in_fragment && !@has_next
 
-          render_group(user_id, group, is_the_very_last_group)
+          render_group(group, is_the_very_last_group)
         end
         if @comments.size >= 20
           render_load_frame(:next, @comments.last)
