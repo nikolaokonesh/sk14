@@ -66,9 +66,14 @@ class Views::Entries::Show < Views::Base
             end
           end
         end
-        div(id: "content_#{dom_id(@entry)}", class: "chat-bubble max-w-full") {
+        render Components::Reactions::Interactive.new(
+          entry: @entry,
+          id: "content_#{dom_id(@entry)}",
+          class_name: "chat-bubble max-w-full relative",
+          with_controller: true
+        ) do
           render Components::Entries::Content.new(entry: @entry)
-        }
+        end
         div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
       end
       # Лента комментариев

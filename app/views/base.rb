@@ -9,12 +9,12 @@ class Views::Base < Components::Base
     render layout.new(page_info) do
       main(class: "w-full md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
         navbar do
-          div(class: "flex items-center sticky top-0 bg-base-300 z-10") { render Components::Menu::Header.new }
+          div(class: "flex items-center sticky top-0 bg-base-300 z-100") { render Components::Menu::Header.new }
         end
         super
         render Components::Shared::Flash.new
         navbar do
-          div(class: "flex items-center sticky bottom-0 bg-base-300") { render Components::Menu::Bottom.new }
+          div(class: "flex items-center sticky bottom-0 bg-base-300 z-100") { render Components::Menu::Bottom.new }
         end
       end
     end

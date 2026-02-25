@@ -44,7 +44,7 @@ class Components::Comments::Card < Phlex::HTML
       data: { action: "click->reactions#togglePicker" }) do
       render Components::Entries::Content.new(entry: @comment)
       if authenticated?
-        div(class: "picker-container absolute -top-10 hidden animate-in zoom-in duration-150 z-10", data: { reactions_target: "picker" }) do
+        div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:w-full flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
           render Components::Reactions::Picker.new(entry: @entry)
           button_reply_comment
         end
@@ -109,7 +109,7 @@ class Components::Comments::Card < Phlex::HTML
 
   def button_reply_comment
     if authenticated?
-      span(class: "cursor-pointer absolute right-0 p-2 btn",
+      span(class: "cursor-pointer absolute right-0 top-15 p-2 btn",
         data: {
           action: "click->reply#trigger",
           reply_id_param: @comment.entry.id,

@@ -9,15 +9,15 @@ export default class extends Controller {
     event.stopPropagation()
 
     document.querySelectorAll('[data-reactions-target="picker"]').forEach((el) => {
-        if (el !== this.pickerTarget) {
-            el.classList.add("hidden")
-        }
+      if (el !== this.pickerTarget) {
+        el.classList.add("hidden")
+      }
     })
 
     this.pickerTarget.classList.toggle("hidden")
 
     if (!this.pickerTarget.classList.contains("hidden")) {
-      document.addEventListener('click', () => this.hide(), { once: true })
+      document.addEventListener("click", () => this.hide(), { once: true })
     }
   }
 
@@ -29,9 +29,11 @@ export default class extends Controller {
     const { content, entryId } = event.params
 
     await post(`/entries/${entryId}/reactions/toggle`, {
-      body: JSON.stringify({ content: content }),
-      responseKind: "turbo-stream"
+      body: JSON.stringify({ content }),
+      contentType: "application/json",
+      responseKind: "json"
     })
+
     this.hide()
   }
 }

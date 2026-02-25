@@ -34,10 +34,13 @@ class Components::Posts::Card < Phlex::HTML
   end
 
   def content
-    div(class: "group cursor-pointer") do
-      plain truncate(@post.title, length: 200, omission: "... Читать далее")
-      a(href: link_to_post_helper(@entry)) do
-        span(aria_hidden: "true", class: "absolute inset-0") { }
+    render Components::Reactions::Interactive.new(
+      entry: @entry,
+      class_name: "group  cursor-pointer",
+      with_controller: true
+    ) do
+      a(href: link_to_post_helper(@entry), class: " z-10") do
+        plain truncate(@post.title, length: 200, omission: "... Читать далее")
       end
     end
   end
