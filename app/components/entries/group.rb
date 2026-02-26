@@ -1,14 +1,14 @@
 class Components::Entries::Group < Components::Base
   def initialize(
-      user:,
-      bubbles_id: nil,
-      wrapper_class: "chat chat-start entry-card items-end m-1",
-      wrapper_data: {},
-      avatar_data: {},
-      bubbles_class: "flex flex-col -ml-2",
-      avatar_sticky_class: "sticky bottom-2",
-      group_wrapper_id: nil
-    )
+    user:,
+    bubbles_id: nil,
+    wrapper_class: "chat chat-start entry-card items-end m-1",
+    wrapper_data: {},
+    avatar_data: {},
+    bubbles_class: "flex flex-col -ml-2",
+    avatar_sticky_class: "sticky bottom-2",
+    group_wrapper_id: nil
+  )
     @user = user
     @bubbles_id = bubbles_id
     @wrapper_class = wrapper_class

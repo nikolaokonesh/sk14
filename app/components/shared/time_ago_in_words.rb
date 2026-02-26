@@ -2,7 +2,9 @@
 
 class Components::Shared::TimeAgoInWords < Phlex::HTML
   include Phlex::Rails::Helpers::TimeTag
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

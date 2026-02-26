@@ -6,7 +6,12 @@ class Components::Comments::Form::Create < Phlex::HTML
   include Phlex::Rails::Helpers::Tag
   register_value_helper :lucide_icon
 
-  def initialize(entry:, comment: Comment.new, has_next:, pagy:)
+  def initialize(
+    entry:, 
+    comment: Comment.new, 
+    has_next:, 
+    pagy:
+  )
     @entry = entry
     @comment = comment
     @has_next = has_next

@@ -2,7 +2,9 @@ class Components::Comments::Form::LexxyPrompt < Phlex::HTML
   include Phlex::Rails::Helpers::Routes
   include Phlex::Rails::Helpers::Tag
 
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

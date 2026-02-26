@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Views::Entries::Form < Views::Base
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

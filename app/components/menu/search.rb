@@ -1,5 +1,9 @@
 class Components::Menu::Search < Components::Base
-  def initialize(query:, categories:, counts:)
+  def initialize(
+    query:, 
+    categories:, 
+    counts:
+  )
     @query = query
     @categories = categories
     @counts = counts

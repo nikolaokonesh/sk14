@@ -1,5 +1,7 @@
 class Views::Auth::MailerCode < Components::Base
-  def initialize(auth_code:)
+  def initialize(
+    auth_code:
+  )
     @auth_code = auth_code
   end
 

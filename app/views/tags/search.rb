@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 class Views::Tags::Search < Components::Base
-  def initialize(categories:, counts:, query:)
+  def initialize(
+    categories:, 
+    counts:, 
+    query:
+  )
     @categories = categories
     @counts = counts
     @query = query

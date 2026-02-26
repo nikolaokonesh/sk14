@@ -5,7 +5,10 @@ class Components::Posts::Card < Phlex::HTML
   include Phlex::Rails::Helpers::Truncate
   register_value_helper :lucide_icon
 
-  def initialize(post:, entry: nil)
+  def initialize(
+    post:, 
+    entry: nil
+  )
     @post = post
     @entry = entry || post.entry
   end

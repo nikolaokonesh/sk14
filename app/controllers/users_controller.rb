@@ -9,7 +9,12 @@ class UsersController < ApplicationController
                     .where(entryable_type: "Post")
                     .recent
     @pagy, @entries = pagy_countless(@entries)
-    render Views::Users::Show.new(user: @user, entries: @entries, pagy: @pagy, params: params[:page])
+    render Views::Users::Show.new(
+      user: @user, 
+      entries: @entries, 
+      pagy: @pagy, 
+      params: params[:page]
+    )
   end
 
   def edit

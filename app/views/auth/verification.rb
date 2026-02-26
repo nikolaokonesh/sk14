@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Views::Auth::Verification < Views::Base
-  def initialize(session:)
+  def initialize(
+    session:
+  )
     @session = session
   end
 

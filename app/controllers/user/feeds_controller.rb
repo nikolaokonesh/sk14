@@ -13,8 +13,15 @@ class User::FeedsController < ApplicationController
                     .where.not(user_id: @user.id)
                     .distinct
                     .order(created_at: :desc)
+
     @pagy, @entries = pagy_countless(@entries)
-    render Views::Users::Show.new(user: @user, entries: @entries, pagy: @pagy, params: params[:page])
+
+    render Views::Users::Show.new(
+      user: @user, 
+      entries: @entries, 
+      pagy: @pagy, 
+      params: params[:page]
+    )
   end
 
   private

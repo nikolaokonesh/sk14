@@ -5,7 +5,9 @@ class Components::Users::Mention < Phlex::HTML
   include Phlex::Rails::Helpers::Sanitize
   include Phlex::Rails::Helpers::Routes
   register_value_helper :authenticated?
-  def initialize(user:)
+  def initialize(
+    user:
+  )
     @user = user
     @username = user.username
   end

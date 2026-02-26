@@ -1,7 +1,14 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  def initialize(entries:, pagy:, params:, query:, categories:, counts:)
+  def initialize(
+    entries:, 
+    pagy:, 
+    params:, 
+    query:, 
+    categories:, 
+    counts:
+  )
     @entries = entries
     @pagy = pagy
     @params = params

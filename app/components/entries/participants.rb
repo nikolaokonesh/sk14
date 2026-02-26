@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Entries::Participants < Components::Base
-  def initialize(users:)
+  def initialize(
+    users:
+  )
     @users = users
   end
 

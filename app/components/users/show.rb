@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Users::Show < Components::Base
-  def initialize(user:)
+  def initialize(
+    user:
+  )
     @user = user
   end
 

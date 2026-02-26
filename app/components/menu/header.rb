@@ -1,5 +1,8 @@
 class Components::Menu::Header < Components::Base
-  def initialize(city: nil, title: nil)
+  def initialize(
+    city: nil, 
+    title: nil
+  )
     @city = city
     @title = title
   end

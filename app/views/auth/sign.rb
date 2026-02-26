@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class Views::Auth::Sign < Views::Base
-  def initialize(params:, session:)
+  def initialize(
+    params:, 
+    session:
+  )
     @params = params
     @session = session
   end

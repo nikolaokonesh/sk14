@@ -4,7 +4,10 @@ class Views::Entries::Streams::Update < Phlex::HTML
   include Phlex::Rails::Helpers::TurboStream
   include Phlex::Rails::Helpers::DOMID
 
-  def initialize(entry:, message: nil)
+  def initialize(
+    entry:, 
+    message: nil
+  )
     @entry = entry
     @message = message
   end

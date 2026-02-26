@@ -3,7 +3,11 @@
 class Components::Entries::List < Phlex::HTML
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(entries:, pagy:, params:)
+  def initialize(
+    entries:, 
+    pagy:, 
+    params:
+  )
     @entries = entries
     @pagy = pagy
     @params = params

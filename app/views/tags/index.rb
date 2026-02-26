@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Views::Tags::Index < Views::Base
-  def initialize(tags:)
+  def initialize(
+    tags:
+  )
     @tags = tags
   end
 

@@ -6,7 +6,9 @@ class TagsController < ApplicationController
                .select("tags.*, COUNT(entry_keywords.id) as usage_count")
                .group("tags.id")
                .order("usage_count DESC")
-    render Views::Tags::Index.new(tags: @tags)
+    render Views::Tags::Index.new(
+      tags: @tags
+    )
   end
 
   def show
@@ -18,6 +20,11 @@ class TagsController < ApplicationController
                  .order(created_at: :desc)
 
     @pagy, @entries = pagy_countless(@entries)
-    render Views::Tags::Show.new(entries: @entries, tag: @tag, pagy: @pagy, params: params[:page])
+    render Views::Tags::Show.new(
+      entries: @entries, 
+      tag: @tag, 
+      pagy: @pagy, 
+      params: params[:page]
+    )
   end
 end

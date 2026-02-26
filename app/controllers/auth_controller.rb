@@ -8,7 +8,10 @@ class AuthController < ApplicationController
       flash[:notice] = "Вы уже вошли"
       redirect_to root_path
     else
-      render Views::Auth::Sign.new(params: params[:email], session: session[:email])
+      render Views::Auth::Sign.new(
+        params: params[:email], 
+        session: session[:email]
+      )
     end
   end
 

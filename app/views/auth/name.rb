@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Views::Auth::Name < Views::Base
-  def initialize(user:)
+  def initialize(
+    user:
+  )
     @user = user
   end
 

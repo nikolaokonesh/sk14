@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Comments::Error < Phlex::HTML
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @comment = entry.entryable
   end
 

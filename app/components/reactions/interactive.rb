@@ -17,7 +17,7 @@ class Components::Reactions::Interactive < Components::Base
 
       return unless authenticated?
 
-      div(class: "absolute hidden max-w-[70vw] md:w-full flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
+      div(class: "absolute hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
         render Components::Reactions::Picker.new(entry: @entry)
       end
 

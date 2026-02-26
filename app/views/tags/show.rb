@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 class Views::Tags::Show < Views::Base
-  def initialize(entries:, tag:, pagy:, params:)
+  def initialize(
+    entries:, 
+    tag:, 
+    pagy:, 
+    params:
+  )
     @entries = entries
     @tag = tag
     @pagy = pagy

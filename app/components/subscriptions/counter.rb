@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Subscriptions::Counter < Components::Base
-  def initialize(followable:)
+  def initialize(
+    followable:
+  )
     @followable = followable
   end
 

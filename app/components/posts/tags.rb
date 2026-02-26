@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Posts::Tags < Components::Base
-  def initialize(post:)
+  def initialize(
+    post:
+  )
     @post = post
   end
 

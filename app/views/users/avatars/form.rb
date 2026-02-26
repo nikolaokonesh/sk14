@@ -1,5 +1,7 @@
 class Views::Users::Avatars::Form < Views::Base
-  def initialize(user_avatar:)
+  def initialize(
+    user_avatar:
+  )
     @user_avatar = user_avatar
   end
 

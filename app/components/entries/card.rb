@@ -10,13 +10,13 @@ class Components::Entries::Card < Phlex::HTML
   register_value_helper :current_user_id
 
   def initialize(
-      entry:,
-      highlight: false,
-      is_first: nil,
-      is_last: nil,
-      show_avatar: true,
-      class_target: ""
-    )
+    entry:,
+    highlight: false,
+    is_first: nil,
+    is_last: nil,
+    show_avatar: true,
+    class_target: ""
+  )
     @entry = entry
     @highlight = highlight
     @is_first = is_first.nil? ? @entry.first_in_group? : is_first
@@ -40,7 +40,7 @@ class Components::Entries::Card < Phlex::HTML
 
       div(class: "chat-header flex items-center") do
         div(class: "bg-base-200 px-1.5") do
-          div(class: "text-base") { sanitize(strip_tags(@entry.user.username)) if @is_first }
+          div(class: "text-base font-bold") { sanitize(strip_tags(@entry.user.username)) if @is_first }
           div(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
         end
         time do

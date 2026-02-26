@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Components::Entries::Content < Phlex::HTML
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

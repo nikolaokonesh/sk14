@@ -4,7 +4,9 @@ class Views::Comments::Streams::Create < Phlex::HTML
   include Phlex::Rails::Helpers::TurboStream
   include Phlex::Rails::Helpers::DOMID
 
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

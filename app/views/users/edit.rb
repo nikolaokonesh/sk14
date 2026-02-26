@@ -1,5 +1,7 @@
 class Views::Users::Edit < Views::Base
-  def initialize(user:)
+  def initialize(
+    user:
+  )
     @user = user
   end
 

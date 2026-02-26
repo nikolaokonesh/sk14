@@ -10,7 +10,13 @@ class Components::Comments::Card < Phlex::HTML
   register_value_helper :current_user_id
   register_value_helper :authenticated?
 
-  def initialize(entry:, highlight: false, class_target: "", is_first: nil, is_last: nil)
+  def initialize(
+    entry:, 
+    highlight: false, 
+    class_target: "", 
+    is_first: nil, 
+    is_last: nil
+  )
     @entry = entry
     @comment = entry.entryable
     @highlight = highlight
@@ -44,7 +50,7 @@ class Components::Comments::Card < Phlex::HTML
       data: { action: "click->reactions#togglePicker" }) do
       render Components::Entries::Content.new(entry: @comment)
       if authenticated?
-        div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:w-full flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
+        div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
           render Components::Reactions::Picker.new(entry: @entry)
           button_reply_comment
         end
@@ -60,7 +66,7 @@ class Components::Comments::Card < Phlex::HTML
                 chat_visibility_target: "chat" },
         class: "chat chat-start entry-card group items-end #{@class_target}") do
       div(class: "chat-header flex items-center") do
-        span(class: "pr-3 text-base", data: { chat_visibility_target: "username" }) {
+        span(class: "pr-3 text-base font-bold", data: { chat_visibility_target: "username" }) {
           sanitize(strip_tags(@entry.user.username)) if @is_first
         }
       end

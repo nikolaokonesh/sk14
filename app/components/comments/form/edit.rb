@@ -7,7 +7,9 @@ class Components::Comments::Form::Edit < Phlex::HTML
   include Phlex::Rails::Helpers::DOMID
   register_value_helper :lucide_icon
 
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @comment = entry
     @entry = entry.entry
   end

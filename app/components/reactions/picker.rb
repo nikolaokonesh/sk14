@@ -1,6 +1,8 @@
 # app/components/reactions/picker.rb
 class Components::Reactions::Picker < Components::Base
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
   end
 

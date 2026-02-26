@@ -1,5 +1,7 @@
 class Components::Reactions::List < Components::Base
-  def initialize(entry:)
+  def initialize(
+    entry:
+  )
     @entry = entry
     @summary = entry.reactions.group(:content).count
   end

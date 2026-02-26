@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class Components::Subscriptions::Button < Components::Base
-  def initialize(user:, followable:)
+  def initialize(
+    user:, 
+    followable:
+  )
     @user = user
     @followable = followable
   end

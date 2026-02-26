@@ -7,7 +7,12 @@ class Entries::TrashController < ApplicationController
                            .recent
 
     @pagy, @entries = pagy_countless(@entries)
-    render Views::Users::Show.new(user: Current.user, entries: @entries, pagy: @pagy, params: params[:page])
+    render Views::Users::Show.new(
+      user: Current.user, 
+      entries: @entries, 
+      pagy: @pagy, 
+      params: params[:page]
+    )
   end
 
   def show

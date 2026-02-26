@@ -4,7 +4,10 @@ class Components::Pagination::NextPage < Phlex::HTML
   include Phlex::Rails::Helpers::TurboFrameTag
   register_value_helper :pagy_url_for
 
-  def initialize(pagy:, frame_prefix: "entries-page")
+  def initialize(
+    pagy:, 
+    frame_prefix: "entries-page"
+  )
     @pagy = pagy
     @frame_prefix = frame_prefix
   end

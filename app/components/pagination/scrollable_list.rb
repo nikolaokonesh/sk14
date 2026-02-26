@@ -3,7 +3,10 @@
 class Components::Pagination::ScrollableList < Phlex::HTML
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(pagy:, entries:)
+  def initialize(
+    pagy:, 
+    entries:
+  )
     @pagy = pagy
     @entries = entries
   end
