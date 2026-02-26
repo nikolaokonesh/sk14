@@ -2,7 +2,7 @@
 
 class Views::Auth::Sign < Views::Base
   def initialize(
-    params:, 
+    params:,
     session:
   )
     @params = params

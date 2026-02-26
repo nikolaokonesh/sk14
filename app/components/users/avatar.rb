@@ -2,8 +2,8 @@ class Components::Users::Avatar < Phlex::HTML
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::URLFor
   def initialize(
-    user:, 
-    style: "size-10", 
+    user:,
+    style: "size-10",
     text_size: "text-xs"
   )
     @user = user

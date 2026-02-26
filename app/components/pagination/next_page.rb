@@ -5,7 +5,7 @@ class Components::Pagination::NextPage < Phlex::HTML
   register_value_helper :pagy_url_for
 
   def initialize(
-    pagy:, 
+    pagy:,
     frame_prefix: "entries-page"
   )
     @pagy = pagy

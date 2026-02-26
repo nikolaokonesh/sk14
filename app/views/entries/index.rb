@@ -2,11 +2,11 @@
 
 class Views::Entries::Index < Views::Base
   def initialize(
-    entries:, 
-    pagy:, 
-    params:, 
-    query:, 
-    categories:, 
+    entries:,
+    pagy:,
+    params:,
+    query:,
+    categories:,
     counts:
   )
     @entries = entries

@@ -9,7 +9,7 @@ class AuthController < ApplicationController
       redirect_to root_path
     else
       render Views::Auth::Sign.new(
-        params: params[:email], 
+        params: params[:email],
         session: session[:email]
       )
     end

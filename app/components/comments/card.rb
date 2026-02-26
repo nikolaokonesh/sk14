@@ -11,10 +11,10 @@ class Components::Comments::Card < Phlex::HTML
   register_value_helper :authenticated?
 
   def initialize(
-    entry:, 
-    highlight: false, 
-    class_target: "", 
-    is_first: nil, 
+    entry:,
+    highlight: false,
+    class_target: "",
+    is_first: nil,
     is_last: nil
   )
     @entry = entry

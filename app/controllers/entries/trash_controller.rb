@@ -8,9 +8,9 @@ class Entries::TrashController < ApplicationController
 
     @pagy, @entries = pagy_countless(@entries)
     render Views::Users::Show.new(
-      user: Current.user, 
-      entries: @entries, 
-      pagy: @pagy, 
+      user: Current.user,
+      entries: @entries,
+      pagy: @pagy,
       params: params[:page]
     )
   end

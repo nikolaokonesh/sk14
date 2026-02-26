@@ -2,7 +2,7 @@
 
 class Components::Subscriptions::Button < Components::Base
   def initialize(
-    user:, 
+    user:,
     followable:
   )
     @user = user

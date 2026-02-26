@@ -1,6 +1,6 @@
 class Components::Menu::Header < Components::Base
   def initialize(
-    city: nil, 
+    city: nil,
     title: nil
   )
     @city = city

@@ -2,8 +2,8 @@
 
 class Views::Tags::Search < Components::Base
   def initialize(
-    categories:, 
-    counts:, 
+    categories:,
+    counts:,
     query:
   )
     @categories = categories

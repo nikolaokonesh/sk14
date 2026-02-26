@@ -2,14 +2,14 @@
 
 class Views::Comments::Index < Components::Base
   def initialize(
-    entry:, 
-    comments:, 
-    pagy: nil, 
-    direction: nil, 
-    highlight_id: nil, 
-    frame_id: nil, 
-    has_prev: false, 
-    has_next: false, 
+    entry:,
+    comments:,
+    pagy: nil,
+    direction: nil,
+    highlight_id: nil,
+    frame_id: nil,
+    has_prev: false,
+    has_next: false,
     button_down: false
   )
     @entry = entry

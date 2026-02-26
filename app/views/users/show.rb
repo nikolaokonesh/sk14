@@ -1,8 +1,8 @@
 class Views::Users::Show < Views::Base
   def initialize(
-    user:, 
-    entries:, 
-    pagy:, 
+    user:,
+    entries:,
+    pagy:,
     params:
   )
     @user = user

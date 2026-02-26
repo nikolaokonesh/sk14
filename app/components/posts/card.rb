@@ -6,7 +6,7 @@ class Components::Posts::Card < Phlex::HTML
   register_value_helper :lucide_icon
 
   def initialize(
-    post:, 
+    post:,
     entry: nil
   )
     @post = post

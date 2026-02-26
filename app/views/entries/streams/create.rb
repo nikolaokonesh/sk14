@@ -5,7 +5,7 @@ class Views::Entries::Streams::Create < Phlex::HTML
   include Phlex::Rails::Helpers::DOMID
 
   def initialize(
-    entry:, 
+    entry:,
     message: nil
   )
     @entry = entry

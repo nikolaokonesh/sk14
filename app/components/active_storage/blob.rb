@@ -5,7 +5,7 @@ class Components::ActiveStorage::Blob < Phlex::HTML
   include Phlex::Rails::Helpers::NumberToHumanSize
 
   def initialize(
-    blob:, 
+    blob:,
     in_gallery:
   )
     @blob = blob

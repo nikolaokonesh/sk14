@@ -2,9 +2,9 @@
 
 class Views::Tags::Show < Views::Base
   def initialize(
-    entries:, 
-    tag:, 
-    pagy:, 
+    entries:,
+    tag:,
+    pagy:,
     params:
   )
     @entries = entries

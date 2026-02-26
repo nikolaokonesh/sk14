@@ -21,9 +21,9 @@ class TagsController < ApplicationController
 
     @pagy, @entries = pagy_countless(@entries)
     render Views::Tags::Show.new(
-      entries: @entries, 
-      tag: @tag, 
-      pagy: @pagy, 
+      entries: @entries,
+      tag: @tag,
+      pagy: @pagy,
       params: params[:page]
     )
   end
