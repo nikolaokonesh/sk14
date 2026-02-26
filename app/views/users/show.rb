@@ -67,7 +67,9 @@ class Views::Users::Show < Views::Base
         end
       end
       div(class: "mt-10") do
-        render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+        div(class: "h-[66svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
+          render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+        end
       end
     end
   end

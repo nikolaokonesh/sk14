@@ -19,8 +19,11 @@ Rails.application.routes.draw do
   resources :subscriptions, only: [ :create, :destroy ]
 
   resources :notifications, only: [ :index ] do
+    member do
+      patch :mark_as_read
+    end
     collection do
-       post :mark_all_as_read
+      post :mark_all_as_read
     end
   end
 

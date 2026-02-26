@@ -49,6 +49,12 @@ class User < ApplicationRecord
   has_many :posts, through: :entries, source: :entryable, source_type: "Post"
   has_many :comments, through: :entries, source: :entryable, source_type: "Comment"
 
+  has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
+
+  def unread_notifications_count
+    notifications.where(read_at: nil).count
+  end
+
   def trash_size
     self.entries.where(entryable_type: "Post").inactive.count
   end

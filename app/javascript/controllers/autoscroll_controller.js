@@ -52,13 +52,13 @@ export default class extends Controller {
 
       if (mutation.addedNodes.length === 0) continue
       
-      let hasPaginationInNotes = false
+      // let hasPaginationInNotes = false
 
       mutation.addedNodes.forEach(node => {
         if (node.nodeType !== 1) return
         
-        if (node.tagName === "TURBO-FRAME" && node.id?.startWith("load_")) {
-          hasPaginationInNotes = true
+        if (node.tagName === "TURBO-FRAME" && node.id?.startsWith("load_")) {
+          // hasPaginationInNotes = true
           return
         }
         const entryNode = node.classList.contains("entry-card") ? node : node.querySelector(".entry-card")
@@ -131,7 +131,8 @@ export default class extends Controller {
   scrollToBottom() {
     this.scrollContainer.scrollTo({
       top: this.scrollContainer.scrollHeight,
-      behavior: "smooth"
+      behavior: "auto"
+      // behavior: "smooth"
     })
     this.hideBadge()
   }

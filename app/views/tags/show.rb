@@ -29,7 +29,7 @@ class Views::Tags::Show < Views::Base
       end
 
       if @entries.any?
-        div(class: "space-y-6") do
+        div(class: "h-[66svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
           render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
         end
       else
