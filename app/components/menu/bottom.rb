@@ -19,7 +19,7 @@ class Components::Menu::Bottom < Components::Base
       end
     else
       a(href: auth_path, class: "mx-auto p-2 active:text-red-500") { lucide_icon("bell") }
-      a(href: auth_path, class: "mx-auto p-2 active:text-red-500") { lucide_icon("user") }
+      a(href: auth_path, class: "mx-auto p-4 active:text-red-500") { lucide_icon("user") }
     end
   end
 end

@@ -35,7 +35,7 @@ class Views::Tags::Search < Components::Base
         href: root_path(query: value),
         class: "btn btn-sm rounded-full whitespace-nowrap #{active_class}",
         data: {
-          turbo_frame: "_top",
+          turbo_frame: "entries_list",
           search_target: "tag",
           action: "click->search#set_query",
           search_value: value || ""
