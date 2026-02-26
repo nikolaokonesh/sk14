@@ -7,7 +7,6 @@ class Components::Entries::Card < Phlex::HTML
   include Phlex::Rails::Helpers::Routes
   include Phlex::Rails::Helpers::Truncate
   register_value_helper :lucide_icon
-  register_value_helper :current_user_id
 
   def initialize(
     entry:,

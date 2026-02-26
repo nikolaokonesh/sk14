@@ -1,4 +1,4 @@
-class Components::Reactions::List < Components::Base
+class Components::Reactions::List < Phlex::HTML
   def initialize(
     entry:
   )
