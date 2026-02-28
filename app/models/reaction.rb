@@ -22,15 +22,14 @@ class Reaction < ApplicationRecord
   private
 
   def broadcast_reaction_update
-    component = Components::Reactions::List.new(entry: entry)
     broadcast_replace_to :entries,
       target: "reactions_entry_#{entry_id}",
-      renderable: component,
+      renderable: Components::Reactions::List.new(entry: entry),
       layout: false
 
     broadcast_replace_to [ entry.root, :comments ],
       target: "reactions_entry_#{entry_id}",
-      renderable: component,
+      renderable: Components::Reactions::List.new(entry: entry),
       layout: false
   end
 end

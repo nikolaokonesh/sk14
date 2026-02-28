@@ -30,7 +30,7 @@ class Views::Base < Components::Base
 
   def navbar(&block)
     axcluded_controllers = %w[name auth auth_verification tags feeds trash notifications]
-    axcluded_actions = %w[new edit show]
+    axcluded_actions = %w[new edit show create update]
 
     return if controller_name.in?(axcluded_controllers) ||
               action_name.in?(axcluded_actions)

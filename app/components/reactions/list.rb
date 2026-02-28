@@ -13,12 +13,12 @@ class Components::Reactions::List < Phlex::HTML
 
         button(
           class: [
-            "flex items-center gap-1 px-2 py-0.5 rounded-full text-sm border transition-all active:scale-90",
+            "flex items-center gap-1 size-6.5 cursor-pointer pl-1 rounded-full text-sm border transition-all active:scale-90",
             is_active ? "bg-primary/20 border-primary text-primary" : "bg-base-100 border-transparent"
           ],
           data: { action: "click->reactions#select", reactions_content_param: emoji, reactions_entry_id_param: @entry.id }
         ) do
-          span { emoji }; span(class: "font-bold") { count if count > 1 }
+          span { emoji }; span(class: "font-bold text-xs -mt-4 -ml-1") { count if count > 1 }
         end
       end
     end

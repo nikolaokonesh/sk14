@@ -61,7 +61,7 @@ class Views::Entries::Show < Views::Base
             div(class: "dropdown dropdown-end",
                 data: { auth_visibility_target: "controls" }) do
               div(tabindex: 0, role: "button", class: "px-2 cursor-pointer") { lucide_icon("ellipsis") }
-              ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-10 w-52 p-2 shadow-sm") do
+              ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-100 w-52 p-2 shadow-sm") do
                 li do
                   a(href: edit_entry_path(@entry)) { "Редактировать" }
                 end

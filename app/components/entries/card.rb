@@ -40,19 +40,18 @@ class Components::Entries::Card < Phlex::HTML
       div(class: "chat-header flex items-center") do
         div(class: "bg-base-200 px-1.5") do
           div(class: "text-base font-bold") { sanitize(strip_tags(@entry.user.username)) if @is_first }
-          div(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
         end
-        time do
-          case @entry.entryable
-          when Post
-            render Components::Posts::Card.new(post: @entry.entryable) do |card|
-              card.nav
-            end
-          end
-        end
+        # time do
+        #   case @entry.entryable
+        #   when Post
+        #     render Components::Posts::Card.new(post: @entry.entryable) do |card|
+        #       card.nav
+        #     end
+        #   end
+        # end
       end
 
-      div(class: [ "chat-bubble max-w-[99%] rounded-none z-1", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(class: [ "chat-bubble min-w-[200px] max-w-[99%] rounded-none z-1", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         case @entry.entryable
         when Post
           render Components::Posts::Card.new(post: @entry.entryable) do |card|
