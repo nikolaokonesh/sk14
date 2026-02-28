@@ -3,11 +3,17 @@ class Post < ApplicationRecord
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 
   has_rich_text :content
-  validates :content, presence: { message: "Содержание не может быть без текста!" }
+  validate :content_length
 
   after_save :update_truncated_content
 
   private
+
+  def content_length
+    if content.to_plain_text.length < 10
+      errors.add(:content, "Должен быть текст записи (минимум 10 сиволов)")
+    end
+  end
 
   def update_truncated_content
     return unless content.present?
