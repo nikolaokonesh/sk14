@@ -64,7 +64,7 @@ class Components::Entries::Card < Phlex::HTML
         end
       end
 
-      div(class: "chat-footer opacity-50 bg-base-200 px-2 z-0") { @entry.tags_list }
+      div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") { @entry.tags_list }
     end
   end
 end

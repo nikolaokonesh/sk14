@@ -49,12 +49,15 @@ class Components::Comments::Card < Phlex::HTML
     div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2",
       data: { action: "click->reactions#togglePicker" }) do
       render Components::Entries::Content.new(entry: @comment)
-      if authenticated?
-        div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
-          render Components::Reactions::Picker.new(entry: @entry)
-          button_reply_comment
+      div(class: "flex items-center justify-between") do
+        if authenticated?
+          div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
+            render Components::Reactions::Picker.new(entry: @entry)
+            button_reply_comment
+          end
+          render Components::Reactions::List.new(entry: @entry)
         end
-        render Components::Reactions::List.new(entry: @entry)
+        div(class: "opacity-30 text-xs ml-auto") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
       end
     end
   end
@@ -70,7 +73,7 @@ class Components::Comments::Card < Phlex::HTML
           sanitize(strip_tags(@entry.user.username)) if @is_first
         }
       end
-      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 max-w-[98%] rounded-none", (@is_first ? "" : ""), (!@is_last ? "before:hidden mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(data: { chat_visibility_target: "bgcolor" }, class: [ "chat-bubble p-0 min-w-[200px] max-w-[98%] rounded-none", (@is_first ? "" : ""), (!@is_last ? "before:hidden mb-0" : ""), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         if @comment.entry.parent&.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
@@ -83,10 +86,6 @@ class Components::Comments::Card < Phlex::HTML
           end
         end
         content
-      end
-      div(class: "chat-footer") do
-        time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
-        nav
       end
     end
   end

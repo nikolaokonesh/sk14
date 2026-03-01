@@ -17,8 +17,11 @@ user.add_role "admin"
   puts "User + #{i}"
 end
 
+categories = ListingsDictionary::ACTIONS.keys
+
 50.times do |i|
-  post = Post.create!(content: "#{Faker::Lorem.paragraph}")
+  random_category = categories.sample
+  post = Post.create!(content: "#{random_category} #{Faker::Lorem.paragraph}")
   Entry.create!(user_id: User.all.sample.id, entryable: post)
   puts "Post + #{i}"
 end
@@ -27,7 +30,7 @@ entry_post = Entry.all
 
 entry_post.each do |entry|
   puts "Entry + #{entry.id}"
-  100.times do |i|
+  20.times do |i|
     comment = Comment.create!(content: "+#{i} коммент id #{entry.id}")
     Entry.create!(user_id: User.all.sample.id, parent: entry, entryable: comment)
     puts "Comments + #{i}"

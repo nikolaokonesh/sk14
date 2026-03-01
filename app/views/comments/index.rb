@@ -97,7 +97,7 @@ class Views::Comments::Index < Components::Base
       wrapper_class: "chat chat-start entry-card items-end m-1 mt-6",
       wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: anchor.user_id },
       avatar_data: { chat_visibility_target: "avatar" },
-      bubbles_class: "flex flex-col -ml-2 -mb-4",
+      bubbles_class: "flex flex-col -ml-2 -mb-2",
       avatar_sticky_class: "sticky bottom-2"
     ) do
       group.each_with_index do |comment, i|
