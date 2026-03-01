@@ -27,38 +27,27 @@ class Views::Comments::Index < Components::Base
     turbo_frame_tag :comments, refresh: "morph" do
       turbo_stream_from [ @entry, :comments ]
 
-      div(data: { controller: "reply" }) do
-        # Контейнер:
-        # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
-        # 2. relative нужен для позиционирования кнопки
-        div(id: dom_id(@entry.root, :comments_list),
-            class: "pt-4 h-[75svh] overflow-y-auto overflow-x-visible no-scrollbar",
-            data: { controller: "autoscroll infinite-scroll" }) do
-          @direction.present? ? render_direction_fragment : render_full_page
+      # Контейнер:
+      # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
+      # 2. relative нужен для позиционирования кнопки
+      div(id: dom_id(@entry.root, :comments_list),
+          class: "pt-4 h-[75svh] overflow-y-auto overflow-x-visible no-scrollbar",
+          data: { controller: "autoscroll infinite-scroll" }) do
+        @direction.present? ? render_direction_fragment : render_full_page
 
-          render Components::Entries::ButtonNewBadge.new
+        render Components::Entries::ButtonNewBadge.new
 
-          if @button_down.present?
-            a(
-              href: entry_comments_path(@entry),
-              class: "fixed bottom-24 right-6 btn btn-circle btn-secondary shadow-xl z-50",
-              id: "go_to_latest",
-              data: {
-                turbo_frame: "comments",
-                action: "click->autoscroll#disable_click"
-              }
-            ) { lucide_icon("chevrons-down") }
-          end
+        if @button_down.present?
+          a(
+            href: entry_comments_path(@entry),
+            class: "fixed bottom-24 right-6 btn btn-circle btn-secondary shadow-xl z-50",
+            id: "go_to_latest",
+            data: {
+              turbo_frame: "comments",
+              action: "click->autoscroll#disable_click"
+            }
+          ) { lucide_icon("chevrons-down") }
         end
-        # Форма ввода комментария (прижата к низу)
-        if current_user
-          # reply_controller внутри Form::Create.rb
-          div(id: "new_comment_form", class: "flex-none sticky bottom-0 bg-base-200 p-4 pb-safe z-10") do
-            render Components::Comments::Form::Create.new(entry: @entry, has_next: @has_next, pagy: @pagy)
-          end
-        end
-        # snap-end snap-always Это для залипания
-        div(class: "snap-end") { }
       end
     end
   end

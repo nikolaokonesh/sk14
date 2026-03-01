@@ -29,9 +29,9 @@ class Views::Entries::Show < Views::Base
 
   def view_template
     turbo_stream_from :entries
-    div(id: dom_id(@entry, :show_container), class: "snap-start scroll-smooth w-full") do
+    div(id: dom_id(@entry, :show_container), data: { controller: "reply" }, class: "snap-y snap-proximity scroll-smooth w-full") do
       if @entry.trash == true
-        div(class: "flex items-center mt-5") do
+        div(class: "flex items-center mt-5 snap-start") do
           div(class: "bg-red-500 inline p-1 m-2") { "Удалено" }
           div(class: "flex items-center") do
             span { "Вы можете восстановить пост" }
@@ -42,7 +42,7 @@ class Views::Entries::Show < Views::Base
       end
 
       # snap-y snap-proximity scroll-smooth Это для залипания
-      div(class: "chat chat-start items-end pb-4 m-1") do
+      div(class: "chat chat-start snap-end items-end pb-4 m-1") do
         div(class: "chat-image avatar sticky bottom-2 self-end") do
           div(class: "w-10 rounded-full") do
             a(href: user_path(@entry.user)) do
@@ -86,6 +86,7 @@ class Views::Entries::Show < Views::Base
         end
         div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
       end
+
       div(class: "relative h-15 -mb-15 bg-gradient-to-b from-base-200 to-transparent z-10 pointer-events-none") { }
 
       # Лента комментариев
@@ -98,6 +99,16 @@ class Views::Entries::Show < Views::Base
                                         has_prev: @has_prev,
                                         has_next: @has_next,
                                         button_down: @button_down)
+
+      # Форма ввода комментария (прижата к низу)
+      if current_user
+        # reply_controller внутри Form::Create.rb
+        div(id: "new_comment_form", class: "flex-none bg-base-200 p-4 pb-safe z-10") do
+          render Components::Comments::Form::Create.new(entry: @entry, has_next: @has_next, pagy: @pagy)
+        end
+      end
+      # snap-end snap-always Это для залипания
+      div(class: "snap-end") { }
     end
   end
 end

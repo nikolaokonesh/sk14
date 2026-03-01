@@ -131,8 +131,8 @@ export default class extends Controller {
   scrollToBottom() {
     this.scrollContainer.scrollTo({
       top: this.scrollContainer.scrollHeight,
-      behavior: "auto"
-      // behavior: "smooth"
+      // behavior: "auto"
+      behavior: "smooth"
     })
     this.hideBadge()
   }
