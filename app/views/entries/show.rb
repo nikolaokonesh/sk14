@@ -42,7 +42,7 @@ class Views::Entries::Show < Views::Base
       end
 
       # snap-y snap-proximity scroll-smooth Это для залипания
-      div(class: "chat chat-start items-end pb-4 m-1 shadow-xl") do
+      div(class: "chat chat-start items-end pb-4 m-1") do
         div(class: "chat-image avatar sticky bottom-2 self-end") do
           div(class: "w-10 rounded-full") do
             a(href: user_path(@entry.user)) do
@@ -86,6 +86,8 @@ class Views::Entries::Show < Views::Base
         end
         div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
       end
+      div(class: "relative h-15 -mb-15 bg-gradient-to-b from-base-200 to-transparent z-10 pointer-events-none") { }
+
       # Лента комментариев
       render Views::Comments::Index.new(entry: @entry,
                                         comments: @comments,

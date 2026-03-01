@@ -30,8 +30,10 @@ class Views::Entries::Index < Views::Base
 
     render Components::Menu::Search.new(query: @query, categories: @categories, counts: @counts)
 
+
     turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
       div(class: "w-full snap-start") do
+        div(class: "relative h-15 -mb-15 bg-gradient-to-b from-base-100 to-transparent z-10 pointer-events-none") { }
         div(class: "h-[66svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
           render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
           render Components::Entries::ButtonNewBadge.new
