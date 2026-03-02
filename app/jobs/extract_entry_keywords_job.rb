@@ -28,5 +28,6 @@ class ExtractEntryKeywordsJob < ApplicationJob
     end
 
     entry.update_column(:tags_list, keywords.join(" "))
+    Entries::NotifyFollowedTagsJob.perform_later(entry.id)
   end
 end

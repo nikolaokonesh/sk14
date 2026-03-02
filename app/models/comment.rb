@@ -5,9 +5,15 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
-  after_create_commit :broadcast_to_create_chat
+  # after_create_commit :broadcast_to_create_chat
   after_update_commit :broadcast_to_update_chat
   after_destroy_commit :broadcast_to_destroy_chat
+
+  def mentioned_user_ids
+    return [] unless content&.body
+
+    content.body.attachables.grep(User).map(&:id).uniq
+  end
 
   private
 

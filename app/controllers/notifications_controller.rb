@@ -18,7 +18,7 @@ class NotificationsController < ApplicationController
   def mark_as_read
     @notification.update(read_at: Time.current) if @notification.read_at.nil?
 
-    redirect_to notification_path, notice: "Уведомление прочитано"
+    redirect_to notifications_path, notice: "Уведомление прочитано"
   end
 
   def mark_all_as_read

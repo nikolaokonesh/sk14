@@ -33,6 +33,9 @@ class EntriesController < ApplicationController
       redirect_to root_path, notice: "Пост был удалён..."
     else
       load_comments_for(@entry)
+
+      Current.user.mark_entry_as_read!(@entry) if authenticated?
+
       render Views::Entries::Show.new(
         entry: @entry,
         direction: params[:direction],
@@ -64,6 +67,8 @@ class EntriesController < ApplicationController
 
     if @entry.save
       Entries::Streams::CreateJob.perform_later(@entry.id)
+      Entries::NotifyFollowedUsersJob.perform_later(@entry.id)
+
       flash[:success] = "Пост успешно создан"
       respond_to do |format|
         format.html { redirect_to @entry }

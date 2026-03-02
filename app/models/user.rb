@@ -51,6 +51,34 @@ class User < ApplicationRecord
 
   has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
 
+  has_many :entry_read_states, dependent: :destroy
+
+  def mark_entry_as_read!(entry)
+    root_entry = entry.root || entry
+    now = Time.current
+
+    state = entry_read_states.find_or_initialize_by(entry: root_entry)
+    state.post_read_at = now
+    state.comments_read_at = now
+    state.save!
+
+    notifications.where(read_at: nil).includes(:event).find_each do |notification|
+      params = notification.event&.params || {}
+      root_entry_id = params["root_entry_id"] || params[:root_entry_id]
+      next unless root_entry_id.to_i == root_entry.id
+
+      notification.update_columns(read_at: now, updated_at: now)
+    end
+  end
+
+  def unread_comments_count_for(entry)
+    root_entry = entry.root || entry
+    state = entry_read_states.find_by(entry: root_entry)
+    from_time = state&.comments_read_at || root_entry.created_at
+
+    root_entry.all_comments.where("created_at > ?", from_time).where.not(user_id: id).count
+  end
+
   def unread_notifications_count
     notifications.where(read_at: nil).count
   end

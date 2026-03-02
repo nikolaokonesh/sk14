@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_21_081408) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
   create_table "access_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
@@ -98,6 +98,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_21_081408) do
     t.index ["entry_id"], name: "index_entry_keywords_on_entry_id"
     t.index ["keyword", "entry_id"], name: "index_entry_keywords_on_keyword_and_entry_id", unique: true
     t.index ["tag_id"], name: "index_entry_keywords_on_tag_id"
+  end
+
+  create_table "entry_read_states", force: :cascade do |t|
+    t.datetime "comments_read_at"
+    t.datetime "created_at", null: false
+    t.integer "entry_id", null: false
+    t.datetime "post_read_at"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["entry_id"], name: "index_entry_read_states_on_entry_id"
+    t.index ["user_id", "entry_id"], name: "index_entry_read_states_on_user_id_and_entry_id", unique: true
+    t.index ["user_id"], name: "index_entry_read_states_on_user_id"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -229,6 +241,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_21_081408) do
   add_foreign_key "entries", "users"
   add_foreign_key "entry_keywords", "entries"
   add_foreign_key "entry_keywords", "tags"
+  add_foreign_key "entry_read_states", "entries"
+  add_foreign_key "entry_read_states", "users"
   add_foreign_key "reactions", "entries"
   add_foreign_key "reactions", "users"
   add_foreign_key "sessions", "users"

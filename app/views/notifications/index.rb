@@ -1,6 +1,6 @@
 class Views::Notifications::Index < Views::Base
   def initialize(notifications:, pagy:)
-    @notification = notifications
+    @notifications = notifications
     @pagy = pagy
   end
 
@@ -14,13 +14,13 @@ class Views::Notifications::Index < Views::Base
 
         if Current.user.unread_notifications_count.positive?
           button_to "Отметить всё прочитанным",
-            mark_all_as_read_notification_path,
+            mark_all_as_read_notifications_path,
             method: :post,
             class: "btn btn-sm btn-outline"
         end
       end
 
-      if @notification.empty?
+      if @notifications.empty?
         p(class: "text-base-content/70") { "Пока уведомлений нет" }
       else
         render Views::Notifications::Page.new(notifications: @notifications, pagy: @pagy)

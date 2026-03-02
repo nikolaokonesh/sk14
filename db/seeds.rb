@@ -30,7 +30,7 @@ entry_post = Entry.all
 
 entry_post.each do |entry|
   puts "Entry + #{entry.id}"
-  20.times do |i|
+  100.times do |i|
     comment = Comment.create!(content: "+#{i} коммент id #{entry.id}")
     Entry.create!(user_id: User.all.sample.id, parent: entry, entryable: comment)
     puts "Comments + #{i}"

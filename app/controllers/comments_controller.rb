@@ -9,6 +9,7 @@ class CommentsController < ApplicationController
     return redirect_to entry_path(@entry.root, comment_id: params[:comment_id]) if request.headers["Turbo-Frame"].nil?
 
     load_comments_for(@entry)
+    Current.user.mark_entry_as_read!(@entry) if authenticated?
 
     render Views::Comments::Index.new(
       entry: @entry,
@@ -71,6 +72,9 @@ class CommentsController < ApplicationController
     @comment.build_entry(user: Current.user, parent: parent)
 
     if @comment.save
+      Comments::NotifyReplyJob.perform_later(@comment.id)
+      Comments::NotifyMentionsJob.perform_later(@comment.id)
+
       respond_to do |format|
         format.turbo_stream { render Views::Comments::Streams::Create.new(entry: @comment.entry), layout: false }
         format.html { redirect_to post_path(@entry.root), notice: "Комментарий добавлен" }
