@@ -33,7 +33,7 @@ class Components::Comments::Card < Phlex::HTML
     span(class: "hidden dropdown dropdown-left dropdown-end",
         data: { auth_visibility_target: "controls" }) do
       div(tabindex: 0, role: "button", class: "px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
-      ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 z-50 shadow-sm") do
+      ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-100 w-52 p-2 z-50 shadow-sm") do
         li do
           a(href: edit_entry_comment_path(@entry, @comment), data: { turbo_stream: true, turbo_prefetch: "false" }) { "Редактировать" }
         end
@@ -46,9 +46,8 @@ class Components::Comments::Card < Phlex::HTML
 
   def content
     # plain "#{@entry.root.entryable.id}" Это ID Поста
-    div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2",
-      data: { action: "click->reactions#togglePicker" }) do
-      render Components::Entries::Content.new(entry: @comment)
+    div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2") do
+      div(data: { action: "click->reactions#togglePicker" }) { render Components::Entries::Content.new(entry: @comment) }
       div(class: "flex items-center justify-between") do
         if authenticated?
           div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
@@ -58,6 +57,7 @@ class Components::Comments::Card < Phlex::HTML
           render Components::Reactions::List.new(entry: @entry)
         end
         div(class: "opacity-30 text-xs ml-auto") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
+        nav
       end
     end
   end
@@ -77,7 +77,7 @@ class Components::Comments::Card < Phlex::HTML
         if @comment.entry.parent&.entryable_type == "Comment"
           a(
             href: entry_comments_path(@comment.entry.root, comment_id: @comment.entry.parent.id),
-            data: { turbo_frame: "comments", action: "click->autoscroll#disable_click" }
+            data: { turbo_prefetch: "false", turbo_frame: "comments", action: "click->autoscroll#disable_click" }
           ) do
             div(class: "flex flex-col overflow-hidden bg-base-200 border-l-4 border-primary px-4 py-2") do
               span(class: "text-primary text-sm font-bold truncate") { @comment.entry.parent.user.username }
@@ -114,7 +114,7 @@ class Components::Comments::Card < Phlex::HTML
 
   def button_reply_comment
     if authenticated?
-      span(class: "cursor-pointer absolute right-0 top-15 p-2 btn",
+      span(class: "cursor-pointer absolute right-0 top-15 p-2 btn btn-primary",
         data: {
           action: "click->reply#trigger",
           reply_id_param: @comment.entry.id,

@@ -18,11 +18,22 @@ class NotificationsController < ApplicationController
   def mark_as_read
     @notification.update(read_at: Time.current) if @notification.read_at.nil?
 
-    redirect_to notifications_path, notice: "Уведомление прочитано"
+    Current.user.broadcast_notifications_badge_update!
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream:
+          turbo_stream.replace(@notification,
+                              renderable: Components::Notifications::Item.new(notification: @notification),
+                              layout: false)
+      end
+      format.html { redirect_to notifications_path, notice: "Уведомление прочитано" }
+    end
   end
 
   def mark_all_as_read
     Current.user.notifications.where(read_at: nil).update_all(read_at: Time.current)
+    Current.user.broadcast_notifications_badge_update!
 
     redirect_to notifications_path, notice: "Все уведомления отмечены как прочитанные"
   end

@@ -5,7 +5,8 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
-  # after_create_commit :broadcast_to_create_chat
+  after_create_commit :broadcast_to_create_chat
+  after_create_commit :broadcast_read_state_badges
   after_update_commit :broadcast_to_update_chat
   after_destroy_commit :broadcast_to_destroy_chat
 
@@ -17,12 +18,26 @@ class Comment < ApplicationRecord
 
   private
 
+  def broadcast_read_state_badges
+    root_entry = entry&.root
+    return unless root_entry
+
+    user_ids = root_entry.all_comments.select(:user_id).distinct.pluck(:user_id)
+    user_ids << root_entry.user_id
+
+    User.where(id: user_ids.uniq).find_each do |user|
+      user.broadcast_read_state_update!(root_entry)
+    end
+  end
+
   def broadcast_to_create_chat
     broadcast_render_to(
       [ entry.root, :comments ],
       renderable: Views::Comments::Streams::Create.new(entry: entry),
       layout: false
     )
+
+    broadcast_refresh_to(:notifications)
 
     # broadcast_append_to [ entry.root, :comments ],
     #   target: [ entry.root, :comments_list ],
@@ -46,5 +61,6 @@ class Comment < ApplicationRecord
 
   def broadcast_to_destroy_chat
     broadcast_remove_to [ entry.root, :comments ], target: "entry_#{entry.id}"
+    broadcast_read_state_badges
   end
 end

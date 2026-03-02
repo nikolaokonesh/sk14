@@ -11,7 +11,7 @@ class Components::Notifications::Item < Phlex::HTML
     div(id: dom_id(@notification), class: classes) do
       div(class: "space-y-1") do
         if notification_url
-          a(href: notification_url, data: { turbo_frame: "_top" }, class: "hover:opacity-80") do
+          a(href: notification_url, data: { turbo_frame: "_top", turbo_prefetch: "false" }, class: "hover:opacity-80") do
             p(class: "font-medium") { notification_title }
             p(class: "font-sm text-base-content/70") { notification_body }
           end

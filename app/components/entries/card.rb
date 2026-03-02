@@ -51,11 +51,11 @@ class Components::Entries::Card < Phlex::HTML
         # end
       end
 
-      div(class: [ "chat-bubble min-w-[200px] max-w-[99%] rounded-none z-1", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
+      div(class: [ "chat-bubble min-w-[200px] max-w-[99%] rounded-none z-1 relative", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         case @entry.entryable
         when Post
-          if show_new_comments_badge?
-            span(class: "badge badge-warning badge-sm absolute top-2 right-2 z-10") { "+#{new_comments_count} комм." }
+          if show_read_state_badge?
+            render Components::Entries::ReadStateBadge.new(entry: @entry, user: Current.user)
           end
 
           render Components::Posts::Card.new(post: @entry.entryable) do |card|
@@ -72,15 +72,9 @@ class Components::Entries::Card < Phlex::HTML
     end
   end
 
-  def show_new_comments_badge?
+  def show_read_state_badge?
     return false unless Current.user
     return false unless @entry.entryable_type == "Post"
-    return false unless @entry.user_id == Current.user.id
-
-    new_comments_count.positive?
-  end
-
-  def new_comments_count
-    @new_comments_count ||= Current.user.unread_comments_count_for(@entry)
+    true
   end
 end
