@@ -32,8 +32,8 @@ class Entry < ApplicationRecord
   #          foreign_key: :parent_id
 
   has_many :reactions, dependent: :destroy
-  has_many :noticed_events, as: :record, dependent: :destroy, class_name: "Noticed::Event"
-  has_many :notifications, through: :noticed_events, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
+  has_many :notifications, through: :noticed_events, class_name: "Noticed::Notification", dependent: :destroy
   has_many :entry_read_states, dependent: :destroy
 
   def reaction_summary

@@ -1,8 +1,8 @@
 # To deliver this notification:
 #
-# Entries::NewEntryInFollowedTagNotifier.with(record: @post, message: "New post").deliver(User.all)
+# Entries::NewEntryInFollowedTagsNotifier.with(record: @post, message: "New post").deliver(User.all)
 
-class Entries::NewEntryInFollowedTagNotifier < ApplicationNotifier
+class Entries::NewEntryInFollowedTagsNotifier < ApplicationNotifier
   deliver_by :database
 
   def message

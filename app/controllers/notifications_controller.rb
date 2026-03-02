@@ -16,7 +16,7 @@ class NotificationsController < ApplicationController
   end
 
   def mark_as_read
-    @notification.update(read_at: Time.current) if @notification.read_at.nil?
+    @notification.mark_as_read! if @notification.read?
 
     Current.user.broadcast_notifications_badge_update!
 
@@ -32,7 +32,7 @@ class NotificationsController < ApplicationController
   end
 
   def mark_all_as_read
-    Current.user.notifications.where(read_at: nil).update_all(read_at: Time.current)
+    Current.user.notifications.mark_as_read!
     Current.user.broadcast_notifications_badge_update!
 
     redirect_to notifications_path, notice: "Все уведомления отмечены как прочитанные"

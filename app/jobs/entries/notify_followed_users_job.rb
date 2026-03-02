@@ -8,7 +8,7 @@ class Entries::NotifyFollowedUsersJob < ApplicationJob
     recipients = entry.user.followers.where.not(id: entry.user_id)
     retirn if recipients.empty?
 
-    Entries::NewEntryInFollowedUserNotifier.with(
+    Entries::NewEntryFromFollowedUserNotifier.with(
       record: entry,
       title: "Новый пост от #{ entry.user.username }",
       body: "Пользователь опублтиковал новый пост",
