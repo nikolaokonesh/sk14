@@ -16,7 +16,7 @@ class NotificationsController < ApplicationController
   end
 
   def mark_as_read
-    @notification.mark_as_read if @notification.read?
+    @notification.mark_as_read unless @notification.read?
 
     Current.user.broadcast_notifications_badge_update!
 

@@ -6,7 +6,7 @@ class Entries::NotifyFollowedUsersJob < ApplicationJob
     return unless entry&.entryable_type == "Post"
 
     recipients = entry.user.followers.where.not(id: entry.user_id)
-    retirn if recipients.empty?
+    return if recipients.empty?
 
     Entries::NewEntryFromFollowedUserNotifier.with(
       record: entry,

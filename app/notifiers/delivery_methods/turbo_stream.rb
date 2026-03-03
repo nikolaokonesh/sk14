@@ -10,6 +10,6 @@ class DeliveryMethods::TurboStream < ApplicationDeliveryMethod
 
   def deliver
     return unless recipient.is_a?(User)
-    notification.recipient.broadcast_notifications_badge_update!
+    notification.broadcast_update_to_bell
   end
 end

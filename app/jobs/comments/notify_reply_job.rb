@@ -10,7 +10,7 @@ class Comments::NotifyReplyJob < ApplicationJob
     return if parent_entry.user_id == comment.entry.user_id
 
     Comments::NewReplyNotifier.with(
-      record: comment.entry.root,
+      record: comment.entry,
       title: "Новый ответ на ваш комментарий",
       body: "#{comment.entry.user.username} ответил(а) вам",
       root_entry_id: comment.entry.root_id

@@ -7,16 +7,25 @@ class Components::Entries::ReadStateBadge < Phlex::HTML
   end
 
   def view_template
-    span(id: dom_id(@entry, :read_state_badge), class: "absolute top-2 right-2 z-10") do
-      unread = @user.unread_comments_count_for(@entry)
-      show_count = @user.show_unread_comments_count_for?(@entry)
-
-      if unread.positive?
-        text = show_count ? "Не прочитано * #{unread}" : "Не прочитано"
-        span(class: "badge badge-warning badge-sm") { text }
-      else
-        span(class: "badge badge-success badge-sm") { "Прочитано" }
-      end
+    span(id: dom_id(@entry, :read_state_badge), class: "absolute top-2 right-2 z-10 flex gap-1") do
+      render_post_state_badge
+      render_unread_comments_badge
     end
+  end
+
+  def render_post_state_badge
+    if @user.post_read_for?(@entry)
+      span(class: "badge badge-success badge-sm") { "Прочитано" }
+    else
+      span(class: "badge badge-warning badge-sm") { "Не прочитано" }
+    end
+  end
+
+  def render_unread_comments_badge
+    unread = @user.unread_comments_count_for(@entry)
+    return unless unread.positive?
+    return unless @user.show_unread_comments_count_for?(@entry)
+
+    span(class: "badge badge-info badge-sm") { "+#{unread} комм." }
   end
 end

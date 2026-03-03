@@ -27,6 +27,7 @@ class Comment < ApplicationRecord
 
     User.where(id: user_ids.uniq).find_each do |user|
       user.broadcast_read_state_update!(root_entry)
+      user.broadcast_notifications_badge_update!
     end
   end
 

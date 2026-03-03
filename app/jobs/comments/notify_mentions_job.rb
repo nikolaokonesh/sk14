@@ -10,7 +10,7 @@ class Comments::NotifyMentionsJob < ApplicationJob
     return if recipients.empty?
 
     Comments::NewMentionNotifier.with(
-      record: comment.entry.root,
+      record: comment.entry,
       title: "Вас упомянули в комментарии",
       body: "#{comment.entry.user.username} упомянул(а) вас",
       root_entry_id: comment.entry.root_id

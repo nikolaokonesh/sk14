@@ -57,18 +57,10 @@ class User < ApplicationRecord
     root_entry = entry.root || entry
     now = Time.current
 
-    state = entry_read_states.find_by(entry: root_entry)
-    latest_comment_at = root_entry.all_comments.maximum(:created_at)
-    already_read = state&.post_read_at.present? &&
-                   state&.comments_read_at.present? &&
-                   (latest_comment_at.nil? || state.comments_read_at >= latest_comment_at)
-
-    return if already_read
-
-    state ||= entry_read_states.new(entry: root_entry)
-    state.post_read_at = now
+    state = entry_read_states.find_or_initialize_by(entry: root_entry)
+    state.post_read_at ||= now
     state.comments_read_at = now
-    state.save!
+    state.save! if state.changed?
 
     notifications.where(read_at: nil).includes(:event).find_each do |notification|
       params = notification.event&.params || {}
@@ -81,9 +73,18 @@ class User < ApplicationRecord
     broadcast_read_state_update!(root_entry)
   end
 
+  def entry_read_state_for(entry)
+    root_entry = entry.root || entry
+    entry_read_states.find_by(entry: root_entry)
+  end
+
+  def post_read_for?(entry)
+    entry_read_state_for(entry)&.post_read_at.present?
+  end
+
   def unread_comments_count_for(entry)
     root_entry = entry.root || entry
-    state = entry_read_states.find_by(entry: root_entry)
+    state = entry_read_state_for(root_entry)
     from_time = state&.comments_read_at || root_entry.created_at
 
     root_entry.all_comments.where("created_at > ?", from_time).where.not(user_id: id).count
@@ -91,7 +92,8 @@ class User < ApplicationRecord
 
   def show_unread_comments_count_for?(entry)
     root_entry = entry.root || entry
-    entry.user_id == id || entries.where(entryable_type: "Comment", root_id: root_entry.id).exists?
+    state = entry_read_state_for(root_entry)
+    root_entry.user_id == id || state&.post_read_at.present? || entries.where(entryable_type: "Comment", root_id: root_entry.id).exists?
   end
 
   def unread_notifications_count
@@ -99,7 +101,7 @@ class User < ApplicationRecord
   end
 
   def broadcast_notifications_badge_update!
-    broadcast_replace_to(
+    broadcast_update_to(
       [ :user, id ],
       target: [ self, :notifications_badge ],
       renderable: Components::Menu::NotificationsBadge.new(user: self),
