@@ -20,7 +20,7 @@ class Entry < ApplicationRecord
   # Твой запрос: прямая связь для получения комментариев
   # Мы ищем среди детей (replies) только те, где entryable_type это Comment
   has_many :comments, -> { where(entryable_type: "Comment") },
-           class_name: "Entry", foreign_key: :root_id
+           class_name: "Entry", foreign_key: :root_id, dependent: :destroy
 
   has_many :entry_keywords, dependent: :destroy
   has_many :tags, through: :entry_keywords

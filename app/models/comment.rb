@@ -37,8 +37,6 @@ class Comment < ApplicationRecord
       layout: false
     )
 
-    broadcast_refresh_to(:notifications)
-
     # broadcast_append_to [ entry.root, :comments ],
     #   target: [ entry.root, :comments_list ],
     #   renderable: Components::Comments::Card.new(entry: entry, is_last_in_group: true, highlight: true, class_target: "last-comment") { |card| card.card_comment },

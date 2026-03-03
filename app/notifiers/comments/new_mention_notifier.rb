@@ -4,6 +4,7 @@
 
 class Comments::NewMentionNotifier < ApplicationNotifier
   deliver_by :database
+  deliver_by :turbo_stream, class: "DeliveryMethods::TurboStream"
 
   def message
     params[:title].presence || "Вас упомянули"

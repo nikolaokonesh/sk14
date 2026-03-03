@@ -4,6 +4,7 @@
 
 class Entries::NewEntryInFollowedTagsNotifier < ApplicationNotifier
   deliver_by :database
+  deliver_by :turbo_stream, class: "DeliveryMethods::TurboStream"
 
   def message
     params[:title].presence || "Новый пост по вышим тегам"

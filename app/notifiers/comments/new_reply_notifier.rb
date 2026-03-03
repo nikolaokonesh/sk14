@@ -4,6 +4,7 @@
 
 class Comments::NewReplyNotifier < ApplicationNotifier
   deliver_by :database
+  deliver_by :turbo_stream, class: "DeliveryMethods::TurboStream"
 
   def message
     params[:title].presence || "Новый ответ на ваш комментарий"
