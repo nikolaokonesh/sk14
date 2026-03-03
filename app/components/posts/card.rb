@@ -52,6 +52,10 @@ class Components::Posts::Card < Phlex::HTML
   private
 
   def link_to_post_helper(entry)
-    entry.trash? ? trash_path(entry) : entry_path(entry)
+    if entry.user == Current.user
+      entry.trash? ? trash_path(entry) : entry_path(entry)
+    else
+      entry_path(entry)
+    end
   end
 end

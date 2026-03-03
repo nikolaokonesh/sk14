@@ -9,10 +9,9 @@ module SearchLoader
       keywords = @query.to_s.downcase.scan(/[а-яёa-z0-9]+/i)
       stems = keywords.map { |w| RussianStemmer.stem(w) }.reject(&:blank?).uniq
       if stems.any?
-        @entries = @entries.joins("JOIN posts ON entries.entryable_id = posts.id")
         stems.each do |stem|
           @entries = @entries.where(
-            "LOWER(entries.title) LIKE :s OR LOWER(entries.tags_list) LIKE :s",
+            "LOWER(entries.title) LIKE :s OR LOWER(COALESCE(entries.tags_list, '')) LIKE :s",
             s: "%#{stem}%")
         end
       end

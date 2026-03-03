@@ -5,8 +5,8 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
-  # after_create_commit :broadcast_to_create_chat
-  # after_create_commit :broadcast_read_state_badges
+  after_create_commit :broadcast_to_create_chat
+  after_create_commit :broadcast_read_state_badges
   after_update_commit :broadcast_to_update_chat
   after_destroy_commit :broadcast_to_destroy_chat
 
