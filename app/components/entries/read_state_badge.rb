@@ -26,6 +26,6 @@ class Components::Entries::ReadStateBadge < Phlex::HTML
     return unless unread.positive?
     return unless @user.show_unread_comments_count_for?(@entry)
 
-    span(class: "badge badge-info badge-sm") { "+#{unread} комм." }
+    span(class: "badge badge-error badge-sm") { "+#{unread} комм." }
   end
 end

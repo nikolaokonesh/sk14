@@ -71,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
     t.integer "position", default: 0
     t.integer "root_id"
     t.string "tags_list"
+    t.string "title", limit: 200
     t.boolean "trash", default: false
     t.datetime "trash_data"
     t.datetime "updated_at", null: false
@@ -151,7 +152,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
     t.datetime "created_at", null: false
     t.datetime "premier"
     t.json "setting"
-    t.string "title", limit: 200
     t.datetime "updated_at", null: false
   end
 

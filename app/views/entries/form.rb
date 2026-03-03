@@ -31,7 +31,7 @@ class Views::Entries::Form < Views::Base
           form.submit "Сохранить", class: "btn btn-primary", data: { turbo_submits_with: "Обновление..." }
         }
       end
-      a(href: @entry.new_record? ? root_path : entry_path(@entry), class: "btn") { "Отмена" }
+      a(href: @entry.new_record? ? root_path : entry_path(@entry), class: "btn", data: { turbo_prefetch: "false" }) { "Отмена" }
     end
   end
 end

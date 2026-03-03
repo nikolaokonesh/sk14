@@ -12,7 +12,7 @@ module SearchLoader
         @entries = @entries.joins("JOIN posts ON entries.entryable_id = posts.id")
         stems.each do |stem|
           @entries = @entries.where(
-            "LOWER(posts.title) LIKE :s OR LOWER(entries.tags_list) LIKE :s",
+            "LOWER(entries.title) LIKE :s OR LOWER(entries.tags_list) LIKE :s",
             s: "%#{stem}%")
         end
       end

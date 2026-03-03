@@ -6,6 +6,7 @@ class CreateEntries < ActiveRecord::Migration[8.1]
       t.boolean  :trash, default: false  # Удаление поста в корзину
       t.datetime :trash_data             # Дата удаления
       t.string   :tags_list              # Список тэгов
+      t.string   :title, limit: 200      # Запись части из :content
 
       # Ссылка на родительскую Entry (самореферентная связь)
       # null: true, потому что у главных постов нет родителя.

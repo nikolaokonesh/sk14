@@ -28,6 +28,7 @@ class Components::Layout < Components::Base
         javascript_importmap_tags
         meta(name: :turbo_refresh_method, content: :morph)
         meta(name: :turbo_refresh_scroll, content: :preserve)
+        meta(name: :turbo_prefetch, content: "false")
       end
       body(data: { current_user_id: current_user_id }) { yield }
     end

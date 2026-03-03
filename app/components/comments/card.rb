@@ -101,7 +101,7 @@ class Components::Comments::Card < Phlex::HTML
         else
           div(class: "text-xs font-bold") { "Комментарий к посту:" }
         end
-        span(class: "text-base-content/70 text-xs truncate") { truncate(@entry.root.entryable.title, length: 100, omission: "...") }
+        span(class: "text-base-content/70 text-xs truncate") { truncate(@entry.root.title, length: 100, omission: "...") }
       end
       div(class: "p-2") do
         content

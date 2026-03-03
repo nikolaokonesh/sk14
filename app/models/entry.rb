@@ -2,7 +2,7 @@ class Entry < ApplicationRecord
   # broadcasts_refreshes
 
   delegated_type :entryable, types: %w[ Post Comment ], dependent: :destroy
-  delegate :title, :content, to: :entryable, allow_nil: true
+  delegate :content, to: :entryable, allow_nil: true
   accepts_nested_attributes_for :entryable
 
   scope :recent, -> { order(created_at: :desc) }
@@ -68,6 +68,8 @@ class Entry < ApplicationRecord
   # Если это корень, проставляем root_id = id после создания
   after_create :set_self_as_root, unless: :root_id?
 
+  after_save :update_truncated_content
+
   validate :root_consistency, on: :update, if: :root_id_changed?
 
   def first_in_group?
@@ -114,6 +116,25 @@ class Entry < ApplicationRecord
   end
 
   private
+
+  def update_truncated_content
+    return unless entryable.content.present?
+
+    plain_text = if entryable.content.respond_to?(:to_plain_text)
+      entryable.content.to_plain_text
+    else
+      ActionController::Base.helpers.strip_tags(entryable.content.to_s).squish
+    end
+
+    truncated = if plain_text.length > 500
+      space_index = plain_text[0..500].rindex(" ") || 500
+      plain_text[0..space_index] + "..."
+    else
+      plain_text
+    end
+
+    update_column(:title, truncated)
+  end
 
   def enqueue_keyword_extraction
     return unless post? && active?

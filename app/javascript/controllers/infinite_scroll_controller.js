@@ -24,9 +24,9 @@ export default class extends Controller {
   }
 
   flash(el) {
-    el.classList.add("bg-secondary", "transition-all", "duration-1000")
+    el.classList.add("bg-error", "transition-all", "duration-1000")
     setTimeout(() => {
-      el.classList.remove("bg-secondary")
+      el.classList.remove("bg-error")
     }, 4000)
   }
 
