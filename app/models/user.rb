@@ -92,8 +92,9 @@ class User < ApplicationRecord
 
   def show_unread_comments_count_for?(entry)
     root_entry = entry.root || entry
-    state = entry_read_state_for(root_entry)
-    root_entry.user_id == id || state&.post_read_at.present? || entries.where(entryable_type: "Comment", root_id: root_entry.id).exists?
+    return true if root_entry.user_id == id
+
+    entries.where(entryable_type: "Comment", root_id: root_entry.id).exists?
   end
 
   def unread_notifications_count

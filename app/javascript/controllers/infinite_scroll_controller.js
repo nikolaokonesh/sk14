@@ -24,10 +24,10 @@ export default class extends Controller {
   }
 
   flash(el) {
-    el.classList.add("bg-primary/30", "transition-all", "duration-1000")
+    el.classList.add("bg-secondary", "transition-all", "duration-1000")
     setTimeout(() => {
-      el.classList.remove("bg-primary/30")
-    }, 3000)
+      el.classList.remove("bg-secondary")
+    }, 4000)
   }
 
   preserve(event) {

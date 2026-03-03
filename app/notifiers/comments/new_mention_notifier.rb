@@ -17,7 +17,7 @@ class Comments::NewMentionNotifier < ApplicationNotifier
   def url
     return unless params[:root_entry_id].present?
 
-    Rails.application.routes.url_helpers.entry_path(params[:root_entry_id])
+    Rails.application.routes.url_helpers.entry_path(params[:root_entry_id], comment_id: params[:comment_id])
   end
 
   # Add your delivery methods

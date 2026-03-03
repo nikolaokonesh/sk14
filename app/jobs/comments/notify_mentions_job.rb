@@ -13,7 +13,8 @@ class Comments::NotifyMentionsJob < ApplicationJob
       record: comment.entry,
       title: "Вас упомянули в комментарии",
       body: "#{comment.entry.user.username} упомянул(а) вас",
-      root_entry_id: comment.entry.root_id
+      root_entry_id: comment.entry.root_id,
+      comment_id: comment.entry.id
     ).deliver_later(recipients)
   end
 

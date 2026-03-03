@@ -13,7 +13,8 @@ class Comments::NotifyReplyJob < ApplicationJob
       record: comment.entry,
       title: "Новый ответ на ваш комментарий",
       body: "#{comment.entry.user.username} ответил(а) вам",
-      root_entry_id: comment.entry.root_id
+      root_entry_id: comment.entry.root_id,
+      comment_id: comment.entry.id
     ).deliver_later(parent_entry.user)
   end
 end
