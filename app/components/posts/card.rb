@@ -44,7 +44,7 @@ class Components::Posts::Card < Phlex::HTML
     ) do
       a(href: link_to_post_helper(@entry), data: { turbo_prefetch: "false" }, class: "z-10 cursor-pointer") do
         plain truncate(@post.entry.title, length: 200, omission: "... Читать далее")
-        div(class: "opacity-30 text-xs text-right") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
+        div(class: "opacity-50 text-xs text-right") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
       end
     end
   end

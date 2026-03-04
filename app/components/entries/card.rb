@@ -54,10 +54,6 @@ class Components::Entries::Card < Phlex::HTML
       div(class: [ "chat-bubble min-w-[200px] max-w-[99%] rounded-none z-1 relative", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
         case @entry.entryable
         when Post
-          if show_read_state_badge?
-            render Components::Entries::ReadStateBadge.new(entry: @entry, user: Current.user)
-          end
-
           render Components::Posts::Card.new(post: @entry.entryable) do |card|
             card.content
           end
@@ -70,11 +66,5 @@ class Components::Entries::Card < Phlex::HTML
 
       div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") { @entry.tags_list }
     end
-  end
-
-  def show_read_state_badge?
-    return false unless Current.user
-    return false unless @entry.entryable_type == "Post"
-    true
   end
 end

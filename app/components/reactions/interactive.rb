@@ -25,6 +25,17 @@ class Components::Reactions::Interactive < Phlex::HTML
       end
 
       div(class: "flex items-center relative z-30") do
+        div(class: "flex") do
+          raw lucide_icon("messages-square")
+          span(class: "text-xs absolute opacity-70 left-5 -top-1") do
+            plain @entry.root.all_comments.count
+          end
+        end
+
+        if show_read_state_badge?
+          render Components::Entries::ReadStateBadge.new(entry: @entry, user: Current.user)
+        end
+
         render Components::Reactions::List.new(entry: @entry)
         div(class: "ml-auto px-1.5") do
           button(
@@ -39,6 +50,12 @@ class Components::Reactions::Interactive < Phlex::HTML
   end
 
   private
+
+  def show_read_state_badge?
+    return false unless Current.user
+    return false unless @entry.entryable_type == "Post"
+    true
+  end
 
   def container_options
     data = {}
