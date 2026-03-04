@@ -56,7 +56,6 @@ class Views::Entries::Show < Views::Base
               sanitize(strip_tags(@entry.user.name_full))
             end
           end
-          time(class: "opacity-50") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
           if authenticated? && can?(:manage, @entry)
             div(class: "dropdown dropdown-end",
                 data: { auth_visibility_target: "controls" }) do
@@ -83,6 +82,7 @@ class Views::Entries::Show < Views::Base
           with_controller: true
         ) do
           render Components::Entries::Content.new(entry: @entry)
+          div(class: "opacity-50 text-right") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
         end
         div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
       end
