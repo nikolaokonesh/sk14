@@ -8,7 +8,7 @@ class Views::Base < Components::Base
   def around_template
     render layout.new(page_info) do
       turbo_stream_from :user, Current.user.id if authenticated? && Current.user
-      main(class: "w-full md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
+      main(class: "w-full bg-slate-400 dark:bg-slate-800 md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
         navbar do
           div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new }
         end

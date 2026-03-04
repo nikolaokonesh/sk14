@@ -19,6 +19,8 @@ class CreateEntries < ActiveRecord::Migration[8.1]
       # Опционально: Тип вложенности или позиция для сортировки
       t.integer :position, default: 0
 
+      t.integer :comments_count, default: 0, null: false
+
       t.timestamps
     end
   end

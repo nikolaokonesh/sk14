@@ -19,7 +19,7 @@ class Components::Entries::List < Phlex::HTML
     div(class: "w-full") do
       render Components::Pagination::NextPage.new(pagy: @pagy, frame_prefix: "load_prev_entries_page") if @pagy.next.present?
 
-      div(id: "entries", class: "grid grid-cols-1 gap-3 px-2") do
+      div(id: "entries") do
         if ordered_entries.any?
           entry_groups = ordered_entries.chunk { |entry| entry.user_id }.to_a
 

@@ -18,7 +18,7 @@ class Components::Pagination::ScrollableList < Phlex::HTML
       div(class: "w-full mt-3") do
         render Components::Pagination::NextPage.new(pagy: @pagy, frame_prefix: "load_prev_entries_page") if @pagy.next.present?
 
-        div(id: "entries_#{@pagy.page}", class: "grid grid-cols-1 gap-3 px-2") do
+        div(id: "entries_#{@pagy.page}") do
           entry_groups = ordered_entries.chunk { |entry| entry.user_id }.to_a
 
           entry_groups.each do |_user_id, group|

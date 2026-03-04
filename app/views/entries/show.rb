@@ -84,10 +84,10 @@ class Views::Entries::Show < Views::Base
           render Components::Entries::Content.new(entry: @entry)
           div(class: "opacity-50 text-right") { render Components::Shared::TimeAgoInWords.new(entry: @entry) }
         end
-        div(class: "chat-footer opacity-50") { render Components::Entries::Tags.new(entry: @entry) }
+        div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") { render Components::Entries::Tags.new(entry: @entry) }
       end
 
-      div(class: "relative h-15 -mb-15 bg-gradient-to-b from-base-200 to-transparent z-10 pointer-events-none") { }
+      render Components::Style::BlurBackground.new
 
       # Лента комментариев
       render Views::Comments::Index.new(entry: @entry,

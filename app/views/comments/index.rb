@@ -27,9 +27,6 @@ class Views::Comments::Index < Components::Base
     turbo_frame_tag :comments, refresh: "morph" do
       turbo_stream_from [ @entry, :comments ]
 
-      # Контейнер:
-      # 1. Убрали action: "turbo:frame-load...", так как сделали setTimeout в JS
-      # 2. relative нужен для позиционирования кнопки
       div(id: dom_id(@entry.root, :comments_list),
           class: "pt-4 h-[75svh] overflow-y-auto overflow-x-visible no-scrollbar",
           data: { controller: "autoscroll infinite-scroll" }) do
@@ -53,8 +50,6 @@ class Views::Comments::Index < Components::Base
   end
 
   def render_full_page
-    # Frame подгрузки ВВЕРХ
-    # if (@highlight_id > 0 && @has_prev) || (@direction == "prev" && @pagy&.next)
     if @has_prev || (@pagy && @pagy.page > 1)
       render_load_frame(:prev, @comments.first)
     end
@@ -62,11 +57,10 @@ class Views::Comments::Index < Components::Base
     comment_groups = @comments.chunk { |c| c.user_id }.to_a
 
     comment_groups.each_with_index do |(_user_id, group), index|
-      # Проверка на группу для начальной загрузки
       is_last_group = (index == comment_groups.size - 1) && !@has_next
       render_group(group, is_last_group)
     end
-    # Frame подгрузки ВНИЗ
+
     if @pagy&.next || @has_next
       render_load_frame(:next, @comments.last)
     end
@@ -83,7 +77,7 @@ class Views::Comments::Index < Components::Base
       user: anchor.user,
       group_wrapper_id: group_wrapper_id,
       bubbles_id: bubbles_id,
-      wrapper_class: "chat chat-start entry-card items-end m-1 mt-6",
+      wrapper_class: "chat chat-start entry-card items-end m-1 mt-2",
       wrapper_data: { controller: "chat-visibility", chat_visibility_target: "chat", auth_visibility_author_id_value: anchor.user_id },
       avatar_data: { chat_visibility_target: "avatar" },
       bubbles_class: "flex flex-col -ml-2 -mb-2",

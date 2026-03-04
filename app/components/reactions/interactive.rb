@@ -18,18 +18,20 @@ class Components::Reactions::Interactive < Phlex::HTML
     div(**container_options) do
       yield
 
-      return unless Current.user
+      # return unless Current.user
 
       div(class: "absolute hidden max-w-[70vw] md:max-w-[92vw] bottom-0 flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
         render Components::Reactions::Picker.new(entry: @entry)
       end
 
       div(class: "flex items-center relative z-30") do
-        div(class: "flex") do
-          span(class: "opacity-30") { lucide_icon("messages-square") }
-          span(class: "text-xs absolute opacity-70 left-5 -top-1") {
-            @entry.root.all_comments.count
-          }
+        if !@entry.root.comments_count.zero?
+          div(class: "flex") do
+            span(class: "opacity-30") { lucide_icon("messages-square") }
+            span(class: "text-xs absolute opacity-70 left-5 -top-1") {
+              @entry.root.comments_count
+            }
+          end
         end
 
         if show_read_state_badge?

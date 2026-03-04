@@ -64,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
   end
 
   create_table "entries", force: :cascade do |t|
+    t.integer "comments_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "entryable_id", null: false
     t.string "entryable_type", null: false

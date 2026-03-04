@@ -10,7 +10,7 @@ class Components::Entries::Tags < Components::Base
   def view_template
     div(class: "flex flex-wrap gap-2") do
       @entry.tags.each do |tag|
-        a(href: tag_path(tag.id), class: "text-xs badge px-1") { tag.name }
+        a(href: tag_path(tag.id), class: "text-xs px-1") { tag.name }
       end
     end
   end
