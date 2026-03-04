@@ -26,10 +26,10 @@ class Components::Reactions::Interactive < Phlex::HTML
 
       div(class: "flex items-center relative z-30") do
         div(class: "flex") do
-          raw lucide_icon("messages-square")
-          span(class: "text-xs absolute opacity-70 left-5 -top-1") do
-            plain @entry.root.all_comments.count
-          end
+          span(class: "opacity-30") { lucide_icon("messages-square") }
+          span(class: "text-xs absolute opacity-70 left-5 -top-1") {
+            @entry.root.all_comments.count
+          }
         end
 
         if show_read_state_badge?
