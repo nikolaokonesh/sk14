@@ -2,15 +2,19 @@ class Components::Menu::Header < Components::Base
   def initialize(
     city: nil,
     title: nil,
-    query: nil
+    query: nil,
+    categories:,
+    counts:
   )
     @city = city
     @title = title
     @query = query
+    @categories = categories
+    @counts = counts
   end
 
   def view_template
-    div(class: "w-full sticky top-0 py-2 z-10 bg-base-300") do
+    div(class: "w-full sticky top-0 py-2 z-10 bg-base-300", data: { controller: "search" }) do
       div(class: "flex justify-between items-center mx-4") do
         div(class: "flex items-end size-12 font-bold text-2xl md:text-3xl text-red-500 dark:text-white") {
           img(src: image_path("icon2.png"), class: "size-12", loading: "lazy")
@@ -26,6 +30,11 @@ class Components::Menu::Header < Components::Base
           lucide_icon(:pencil)
         end
       end
+      render Views::Tags::Search.new(
+        categories: @categories,
+        counts: @counts,
+        query: @query
+      )
     end
   end
 end

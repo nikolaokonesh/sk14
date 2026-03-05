@@ -30,19 +30,13 @@ class Views::Entries::Index < Views::Base
 
     div(class: "flex flex-col h-screen overflow-hidden") do
       div(class: "flex flex-col") do
-        div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new(query: @query) }
-
-        render Views::Tags::Search.new(
-          categories: @categories,
-          counts: @counts,
-          query: @query
-        )
+        div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new(query: @query, categories: @categories, counts: @counts) }
       end
 
       render Components::Style::BlurBackground.new
       div(class: "flex-1 overflow-y-auto no-scrollbar relative", data: { controller: "autoscroll infinite-scroll" }) do
         turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
-          div(class: "w-full min-h-full p-4") do
+          div(class: "w-full min-h-full") do
             render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
             render Components::Entries::ButtonNewBadge.new
             div(class: "snap-end") { }

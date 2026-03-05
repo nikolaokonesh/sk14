@@ -31,7 +31,7 @@ class Views::Entries::Show < Views::Base
     turbo_stream_from :entries
     div(id: dom_id(@entry, :show_container), class: "flex flex-col h-screen overflow-hidden", data: { controller: "reply" }) do
       div(class: "flex-1 overflow-y-auto snap-y snap-proximity scroll-smooth no-scrollbar") do
-        div(class: "p-2 w-full") do
+        div(class: "w-full") do
           if @entry.trash == true
             div(class: "flex items-center mt-5 snap-start") do
               div(class: "bg-red-500 inline p-1 m-2") { "Удалено" }
@@ -44,7 +44,7 @@ class Views::Entries::Show < Views::Base
           end
 
           # snap-y snap-proximity scroll-smooth Это для залипания
-          div(class: "chat chat-start snap-end") do
+          div(class: "chat chat-start snap-end p-1") do
             div(class: "chat-image avatar sticky bottom-2 self-end") do
               div(class: "w-10 rounded-full") do
                 a(href: user_path(@entry.user)) do

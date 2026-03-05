@@ -9,7 +9,6 @@ class Components::Menu::Search < Components::Base
     # форма поиска
     div(class: "w-full p-4 bg-base-300") do
       form_with(url: root_path, method: :get, data: {
-        controller: "search",
         search_target: "form",
         turbo_frame: "entries_list"
       }) do |f|
