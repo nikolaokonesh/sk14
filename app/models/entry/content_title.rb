@@ -3,7 +3,7 @@ module Entry::ContentTitle
 
   included do
     after_commit :enqueue_keyword_extraction, on: [ :create, :update ]
-    after_save :update_truncated_content, if: :should_update_truncated_content?
+    after_commit :update_truncated_content, if: :should_update_truncated_content?
   end
 
   private
@@ -23,7 +23,7 @@ module Entry::ContentTitle
 
   def enqueue_keyword_extraction
     return unless post? && active?
-    ExtractEntryKeywordsJob.perform_later(self.id)
+    ExtractEntryKeywordsJob.perform_later(id)
   end
 
   def post?

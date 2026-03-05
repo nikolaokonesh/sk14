@@ -13,7 +13,7 @@ class Views::Tags::Search < Components::Base
 
   def view_template
     turbo_frame_tag "popular_tags", refresh: :morph do
-      div(class: "flex gap-2 overflow-x-auto px-4 no_scrollbar flex-nowrap") do
+      div(class: "flex gap-2 overflow-x-auto px-4 pb-2 no_scrollbar flex-nowrap bg-base-300") do
         all_count = Entry.active.where(entryable_type: "Post").count
         render_tag_link("Все", nil, all_count)
 

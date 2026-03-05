@@ -8,15 +8,9 @@ class Views::Base < Components::Base
   def around_template
     render layout.new(page_info) do
       turbo_stream_from :user, Current.user.id if authenticated? && Current.user
-      main(class: "w-full bg-slate-400 dark:bg-slate-800 md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
-        navbar do
-          div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new }
-        end
-        super
+      main(class: "w-full md:w-3xl xl:w-4xl mx-auto md:px-0 flex flex-col") do
         render Components::Shared::Flash.new
-        navbar do
-          div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Bottom.new }
-        end
+        super
       end
     end
   end
@@ -29,12 +23,11 @@ class Views::Base < Components::Base
     PageInfo.new(title: page_title)
   end
 
-  def navbar(&block)
-    axcluded_controllers = %w[name auth auth_verification tags feeds trash notifications]
-    axcluded_actions = %w[new edit show create update]
-
-    return if controller_name.in?(axcluded_controllers) ||
-              action_name.in?(axcluded_actions)
-    yield
-  end
+  # def navbar(&block)
+  #   axcluded_controllers = %w[name auth auth_verification tags feeds trash notifications]
+  #   axcluded_actions = %w[new edit show create update]
+  #   return if controller_name.in?(axcluded_controllers) ||
+  #             action_name.in?(axcluded_actions)
+  #   yield
+  # end
 end

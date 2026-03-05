@@ -28,18 +28,29 @@ class Views::Entries::Index < Views::Base
       end
     end
 
-    render Components::Menu::Search.new(query: @query, categories: @categories, counts: @counts)
+    div(class: "flex flex-col h-screen overflow-hidden") do
+      div(class: "flex flex-col") do
+        div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new(query: @query) }
 
+        render Views::Tags::Search.new(
+          categories: @categories,
+          counts: @counts,
+          query: @query
+        )
+      end
 
-    turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
-      div(class: "w-full snap-start") do
-        render Components::Style::BlurBackground.new
-        div(class: "h-[66svh] overflow-y-auto overflow-x-visible no-scrollbar", data: { controller: "autoscroll infinite-scroll" }) do
-          render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
-          render Components::Entries::ButtonNewBadge.new
-          div(class: "snap-end") { }
+      render Components::Style::BlurBackground.new
+      div(class: "flex-1 overflow-y-auto no-scrollbar relative", data: { controller: "autoscroll infinite-scroll" }) do
+        turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
+          div(class: "w-full min-h-full p-4") do
+            render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)
+            render Components::Entries::ButtonNewBadge.new
+            div(class: "snap-end") { }
+          end
         end
       end
+
+      div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Bottom.new }
     end
   end
 end

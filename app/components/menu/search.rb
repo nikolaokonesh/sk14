@@ -1,12 +1,8 @@
 class Components::Menu::Search < Components::Base
   def initialize(
-    query:,
-    categories:,
-    counts:
+    query:
   )
     @query = query
-    @categories = categories
-    @counts = counts
   end
 
   def view_template
@@ -32,13 +28,6 @@ class Components::Menu::Search < Components::Base
                 data: { action: "click->search#reset" }) do
             lucide_icon("x")
           end
-        end
-        div(class: "mt-4") do
-          render Views::Tags::Search.new(
-            categories: @categories,
-            counts: @counts,
-            query: @query
-          )
         end
       end
     end
