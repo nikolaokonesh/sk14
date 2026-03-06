@@ -5,11 +5,9 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
-  after_create :broadcast_comments_counter
-  after_create_commit :broadcast_to_create_chat
-  after_create_commit :broadcast_read_state_badges
-  after_update_commit :broadcast_to_update_chat
-  after_destroy_commit :broadcast_to_destroy_chat
+  after_create_commit :enqueue_create_broadcast
+  after_update_commit :enqueue_update_broadcast
+  after_destroy_commit :enqueue_destroy_broadcast
 
   def mentioned_user_ids
     return [] unless content&.body
@@ -19,41 +17,16 @@ class Comment < ApplicationRecord
 
   private
 
-  def broadcast_read_state_badges
-    root_entry = entry&.root
-    return unless root_entry
-
-    user_ids = root_entry.all_comments.select(:user_id).distinct.pluck(:user_id)
-    user_ids << root_entry.user_id
-
-    User.where(id: user_ids.uniq).find_each do |user|
-      user.broadcast_read_state_update!(root_entry)
-      user.broadcast_notifications_badge_update!
-    end
+  def enqueue_create_broadcast
+    Comments::Streams::CreateJob.perform_later(id)
   end
 
-  def broadcast_to_create_chat
-    broadcast_render_to(
-      [ entry.root, :comments ],
-      renderable: Views::Comments::Streams::Create.new(entry: entry),
-      layout: false
-    )
+  def enqueue_update_broadcast
+    Comments::Streams::UpdateJob.perform_later(id)
   end
 
-  def broadcast_to_update_chat
-    broadcast_replace_to [ entry.root, :comments ],
-      target: "entry_#{entry.id}",
-      renderable: Components::Comments::Card.new(entry: entry, highlight: true) { |card| card.card_comment },
-      layout: false
-  end
-
-  def broadcast_to_destroy_chat
-    broadcast_remove_to [ entry.root, :comments ], target: "entry_#{entry.id}"
-    broadcast_read_state_badges
-    broadcast_comments_counter
-  end
-
-  def broadcast_comments_counter
-    broadcast_replace_to :entries, target: [ entry.root, :comments_counter ], renderable: Components::Entries::CommentsCounter.new(entry: entry.root), layout: false
+  def enqueue_destroy_broadcast
+    return unless entry
+    Comments::Streams::DestroyJob.perform_later(root_id: entry.root_id, entry_id: entry.id)
   end
 end

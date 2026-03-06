@@ -7,8 +7,6 @@ class Components::Comments::Card < Phlex::HTML
   include Phlex::Rails::Helpers::StripTags
   include Phlex::Rails::Helpers::DOMID
   register_value_helper :lucide_icon
-  register_value_helper :current_user_id
-  register_value_helper :authenticated?
 
   def initialize(
     entry:,
@@ -49,7 +47,7 @@ class Components::Comments::Card < Phlex::HTML
     div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2") do
       div(data: { action: "click->reactions#togglePicker" }) { render Components::Entries::Content.new(entry: @comment) }
       div(class: "flex items-center justify-between") do
-        if authenticated?
+        if authenticated_user?
           div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
             render Components::Reactions::Picker.new(entry: @entry)
             button_reply_comment
@@ -113,7 +111,7 @@ class Components::Comments::Card < Phlex::HTML
   end
 
   def button_reply_comment
-    if authenticated?
+    if authenticated_user?
       span(class: "cursor-pointer absolute right-0 top-15 p-2 btn btn-primary",
         data: {
           action: "click->reply#trigger",
@@ -126,5 +124,11 @@ class Components::Comments::Card < Phlex::HTML
         p { "Ответить" }
       end
     end
+  end
+
+  private
+
+  def authenticated_user?
+    Current.user.present?
   end
 end
