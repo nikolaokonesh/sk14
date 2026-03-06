@@ -1,5 +1,7 @@
 class Components::Entries::CommentsCounter < Phlex::HTML
+  include Phlex::Rails::Helpers::DOMID
   register_value_helper :lucide_icon
+
 
   def initialize(entry:)
     @entry = entry
@@ -21,6 +23,6 @@ class Components::Entries::CommentsCounter < Phlex::HTML
   end
 
   def counter_dom_id
-    "entry_#{@entry.root.id}_comments_counter"
+    dom_id(@entry.root, :comments_counter)
   end
 end

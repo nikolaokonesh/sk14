@@ -5,9 +5,9 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
+  after_create :broadcast_comments_counter
   after_create_commit :broadcast_to_create_chat
   after_create_commit :broadcast_read_state_badges
-  after_commit :broadcast_comments_counter, only: [:create, :destroy]
   after_update_commit :broadcast_to_update_chat
   after_destroy_commit :broadcast_to_destroy_chat
 
@@ -50,14 +50,10 @@ class Comment < ApplicationRecord
   def broadcast_to_destroy_chat
     broadcast_remove_to [ entry.root, :comments ], target: "entry_#{entry.id}"
     broadcast_read_state_badges
+    broadcast_comments_counter
   end
 
   def broadcast_comments_counter
-    root_entry = entry&.root
-    return unless root_entry
-
-    target = "entry_#{root_entry.id}_comments_counter"
-
-    broadcast_update_to :entries, target: target, renderable: Components::Entries::CommentsCounter.new(entry: root_entry), layout: false
+    broadcast_replace_to :entries, target: [ entry.root, :comments_counter ], renderable: Components::Entries::CommentsCounter.new(entry: entry.root), layout: false
   end
 end
