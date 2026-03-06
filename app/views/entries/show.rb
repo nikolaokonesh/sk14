@@ -29,6 +29,7 @@ class Views::Entries::Show < Views::Base
 
   def view_template
     turbo_stream_from :entries
+    
     div(id: dom_id(@entry, :show_container), class: "flex flex-col h-screen overflow-hidden", data: { controller: "reply" }) do
       div(class: "flex-1 overflow-y-auto snap-y snap-proximity scroll-smooth no-scrollbar") do
         div(class: "w-full") do

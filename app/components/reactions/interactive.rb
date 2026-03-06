@@ -25,14 +25,7 @@ class Components::Reactions::Interactive < Phlex::HTML
       end
 
       div(class: "flex items-center relative z-30") do
-        if !@entry.root.comments_count.zero?
-          div(class: "flex") do
-            span(class: "opacity-30") { lucide_icon("messages-square") }
-            span(class: "text-xs absolute opacity-70 left-5 -top-1") {
-              @entry.root.comments_count
-            }
-          end
-        end
+        render Components::Entries::CommentsCounter.new(entry: @entry)
 
         if show_read_state_badge?
           render Components::Entries::ReadStateBadge.new(entry: @entry, user: Current.user)

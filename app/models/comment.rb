@@ -7,6 +7,7 @@ class Comment < ApplicationRecord
 
   after_create_commit :broadcast_to_create_chat
   after_create_commit :broadcast_read_state_badges
+  after_commit :broadcast_comments_counter, only: [:create, :destroy]
   after_update_commit :broadcast_to_update_chat
   after_destroy_commit :broadcast_to_destroy_chat
 
@@ -37,18 +38,6 @@ class Comment < ApplicationRecord
       renderable: Views::Comments::Streams::Create.new(entry: entry),
       layout: false
     )
-
-    # broadcast_append_to [ entry.root, :comments ],
-    #   target: [ entry.root, :comments_list ],
-    #   renderable: Components::Comments::Card.new(entry: entry, is_last_in_group: true, highlight: true, class_target: "last-comment") { |card| card.card_comment },
-    #   layout: false
-    # previous_comment = entry.root.replies.where.not(id: entry.id).last
-    # if previous_comment && previous_comment.user_id == entry.user_id
-    #   broadcast_replace_to [ entry.root, :comments ],
-    #     target: "entry_#{previous_comment.id}",
-    #     renderable: Components::Comments::Card.new(entry: previous_comment, is_last_in_group: false) { |card| card.card_comment },
-    #     layout: false
-    # end
   end
 
   def broadcast_to_update_chat
@@ -61,5 +50,14 @@ class Comment < ApplicationRecord
   def broadcast_to_destroy_chat
     broadcast_remove_to [ entry.root, :comments ], target: "entry_#{entry.id}"
     broadcast_read_state_badges
+  end
+
+  def broadcast_comments_counter
+    root_entry = entry&.root
+    return unless root_entry
+
+    target = "entry_#{root_entry.id}_comments_counter"
+
+    broadcast_update_to :entries, target: target, renderable: Components::Entries::CommentsCounter.new(entry: root_entry), layout: false
   end
 end

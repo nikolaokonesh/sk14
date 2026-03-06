@@ -7,7 +7,7 @@ class Components::Reactions::List < Phlex::HTML
   end
 
   def view_template
-    div(id: "reactions_entry_#{@entry.id}", class: "flex flex-wrap gap-1 empty:hidden") do
+    div(id: "reactions_entry_#{@entry.id}", class: "flex flex-wrap gap-1 px-2 empty:hidden") do
       @summary.each do |emoji, count|
         is_active = Current.user.present? && @entry.reactions.exists?(user: Current.user, content: emoji)
 
