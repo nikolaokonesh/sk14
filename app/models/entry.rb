@@ -1,6 +1,7 @@
 class Entry < ApplicationRecord
   POST_TYPE = "Post".freeze
   COMMENT_TYPE = "Comment".freeze
+  AUTO_SERVICE_TYPE = "AutoService".freeze
   TITLE_PREVIEW_LENGTH = 500
 
   include CommentsCounter
@@ -8,7 +9,7 @@ class Entry < ApplicationRecord
   include Threading
   include ContentTitle
 
-  delegated_type :entryable, types: [ POST_TYPE, COMMENT_TYPE ], dependent: :destroy
+  delegated_type :entryable, types: [ POST_TYPE, COMMENT_TYPE, AUTO_SERVICE_TYPE ], dependent: :destroy
   delegate :content, to: :entryable, allow_nil: true
   accepts_nested_attributes_for :entryable
 

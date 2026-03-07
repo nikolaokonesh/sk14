@@ -7,6 +7,7 @@ class Entries::Streams::RecoveryJob < ApplicationJob
     return unless entry
 
     Turbo::StreamsChannel.broadcast_refresh_to(:entries)
+    Turbo::StreamsChannel.broadcast_refresh_to(:auto_services)
 
     entry.tags.find_each do |tag|
       Turbo::StreamsChannel.broadcast_refresh_to(:tag, tag.id)

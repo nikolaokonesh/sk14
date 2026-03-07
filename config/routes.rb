@@ -18,6 +18,12 @@ Rails.application.routes.draw do
 
   resources :subscriptions, only: [ :create, :destroy ]
 
+  resources :auto_services, except: %i[show] do
+    member do
+      patch :set_activity
+    end
+  end
+
   resources :notifications, only: [ :index ] do
     member do
       patch :mark_as_read

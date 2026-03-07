@@ -61,10 +61,18 @@ class Components::Entries::Card < Phlex::HTML
           render Components::Comments::Card.new(entry: @entry) do |card|
             card.card_comment_for_root_page
           end
+        when AutoService
+          render Components::AutoServices::Card.new(entry: @entry)
         end
       end
 
-      div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") { @entry.tags_list }
+      div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") do 
+        if @entry.entryable.is_a?(AutoService)
+          @entry.entryable.service_kind_names.join(", ")
+        else
+          @entry.tags_list
+        end
+      end
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_07_082348) do
   create_table "access_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
@@ -56,6 +56,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_071959) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "auto_services", force: :cascade do |t|
+    t.datetime "activated_at"
+    t.boolean "active", default: false, null: false
+    t.string "activity_state", default: "off", null: false
+    t.boolean "available_snapshot", default: false, null: false
+    t.string "car_brand", null: false
+    t.integer "city_trip_price"
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.string "phone", null: false
+    t.string "plate_number", null: false
+    t.string "schedule_mode", default: "always", null: false
+    t.json "service_kinds", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.string "work_days"
+    t.string "work_from"
+    t.string "work_to"
+    t.index ["activated_at"], name: "index_auto_services_on_activated_at"
+    t.index ["activity_state"], name: "index_auto_services_on_activity_state"
   end
 
   create_table "comments", force: :cascade do |t|

@@ -92,7 +92,7 @@ class EntriesController < ApplicationController
 
   def destroy
     authorize! :destroy, @entry
-    if @entry.update(trash: true)
+    if @entry.update(trash: true, trash_data: Time.current)
       Entries::Streams::DestroyJob.perform_later(@entry.id)
       flash[:alert] = "Пост перемещен в удаленные посты"
       respond_to do |format|
