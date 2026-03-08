@@ -22,7 +22,7 @@ class Views::AutoServices::Index < Views::Base
       end
 
       render Components::Style::BlurBackground.new
-      div(class: "flex-1 overflow-y-auto no-scrollbar relative mt-2", data: { controller: "autoscroll infinite-scroll" }) do
+      div(class: "flex-1 overflow-y-auto no-scrollbar relative mt-5", data: { controller: "autoscroll infinite-scroll" }) do
         turbo_frame_tag :entries_list, target: "_top", refresh: :morph do
           div(class: "w-full min-h-full") do
             render Components::Entries::List.new(entries: @entries, pagy: @pagy, params: @params)

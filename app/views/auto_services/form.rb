@@ -3,7 +3,7 @@
 class Views::AutoServices::Form < Views::Base
   def initialize(entry:)
     @entry = entry
-    @service = @entry.entryable
+    @service = @entry.entryable || AutoService.new
   end
 
   def page_title = @entry.new_record? ? "Новая авто услуга" : "Редактирование услуги"
@@ -31,6 +31,7 @@ class Views::AutoServices::Form < Views::Base
                 end
               end
             end
+            field_error(:service_kinds)
           end
 
           field_row(fields, :car_brand, "Марка авто")
@@ -40,7 +41,8 @@ class Views::AutoServices::Form < Views::Base
 
           div do
             fields.label :schedule_mode, "Режим графика", class: "label"
-            fields.select :schedule_mode, AutoService::SCHEDULE_MODES, {}, class: "select select-bordered w-full"
+            fields.select :schedule_mode, AutoService::SCHEDULE_MODES, {}, class: [ "select select-bordered w-full", { "select-error": service_errors(:schedule_mode).any? } ]
+            field_error(:schedule_mode)
           end
 
           div do
@@ -57,6 +59,7 @@ class Views::AutoServices::Form < Views::Base
                 end
               end
             end
+            field_error(:work_days_array)
           end
 
           div(class: "grid md:grid-cols-2 gap-2") do
@@ -66,7 +69,8 @@ class Views::AutoServices::Form < Views::Base
 
           div do
             fields.label :notes, "Комментарий", class: "label"
-            fields.text_area :notes, class: "textarea textarea-bordered w-full", rows: 3
+            fields.text_area :notes, class: [ "textarea textarea-bordered w-full", { "textarea-error": service_errors(:notes).any? } ], rows: 3
+            field_error(:notes)
           end
         end
 
@@ -83,14 +87,27 @@ class Views::AutoServices::Form < Views::Base
   def field_row(fields, attr, label)
     div do
       fields.label attr, label, class: "label"
-      fields.text_field attr, class: "input input-bordered w-full"
+      fields.text_field attr, class: [ "input input-bordered w-full", { "input-error": service_errors(attr).any? } ]
+      field_error(attr)
     end
   end
 
   def time_row(fields, attr, label)
     div do
       fields.label attr, label, class: "label"
-      fields.time_field attr, class: "input input-bordered w-full"
+      fields.time_field attr, class: [ "input input-bordered w-full", { "input-error": service_errors(attr).any? } ]
     end
+  end
+
+  def field_error(attr)
+    return unless service_errors(attr).any?
+
+    p(class: "text-red-500 text-sm mt-1") { service_errors(attr).join(", ") }
+  end
+
+  def service_errors(attr)
+    return [] unless @service.respond_to?(:errors)
+
+    Array(@service.errors[attr])
   end
 end

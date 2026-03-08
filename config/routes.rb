@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :auto_services, except: %i[show] do
     member do
       patch :set_activity
+      patch :restore
     end
   end
 

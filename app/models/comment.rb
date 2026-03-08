@@ -5,7 +5,7 @@ class Comment < ApplicationRecord
 
   validates :content, presence: { message: "Комментарий без текста!" }
 
-  # after_create_commit :enqueue_create_broadcast
+  after_create_commit :enqueue_create_broadcast
   after_update_commit :enqueue_update_broadcast
   after_destroy_commit :enqueue_destroy_broadcast
 

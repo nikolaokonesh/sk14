@@ -29,7 +29,9 @@ class Components::Entries::List < Phlex::HTML
             render_group(user_id, group, is_last_group)
           end
         else
-          p(class: "text-center my-10") { "Нет никаких объявлений..." }
+          div(class: "flex items-center text-center h-100") do
+            span(class: "mx-auto") { "...ничего нет..." }
+          end
         end
       end
     end

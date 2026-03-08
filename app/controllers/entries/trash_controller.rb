@@ -37,7 +37,7 @@ class Entries::TrashController < ApplicationController
 
   def update
     set_entry
-    if @entry.update(trash: false)
+    if @entry.update(trash: false, trash_data: nil)
       flash[:success] = "Успешное восстановление!"
       Entries::Streams::RecoveryJob.perform_later(@entry.id)
       respond_to do |format|

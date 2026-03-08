@@ -1,6 +1,6 @@
 class AutoServicesController < ApplicationController
   allow_unauthenticated_access only: %i[index]
-  before_action :set_entry, only: %i[edit update destroy set_activity]
+  before_action :set_entry, only: %i[edit update destroy restore set_activity]
 
   def index
     @mode = params[:mode].presence_in(%w[passenger services]) || "passenger"
@@ -9,7 +9,7 @@ class AutoServicesController < ApplicationController
       Current.user.entries
              .preload(:entryable, user: { avatar: { avatar_attachment: :blob } })
              .where(entryable_type: Entry::AUTO_SERVICE_TYPE)
-             .reorder(updated_at: :desc)
+             .reorder(created_at: :desc)
     else
       Entry.active
            .preload(:entryable, user: { avatar: { avatar_attachment: :blob } })
@@ -73,13 +73,32 @@ class AutoServicesController < ApplicationController
 
     state = params[:activity_state].to_s
     @entry.entryable.set_activity!(state)
+    Turbo::StreamsChannel.broadcast_refresh_to(:auto_services)
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.refresh }
+      format.turbo_stream { render Views::AutoServices::Streams::SetActivity.new(entry: @entry), layout: false }
       format.html do
         flash[:success] = "Режим активности обновлён"
         redirect_to auto_services_path(mode: "services")
       end
+    end
+  end
+
+  def restore
+    authorize! :update, @entry
+
+    if @entry.update(trash: false, trash_data: nil)
+      Entries::Streams::RecoveryJob.perform_later(@entry.id)
+
+      respond_to do |format|
+        format.turbo_stream { render Views::AutoServices::Streams::SetActivity.new(entry: @entry), layout: false }
+        format.html do
+          flash[:success] = "Услуга восстановлена"
+          redirect_to auto_services_path(mode: "services"), status: :see_other
+        end
+      end
+    else
+      redirect_to auto_services_path(mode: "services"), alert: @entry.errors.full_messages.to_sentence
     end
   end
 
@@ -90,11 +109,11 @@ class AutoServicesController < ApplicationController
       Entries::Streams::DestroyJob.perform_later(@entry.id)
 
       respond_to do |format|
+        format.turbo_stream { render Views::AutoServices::Streams::SetActivity.new(entry: @entry), layout: false }
         format.html do
           flash[:alert] = "Услуга перемещена в удалённые"
           redirect_to auto_services_path(mode: "services"), status: :see_other
         end
-        format.turbo_stream { render turbo_stream: turbo_stream.refresh }
       end
     else
       redirect_to auto_services_path(mode: "services"), alert: @entry.errors.full_messages.to_sentence

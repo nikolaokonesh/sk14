@@ -29,7 +29,7 @@ class Views::Entries::Show < Views::Base
 
   def view_template
     turbo_stream_from :entries
-    
+
     div(id: dom_id(@entry, :show_container), class: "flex flex-col h-screen overflow-hidden", data: { controller: "reply" }) do
       div(class: "flex-1 overflow-y-auto snap-y snap-proximity scroll-smooth no-scrollbar") do
         div(class: "w-full") do
@@ -54,7 +54,7 @@ class Views::Entries::Show < Views::Base
               end
             end
             div(class: "chat-header flex items-center") do
-              span(class: "pr-1.5 text-base") do
+              span(class: "pr-1.5 text-base font-bold") do
                 a(href: user_path(@entry.user), class: "hover:opacity-80 duration-200") do
                   sanitize(strip_tags(@entry.user.name_full))
                 end

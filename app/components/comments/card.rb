@@ -47,13 +47,11 @@ class Components::Comments::Card < Phlex::HTML
     div(id: "content_comment_#{@comment.id}", class: "group cursor-pointer p-2") do
       div(data: { action: "click->reactions#togglePicker" }) { render Components::Entries::Content.new(entry: @comment) }
       div(class: "flex items-center justify-between") do
-        if authenticated_user?
-          div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
-            render Components::Reactions::Picker.new(entry: @entry)
-            button_reply_comment
-          end
-          render Components::Reactions::List.new(entry: @entry)
+        div(class: "picker-container absolute bottom-10 hidden max-w-[70vw] md:max-w-[92vw] flex justify-center animate-in zoom-in duration-250 z-90", data: { reactions_target: "picker" }) do
+          render Components::Reactions::Picker.new(entry: @entry)
+          button_reply_comment
         end
+        render Components::Reactions::List.new(entry: @entry)
         div(class: "opacity-30 text-xs ml-auto") { render Components::Shared::TimeAgoInWords.new(entry: @comment) }
         nav
       end
@@ -111,18 +109,16 @@ class Components::Comments::Card < Phlex::HTML
   end
 
   def button_reply_comment
-    if authenticated_user?
-      span(class: "cursor-pointer absolute right-0 top-15 p-2 btn btn-primary",
-        data: {
-          action: "click->reply#trigger",
-          reply_id_param: @comment.entry.id,
-          reply_author_param: @entry.user.username,
-          reply_text_param: truncate(@comment.content.to_plain_text.to_s,
-          length: 50,
-          omission: "...") }) do
-        raw lucide_icon("message-square-reply", size: 20)
-        p { "Ответить" }
-      end
+    span(class: "cursor-pointer absolute right-0 top-15 p-2 btn btn-primary",
+      data: {
+        action: "click->reply#trigger",
+        reply_id_param: @comment.entry.id,
+        reply_author_param: @entry.user.username,
+        reply_text_param: truncate(@comment.content.to_plain_text.to_s,
+        length: 50,
+        omission: "...") }) do
+      raw lucide_icon("message-square-reply", size: 20)
+      p { "Ответить" }
     end
   end
 
