@@ -25,6 +25,8 @@ class CommentsController < ApplicationController
   end
 
   def edit
+    authorize! :update, @comment
+
     render turbo_stream: [
       turbo_stream.replace("content_comment_#{@comment.id}", renderable: Components::Comments::Form::Edit.new(entry: @comment), layout: false),
       turbo_stream.update("dropdown_comment_hide_#{@comment.id}")
@@ -36,6 +38,8 @@ class CommentsController < ApplicationController
   end
 
   def update
+    authorize! :update, @comment
+
     if @comment.update(comment_params)
       render turbo_stream: turbo_stream.replace(@comment.entry, renderable: Components::Comments::Card.new(entry: @comment.entry, highlight: true) { |c| c.card_comment })
     else

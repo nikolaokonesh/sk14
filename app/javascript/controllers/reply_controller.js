@@ -5,7 +5,9 @@ export default class extends Controller {
   static targets = ["container", "author", "text", "input", "textarea"]
 
   connect() {
-    this.close()
+    if (this.hasContainerTarget) {
+      this.close()
+    }
   }
 
   trigger(event) {

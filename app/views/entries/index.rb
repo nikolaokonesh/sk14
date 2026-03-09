@@ -30,7 +30,7 @@ class Views::Entries::Index < Views::Base
 
     div(class: "flex flex-col h-screen overflow-hidden") do
       div(class: "flex flex-col") do
-        div(class: "flex items-center bg-base-300 z-100") { render Components::Menu::Header.new(query: @query, categories: @categories, counts: @counts) }
+        div(class: "flex items-center bg-base-300 z-40") { render Components::Menu::Header.new(query: @query, categories: @categories, counts: @counts) }
       end
 
       render Components::Style::BlurBackground.new

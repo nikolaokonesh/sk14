@@ -7,7 +7,10 @@ export default class extends Controller {
 
   connect() {
     const currentUserId = document.body.dataset.currentUserId
-    if (currentUserId && currentUserId === this.authorIdValue) {
+    const isAdmin = document.body.dataset.currentUserAdmin === "true"
+    const isModerator = document.body.dataset.currentUserModerator === "true"
+
+    if ((currentUserId && currentUserId === this.authorIdValue) || isAdmin || isModerator) {
       if (this.hasControlsTarget) {
         this.controlsTarget.classList.remove("hidden")
       }

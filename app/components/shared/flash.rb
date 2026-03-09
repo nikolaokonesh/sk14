@@ -9,7 +9,7 @@ class Components::Shared::Flash < Phlex::HTML
         flash.each do |msg_type, message|
           div(data_controller: "notification",
               data_notification_delay_value: "5000",
-              class: "transition transform duration-700 hidden fixed top-24 z-50 font-bold alert #{notice_class_for(msg_type)}",
+              class: "transition transform duration-700 hidden fixed top-30 z-50 font-bold alert #{notice_class_for(msg_type)}",
               data_transition_enter_from: "opacity-0 translate-x-0",
               data_transition_enter_to: "opacity-100 translate-x-6",
               data_transition_leave_from: "opacity-100 translate-x-0",

@@ -41,14 +41,14 @@ class Components::Entries::Card < Phlex::HTML
         div(class: "bg-base-200 px-1.5") do
           div(class: "text-base font-bold") { sanitize(strip_tags(@entry.user.username)) if @is_first }
         end
-        # time do
-        #   case @entry.entryable
-        #   when Post
-        #     render Components::Posts::Card.new(post: @entry.entryable) do |card|
-        #       card.nav
-        #     end
-        #   end
-        # end
+        time do
+          case @entry.entryable
+          when Post
+            render Components::Posts::Card.new(post: @entry.entryable) do |card|
+              card.nav
+            end
+          end
+        end
       end
 
       div(class: [ "chat-bubble min-w-[200px] max-w-[99%] rounded-none z-1 relative", ("before:hidden" unless @is_last), (@highlight ? "animate-shimmer-bottom" : nil) ]) do
@@ -66,7 +66,7 @@ class Components::Entries::Card < Phlex::HTML
         end
       end
 
-      div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") do 
+      div(class: "chat-footer opacity-70 bg-base-300 px-2 z-0") do
         if @entry.entryable.is_a?(AutoService)
           @entry.entryable.service_kind_names.join(", ")
         else

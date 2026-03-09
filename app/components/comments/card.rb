@@ -29,7 +29,7 @@ class Components::Comments::Card < Phlex::HTML
 
   def nav
     span(class: "hidden dropdown dropdown-left dropdown-end",
-        data: { auth_visibility_target: "controls" }) do
+         data: { auth_visibility_target: "controls" }) do
       div(tabindex: 0, role: "button", class: "px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
       ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-100 w-52 p-2 z-50 shadow-sm") do
         li do
@@ -120,11 +120,5 @@ class Components::Comments::Card < Phlex::HTML
       raw lucide_icon("message-square-reply", size: 20)
       p { "Ответить" }
     end
-  end
-
-  private
-
-  def authenticated_user?
-    Current.user.present?
   end
 end

@@ -23,7 +23,7 @@ class Components::Menu::Search < Components::Base
           # Кнопка очистки (справа)
           # Показывает только когда input не пустой (peer-focus)
           button(type: "button",
-                class: "absolute right-3 top-2.5 opacity-50 hover:opacity-100 z-10 hidden peer-[:not(:placeholder-shown)]:block",
+                class: "absolute right-3 top-2.5 opacity-50 hover:opacity-100 z-1 hidden peer-[:not(:placeholder-shown)]:block",
                 data: { action: "click->search#reset" }) do
             lucide_icon("x")
           end

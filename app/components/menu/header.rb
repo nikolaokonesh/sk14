@@ -14,7 +14,7 @@ class Components::Menu::Header < Components::Base
   end
 
   def view_template
-    div(class: "w-full sticky top-0 py-2 z-10 bg-base-300", data: { controller: "search" }) do
+    div(class: "w-full sticky top-0 py-2 z-1 bg-base-300", data: { controller: "search" }) do
       div(class: "flex justify-between items-center mx-4") do
         div(class: "flex items-end size-12 font-bold text-2xl md:text-3xl text-red-500 dark:text-white") {
           img(src: image_path("icon2.png"), class: "size-12", loading: "lazy")

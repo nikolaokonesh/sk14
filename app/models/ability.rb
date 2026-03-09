@@ -4,10 +4,14 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
+    can :read, :all
+    return if Current.user.blank?
+
     if Current.user.has_role?(:admin)
       can :manage, :all
     elsif Current.user.has_role?(:moderator)
       can :update, :all
+      can :destroy, Comment
     elsif Current.user.has_role?(:ban)
       cannot :manage, :all
     else

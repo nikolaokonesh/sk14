@@ -17,6 +17,7 @@ class Components::Entries::List < Phlex::HTML
     ordered_entries = @entries.to_a.reverse
 
     div(class: "w-full") do
+      render Components::Pagination::ScrollableList.new(entries: @entries, pagy: @pagy) if @params
       render Components::Pagination::NextPage.new(pagy: @pagy, frame_prefix: "load_prev_entries_page") if @pagy.next.present?
 
       div(id: "entries") do
@@ -36,7 +37,6 @@ class Components::Entries::List < Phlex::HTML
       end
     end
 
-    render Components::Pagination::ScrollableList.new(entries: @entries, pagy: @pagy) if @params
     div(class: "snap-end") { }
   end
 

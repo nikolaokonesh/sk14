@@ -30,7 +30,11 @@ class Components::Layout < Components::Base
         meta(name: :turbo_refresh_scroll, content: :preserve)
         meta(name: :turbo_prefetch, content: "false")
       end
-      body(data: { current_user_id: current_user_id }) { yield }
+      body(data: {
+        current_user_id: current_user_id,
+        current_user_admin: ("true" if current_user&.has_role?(:admin)),
+        current_user_moderator: ("true" if current_user&.has_role?(:moderator))
+      }) { yield }
     end
   end
 end
