@@ -2,8 +2,8 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
-  include SearchLoader # load_search_for
-  include CommentsLoader # load_comments_for()
+  include SearchLoader
+  include CommentsLoader
 
   def index
     @query = params[:query]
@@ -14,9 +14,16 @@ class EntriesController < ApplicationController
                     .recent
 
     # Живой поиск
-    load_search_for
+    apply_query_search
 
     @pagy, @entries = pagy_countless(@entries)
+
+    if turbo_frame_request? && request.headers["Turbo-Frame"] == "entries_list"
+      render Views::Entries::ListFrame.new(entries: @entries, pagy: @pagy, params: params[:page]), layout: false
+      return
+    end
+
+    load_tags_for_search
 
     render Views::Entries::Index.new(
       entries: @entries,
@@ -24,7 +31,8 @@ class EntriesController < ApplicationController
       params: params[:page],
       query: @query,
       categories: @visible_categories,
-      counts: @counts
+      counts: @counts,
+      all_posts_count: @all_posts_count
     )
   end
 

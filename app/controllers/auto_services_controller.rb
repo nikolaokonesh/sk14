@@ -15,16 +15,15 @@ class AutoServicesController < ApplicationController
            .preload(:entryable, user: { avatar: { avatar_attachment: :blob } })
            .joins("INNER JOIN auto_services ON auto_services.id = entries.entryable_id")
            .where(entryable_type: Entry::AUTO_SERVICE_TYPE)
-           .where.not(auto_services: { activity_state: AutoService::STATE_OFF })
+           .where(auto_services: { available_snapshot: true })
            .reorder(updated_at: :desc)
     end
 
-    if @mode == "passenger"
-      @entries = @entries.select { |entry| entry.entryable.available_now? } if @mode == "passenger"
+    @pagy, @entries = pagy_countless(@entries)
 
-      @pagy, @entries = pagy_array(@entries)
-    else
-      @pagy, @entries = pagy_countless(@entries)
+    if turbo_frame_request? && request.headers["Turbo-Frame"] == "entries_list"
+      render Views::Entries::ListFrame.new(entries: @entries, pagy: @pagy, params: params[:page]), layout: false
+      return
     end
 
     render Views::AutoServices::Index.new(

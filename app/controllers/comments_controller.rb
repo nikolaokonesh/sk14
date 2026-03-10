@@ -6,7 +6,7 @@ class CommentsController < ApplicationController
   include CommentsLoader
 
   def index
-    return redirect_to entry_path(@entry.root, comment_id: params[:comment_id]) if request.headers["Turbo-Frame"].nil?
+    return redirect_to entry_path(@entry.root, comment_id: params[:comment_id]) unless turbo_frame_request?
 
     load_comments_for(@entry)
     Current.user.mark_entry_as_read!(@entry) if authenticated?

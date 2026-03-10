@@ -6,6 +6,11 @@ import "lexxy"
 import "@rails/actiontext"
 
 const useViewTransition = (event) => {
+  const frameId = event.target?.id
+  const shouldSkip = frameId === "entries_list" || frameId === "comments" || frameId?.startsWith("load_")
+
+  if (shouldSkip) return
+  
   if (document.startViewTransition && !event.detail.renderWrapper) {
     const originalRender = event.detail.render;
     event.detail.render = (currentElement, newElement) => {

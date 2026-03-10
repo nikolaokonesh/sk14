@@ -43,11 +43,11 @@ module CommentsLoader
       @pagy, @comments = pagy_countless(scope, limit: limit)
       @has_next = @pagy.next.present?
     else
-      scope = comments_scope.order(id: :asc)
-      count = scope.count
-      initial_page = count.zero? ? 1 : (count.fdiv(limit)).ceil
-      @pagy, @comments = pagy_countless(scope, limit: limit, page: initial_page)
-      @has_next = @pagy.next.present?
+      last_comments = comments_scope.order(id: :desc).limit(limit + 1).to_a
+      @has_prev = last_comments.size > limit
+      @comments = last_comments.first(limit).reverse
+      @pagy = nil
+      @has_next = false
     end
   end
 end

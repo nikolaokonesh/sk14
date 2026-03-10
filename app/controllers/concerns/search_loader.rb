@@ -3,7 +3,7 @@ module SearchLoader
 
   private
 
-  def load_search_for
+  def apply_query_search
     # поле поиска и вывод найденного
     if @query.present?
       keywords = @query.to_s.downcase.scan(/[а-яёa-z0-9]+/i)
@@ -16,7 +16,9 @@ module SearchLoader
         end
       end
     end
+  end
 
+  def load_tags_for_search
     # тэги поиска на главной странице
     categories = ListingsDictionary::ACTIONS.keys
     counts_hash = Tag.where(name: categories)
@@ -30,5 +32,6 @@ module SearchLoader
     @visible_categories = sorted_counts.map(&:first)
 
     @counts = counts_hash
+    @all_posts_count = Entry.active.where(entryable_type: "Post").count
   end
 end

@@ -4,13 +4,15 @@ class Components::Menu::Header < Components::Base
     title: nil,
     query: nil,
     categories:,
-    counts:
+    counts:,
+    all_posts_count:
   )
     @city = city
     @title = title
     @query = query
     @categories = categories
     @counts = counts
+    @all_posts_count = all_posts_count
   end
 
   def view_template
@@ -33,7 +35,8 @@ class Components::Menu::Header < Components::Base
       render Views::Tags::Search.new(
         categories: @categories,
         counts: @counts,
-        query: @query
+        query: @query,
+        all_posts_count: @all_posts_count
       )
     end
   end

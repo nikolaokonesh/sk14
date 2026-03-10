@@ -4,18 +4,19 @@ class Views::Tags::Search < Components::Base
   def initialize(
     categories:,
     counts:,
-    query:
+    query:,
+    all_posts_count:
   )
     @categories = categories
     @counts = counts
     @query = query
+    @all_posts_count = all_posts_count
   end
 
   def view_template
     turbo_frame_tag "popular_tags", refresh: :morph do
       div(class: "flex gap-2 overflow-x-auto px-4 pb-2 no_scrollbar flex-nowrap bg-base-300") do
-        all_count = Entry.active.where(entryable_type: "Post").count
-        render_tag_link("Все", nil, all_count)
+        render_tag_link("Все", nil, @all_posts_count)
 
         @categories.each do |category|
           count = @counts[category.downcase] || 0
@@ -36,6 +37,7 @@ class Views::Tags::Search < Components::Base
         class: "btn btn-sm rounded-full whitespace-nowrap #{active_class}",
         data: {
           turbo_frame: "entries_list",
+          turbo_prefetch: "false",
           search_target: "tag",
           action: "click->search#set_query",
           search_value: value || ""

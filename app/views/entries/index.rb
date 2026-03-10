@@ -7,7 +7,8 @@ class Views::Entries::Index < Views::Base
     params:,
     query:,
     categories:,
-    counts:
+    counts:,
+    all_posts_count:
   )
     @entries = entries
     @pagy = pagy
@@ -15,6 +16,7 @@ class Views::Entries::Index < Views::Base
     @query = query
     @categories = categories
     @counts = counts
+    @all_posts_count = all_posts_count
   end
 
   def page_title = "Лента"
@@ -30,7 +32,14 @@ class Views::Entries::Index < Views::Base
 
     div(class: "flex flex-col h-screen overflow-hidden") do
       div(class: "flex flex-col") do
-        div(class: "flex items-center bg-base-300 z-40") { render Components::Menu::Header.new(query: @query, categories: @categories, counts: @counts) }
+        div(class: "flex items-center bg-base-300 z-40") {
+          render Components::Menu::Header.new(
+            query: @query,
+            categories: @categories,
+            counts: @counts,
+            all_posts_count: @all_posts_count
+          )
+        }
       end
 
       render Components::Style::BlurBackground.new

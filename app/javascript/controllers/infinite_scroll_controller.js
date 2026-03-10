@@ -2,8 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    this.element.addEventListener("turbo:before-frame-render", this.preserve.bind(this))
-    this.element.addEventListener("turbo:frame-render", this.restore.bind(this))
+    this.boundPreserve = this.preserve.bind(this)
+    this.boundRestore = this.restore.bind(this)
+
+    this.element.addEventListener("turbo:before-frame-render", this.boundPreserve)
+    this.element.addEventListener("turbo:frame-render", this.boundRestore)
     
     const highlighted = this.element.querySelector('.js-highlighted-comment')
     
@@ -14,6 +17,11 @@ export default class extends Controller {
       // Если нет подсветки конкретного коммента — сразу идем в самый низ
       this.scrollToBottom()
     }
+  }
+
+  disconnect() {
+    this.element.removeEventListener("turbo:before-frame-render", this.boundPreserve)
+    this.element.removeEventListener("turbo:frame-render", this.boundRestore)
   }
 
   scrollToBottom() {
