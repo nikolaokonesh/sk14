@@ -74,6 +74,19 @@ class Views::AutoServices::Form < Views::Base
           end
         end
 
+        if @entry.new_record?
+          div(class: "bg-info text-base-300 p-1") {
+            span(class: "text-rose-700 font-bold") { "Внимание! " }
+            plain "После сохранения услуги, карточка по умолчанию в режиме"
+            span(class: "badge badge-error p-1 mx-1") { "выключен" }
+            plain ". Нажмите"
+            span(class: "badge badge-success p-1 mx-1") { "активация" }
+            plain "чтобы включить услугу. "
+            plain "Если вы настроили свой график, то выбирайте"
+            span(class: "badge badge-success p-1 mx-1") { "активация по графику" }
+          }
+        end
+
         div(class: "flex gap-2") do
           form.submit "Сохранить", class: "btn btn-primary"
           a(href: auto_services_path(mode: "services"), class: "btn") { "Отмена" }
