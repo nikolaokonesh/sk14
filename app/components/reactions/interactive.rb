@@ -1,5 +1,5 @@
 class Components::Reactions::Interactive < Phlex::HTML
-  register_value_helper :authenticated?
+  register_value_helper :current_user
   register_value_helper :lucide_icon
 
   def initialize(
@@ -47,7 +47,7 @@ class Components::Reactions::Interactive < Phlex::HTML
   private
 
   def show_read_state_badge?
-    return false unless Current.user
+    return false unless current_user
     return false unless @entry.entryable_type == "Post"
     true
   end
