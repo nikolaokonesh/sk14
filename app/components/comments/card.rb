@@ -33,12 +33,12 @@ class Components::Comments::Card < Phlex::HTML
       div(tabindex: 0, role: "button", class: "px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
       ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-100 z-50 shadow-sm") do
         div(class: "flex gap-2") do
-          a(href: edit_entry_comment_path(@entry, @comment),
-            data: { turbo_stream: true, turbo_prefetch: "false" },
-            class: "btn btn-success") { lucide_icon(:pencil) }
           a(href: entry_comment_path(@entry, @comment),
             data: { turbo_method: :delete, turbo_confirm: "Вы точно хотите удалить?" },
-            class: "btn btn-error") { lucide_icon(:trash) }
+            class: "btn btn-error") { lucide_icon("trash") }
+          a(href: edit_entry_comment_path(@entry, @comment),
+            data: { turbo_stream: true, turbo_prefetch: "false" },
+            class: "btn btn-success") { lucide_icon("pencil") }
         end
       end
     end

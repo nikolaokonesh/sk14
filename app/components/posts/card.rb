@@ -23,7 +23,6 @@ class Components::Posts::Card < Phlex::HTML
       div(tabindex: 0, role: "button", class: "absolute -mt-4 px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
       ul(tabindex: -1, class: "dropdown-content menu bg-base-300 z-10 rounded-box p-2 shadow-sm") do
         div(class: "flex gap-2") do
-          a(href: edit_entry_path(@entry), class: "btn btn-success") { lucide_icon(:pencil) }
           if @entry.trash?
             a(href: trash_path(@entry),
               data: { turbo_method: :put, turbo_confirm: "Вы точно хотите восстановить?" },
@@ -33,6 +32,7 @@ class Components::Posts::Card < Phlex::HTML
               data: { turbo_method: :delete, turbo_confirm: "Вы точно хотите удалить?" },
               class: "btn btn-error") { lucide_icon("trash") }
           end
+          a(href: edit_entry_path(@entry), class: "btn btn-success") { lucide_icon("pencil") }
         end
       end
     end
