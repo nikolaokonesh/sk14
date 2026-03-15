@@ -5,25 +5,32 @@ class Ability
 
   def initialize(user)
     can :read, :all
+
     return if Current.user.blank?
 
-    if Current.user.has_role?(:admin)
+    user = Current.user
+
+    if user.has_role?(:admin)
       can :manage, :all
-    elsif Current.user.has_role?(:moderator)
+    end
+
+    if user.has_role?(:moderator)
       can :update, :all
       can :destroy, Comment
-    elsif Current.user.has_role?(:ban)
+    end
+
+    if user.has_role?(:ban)
       cannot :manage, :all
-    else
-      can :read, :all
-      # can :manage, Post if Current.user.has_role?(:moderator, Post)
-      can :manage, Entry, user_id: Current.user.id
-      can :manage, Post do |post|
-        post.entry.user_id == Current.user.id
-      end
-      can :manage, Comment do |comment|
-        comment.entry.user_id == Current.user.id
-      end
+    end
+
+    can :read, :all
+    # can :manage, Post if user.has_role?(:moderator, Post)
+    can :manage, Entry, user_id: user.id
+    can :manage, Post do |post|
+      post.entry.user_id == user.id
+    end
+    can :manage, Comment do |comment|
+      comment.entry.user_id == user.id
     end
     # Define abilities for the user here. For example:
     #

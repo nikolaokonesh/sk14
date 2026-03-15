@@ -28,15 +28,17 @@ class Components::Comments::Card < Phlex::HTML
   end
 
   def nav
-    span(class: "hidden dropdown dropdown-left dropdown-end",
+    span(class: "hidden dropdown dropdown-left dropdown-top",
          data: { auth_visibility_target: "controls" }) do
       div(tabindex: 0, role: "button", class: "px-1.5 cursor-pointer") { lucide_icon("ellipsis") }
-      ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-100 w-52 p-2 z-50 shadow-sm") do
-        li do
-          a(href: edit_entry_comment_path(@entry, @comment), data: { turbo_stream: true, turbo_prefetch: "false" }) { "Редактировать" }
-        end
-        li do
-          a(href: entry_comment_path(@entry, @comment), data: { turbo_method: :delete, turbo_confirm: "Вы точно хотите удалить?" }) { "Удалить" }
+      ul(tabindex: -1, id: "dropdown_comment_hide_#{@comment.id}", class: "dropdown-content menu bg-base-300 rounded-box z-100 z-50 shadow-sm") do
+        div(class: "flex gap-2") do
+          a(href: edit_entry_comment_path(@entry, @comment),
+            data: { turbo_stream: true, turbo_prefetch: "false" },
+            class: "btn btn-success") { lucide_icon(:pencil) }
+          a(href: entry_comment_path(@entry, @comment),
+            data: { turbo_method: :delete, turbo_confirm: "Вы точно хотите удалить?" },
+            class: "btn btn-error") { lucide_icon(:trash) }
         end
       end
     end
