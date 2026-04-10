@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  entryable: one
+  entryable_type: Entryable
+  trash: false
+  trash_data: 2026-04-09 17:28:25
+  parent: one
+  root: one
+  position: 1
+  comments_count: 1
+
+two:
+  user: two
+  entryable: two
+  entryable_type: Entryable
+  trash: false
+  trash_data: 2026-04-09 17:28:25
+  parent: two
+  root: two
+  position: 1
+  comments_count: 1
