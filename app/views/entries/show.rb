@@ -6,6 +6,8 @@ class Views::Entries::Show < Views::Base
   end
 
   def view_template
-    plain raw @entry.content.to_s
+    div(class: "lexxy-show") do
+      plain raw @entry.content.to_s
+    end
   end
 end

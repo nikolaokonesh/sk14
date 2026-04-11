@@ -1,21 +1,18 @@
 # frozen_string_literal: true
 
-class Views::Base < Components::Base
+class Views::Auth < Components::Base
   include Components
 
   PageInfo = Data.define(:title)
 
   def around_template
     render Layout.new(page_info) do
-      main(class: "w-full md:w-2xl mx-auto") do
-        render Menu::Topbar.new
-        div(class: "p-2") { super }
-      end
+      super
     end
   end
 
   def page_title
-    "Sk14.ru"
+    "Sk14.ru - войти"
   end
 
   def page_info

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Views::Auth::Name < Views::Base
+class Views::Auth::Name < Views::Auth
   def initialize(
     user:
   )

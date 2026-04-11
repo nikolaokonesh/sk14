@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Views::Auth::Sign < Views::Base
+class Views::Auth::Sign < Views::Auth
   def initialize(
     params:,
     session:
@@ -8,8 +8,6 @@ class Views::Auth::Sign < Views::Base
     @params = params
     @session = session
   end
-
-  def page_title = "Войти"
 
   def view_template
     div(class: "flex flex-col h-screen") do

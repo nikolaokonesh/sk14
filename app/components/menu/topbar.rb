@@ -10,13 +10,17 @@ class Components::Menu::Topbar < Components::Base
           end
           ul(tabindex: "-1", class: "menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow") do
             li do
-              a(href: root_path) { "Homepage" }
+              a(href: root_path) { "Главное" }
             end
             li do
-              a(href: root_path) { "Homepage" }
+              a(href: root_path) { "Настройки" }
             end
             li do
-              a(href: root_path) { "Homepage" }
+              if current_user
+                a(href: auth_sign_path, data: { turbo_method: :delete, turbo_confirm: "Вы уверены что хотите выйти?" }) { "Выйти" }
+              else
+                a(href: auth_sign_path) { "Войти" }
+              end
             end
           end
         end

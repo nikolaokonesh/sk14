@@ -12,3 +12,30 @@
 .turbo-progress-bar {
   visibility: hidden;
 }
+
+.lexxy-show { 
+  .lexxy-content {
+    --lexxy-editor-rows: 0h;
+    ul,
+    ol {
+      list-style: revert;
+      margin: revert;
+      padding: 0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-size: revert;
+      font-weight: revert;
+    }
+    strong {
+      font-weight: revert;
+    }
+    em {
+      font-style: revert;
+    }
+    color: revert;
+    background-color: revert;
+    table, th, td {
+      background-color: revert !important;
+    }
+  }
+}
