@@ -7,6 +7,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Truncate
   include Phlex::Rails::Helpers::AssetPath
+  include Phlex::Rails::Helpers::TimeTag
 
   register_value_helper :current_user
   register_value_helper :lucide_icon

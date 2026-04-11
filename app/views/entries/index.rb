@@ -7,10 +7,13 @@ class Views::Entries::Index < Views::Base
 
   def view_template
     @entries.each do |entry|
-      cache(entry) do
-        a(href: entry_path(entry), class: "block mb-3 hover:opacity-70 duration-200") do
-          plain truncate entry.content.to_plain_text, length: 100
+      div(class: "block  mb-3") do
+        cache(entry) do
+          a(href: entry_path(entry), class: "block hover:opacity-70 duration-200") do
+            plain truncate entry.content.to_plain_text, length: 100
+          end
         end
+        render Shared::CreatedAt.new(entry: entry)
       end
     end
   end

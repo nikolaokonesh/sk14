@@ -22,6 +22,9 @@ class Views::Entries::Form < Views::Base
               fields.label :content, "Содержание", class: "mx-2"
             end
             fields.rich_text_area :content, placeholder: "Добавить описание", require: true, rows: 5, class: "lexxy-content pb-4 shadow-sm rounded-md mt-2"
+
+            fields.label :no_comments, "Без комментариев", class: "mx-2"
+            fields.check_box :no_comments, checked: @entry.entryable.no_comments?, require: true
           end
         end
         form.hidden_field :entryable_type, value: "Post"
