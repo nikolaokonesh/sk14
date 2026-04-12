@@ -2,6 +2,9 @@
 
 class Components::Shared::CreatedAt < Phlex::HTML
   include Phlex::Rails::Helpers::TimeTag
+
+  register_value_helper :relative_time_in_words
+
   def initialize(
     entry:
   )
@@ -14,6 +17,8 @@ class Components::Shared::CreatedAt < Phlex::HTML
 
     if local_date.year != now.year
       time_tag(@entry.created_at, format: "%d %B %Y")
+    elsif now < local_date + 1.day
+      plain relative_time_in_words(@entry.created_at)
     else
       time_tag(@entry.created_at, format: "%d %B в %H:%M")
     end

@@ -12,8 +12,6 @@ class Views::Entries::Show < Views::Base
 
     div(class: "time") do
       plain "Опубликовано "
-      plain time_ago_in_words(@entry.created_at)
-      plain " назад, "
       render Shared::CreatedAt.new(entry: @entry)
     end
 

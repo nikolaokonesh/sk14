@@ -28,6 +28,9 @@
 #       enabled: "ON"
 
 ru:
+  datetime:
+    relative: 
+      past: "%{time} назад"
   unauthorized:
     default: "У вас нет прав доступа к этой странице!"
   activerecord:

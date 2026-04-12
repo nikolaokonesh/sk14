@@ -16,7 +16,7 @@ class Components::Layout < Components::Base
         meta(name: "apple-mobile-web-app-capable", content: "yes")
         meta(name: "application-name", content: "Sk14")
         meta(name: "mobile-web-app-capable", content: "yes")
-        meta(name: :view_transition, content: "same-origin")
+        # meta(name: "view-transition", content: "same-origin")
         csrf_meta_tags
         csp_meta_tag
         tag.link rel: "manifest", href: pwa_manifest_path(format: :json)
