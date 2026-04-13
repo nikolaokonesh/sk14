@@ -15,7 +15,7 @@ class Views::Entries::Index < Views::Base
             plain truncate strip_tags(entry.content.to_s).strip, length: 100
           end
         end
-        render Shared::CreatedAt.new(entry: entry)
+        div(class: "text-sm") { render Shared::CreatedAt.new(entry: entry) }
       end
     end
   end

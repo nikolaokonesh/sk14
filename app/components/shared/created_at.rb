@@ -2,8 +2,7 @@
 
 class Components::Shared::CreatedAt < Phlex::HTML
   include Phlex::Rails::Helpers::TimeTag
-
-  register_value_helper :relative_time_in_words
+  include Phlex::Rails::Helpers::TurboStreamFrom
 
   def initialize(
     entry:
@@ -12,13 +11,17 @@ class Components::Shared::CreatedAt < Phlex::HTML
   end
 
   def view_template
+    turbo_stream_from "created_at_#{@entry.id}"
+
     local_date = @entry.created_at.in_time_zone(Time.zone)
     now = Time.current
 
     if local_date.year != now.year
       time_tag(@entry.created_at, format: "%d %B %Y")
     elsif now < local_date + 1.day
-      plain relative_time_in_words(@entry.created_at)
+      span(id: "created_at_#{@entry.id}") do
+        render Components::Shared::RelativeTimeInWords.new(entry: @entry)
+      end
     else
       time_tag(@entry.created_at, format: "%d %B в %H:%M")
     end

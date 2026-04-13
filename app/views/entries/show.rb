@@ -11,13 +11,11 @@ class Views::Entries::Show < Views::Base
     div(class: "lexxy-show") { @entry.content.to_s }
 
     div(class: "time") do
-      plain "Опубликовано "
-      render Shared::CreatedAt.new(entry: @entry)
+      render Components::Shared::CreatedAt.new(entry: @entry)
     end
 
-
     if @entry.entryable.no_comments?
-      plain "Комментарии отключены"
+      plain "Без комментариев"
     end
   end
 end

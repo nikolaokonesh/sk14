@@ -12,6 +12,7 @@ class EntriesController < ApplicationController
   end
 
   def show
+    RelativeTimeInWordsJob.perform_later(@entry.id)
     render Views::Entries::Show.new(entry: @entry)
   end
 
