@@ -2,19 +2,13 @@ module User::Name
   extend ActiveSupport::Concern
 
   included do
-    def username
-      if name.present?
-        name.familiar
-      else
-        slug
-      end
-    end
+    def username(type = :familiar) # или username(:full)
+      return slug if name.blank?
 
-    def name_full
-      if name.present?
-        name.full
+      if name.respond_to?(type)
+        name.public_send(type)
       else
-        slug
+        name.to_s
       end
     end
   end

@@ -30,7 +30,8 @@
 ru:
   datetime:
     relative: 
-      past: "%{time} назад"
+      past: "опубликовано %{time} назад"
+      future: "осталось %{time}"
   unauthorized:
     default: "У вас нет прав доступа к этой странице!"
   activerecord:

@@ -9,12 +9,9 @@ class Views::Entries::Show < Views::Base
 
   def view_template
     turbo_stream_from :entry, @entry.id
-
+    span(class: "mr-2") { @entry.user.username(:full) }
+    span(class: "text-xs") { render Shared::CreatedAt.new(entry: @entry) }
     div(class: "lexxy-show") { @entry.content.to_s }
-
-    div(class: "time") do
-      render Components::Shared::CreatedAt.new(entry: @entry)
-    end
 
     if @entry.entryable.no_comments?
       plain "Без комментариев"
