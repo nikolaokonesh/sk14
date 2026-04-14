@@ -11,5 +11,7 @@ class CreateEntries < ActiveRecord::Migration[8.2]
       t.integer :comments_count, default: 0, null: false
       t.timestamps
     end
+
+    add_index :entries, :created_at
   end
 end

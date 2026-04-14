@@ -11,8 +11,6 @@ class Components::Shared::CreatedAt < Phlex::HTML
   end
 
   def view_template
-    turbo_stream_from "created_at_#{@entry.id}"
-
     local_date = @entry.created_at.in_time_zone(Time.zone)
     now = Time.current
 

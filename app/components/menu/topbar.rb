@@ -13,6 +13,9 @@ class Components::Menu::Topbar < Components::Base
               a(href: root_path) { "Главное" }
             end
             li do
+              a(href: new_entry_path) { "Добавить" }
+            end
+            li do
               a(href: root_path) { "Настройки" }
             end
             li do

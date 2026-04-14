@@ -70,6 +70,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_09_063843) do
     t.datetime "trash_data"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["created_at"], name: "index_entries_on_created_at"
     t.index ["entryable_type", "entryable_id"], name: "index_entries_on_entryable"
     t.index ["parent_id"], name: "index_entries_on_parent_id"
     t.index ["root_id"], name: "index_entries_on_root_id"

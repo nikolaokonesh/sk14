@@ -1,33 +1,40 @@
 class RelativeTimeInWordsJob < ApplicationJob
   queue_as :default
 
-  MAX_PROCESS_TIME = 1.hour
+  def perform
+    entries = Entry.where("created_at >= ?", 1.hour.ago)
 
-  def perform(entry_id)
-    entry = Entry.find_by(id: entry_id)
-    return if entry.nil? || (Time.current - entry.created_at) > MAX_PROCESS_TIME
+    entries.find_each do |entry|
+      age_minutes = ((Time.current - entry.created_at) / 60).to_i
 
-    Turbo::StreamsChannel.broadcast_update_to(
-      "created_at_#{entry.id}",
-      target: "created_at_#{entry.id}",
-      renderable: Components::Shared::RelativeTimeInWords.new(entry: entry),
-      layout: false
-    )
+      if should_update?(age_minutes)
+        Turbo::StreamsChannel.broadcast_update_to(
+          [:entry, entry.id],
+          target: "created_at_#{entry.id}",
+          renderable: Components::Shared::RelativeTimeInWords.new(entry: entry),
+          layout: false
+        )
 
-    # Schedule next update
-    self.class.set(wait: update_interval(entry)).perform_later(entry)
+        Turbo::StreamsChannel.broadcast_update_to(
+          :entries_index,
+          target: "created_at_#{entry.id}",
+          renderable: Components::Shared::RelativeTimeInWords.new(entry: entry),
+          layout: false
+        )
+      end
+    end
   end
 
   private
 
-  def update_interval(entry)
-    age = Time.current - entry.created_at
-
+  def should_update?(age_minutes)
     case
-    when age <= 10.minutes
-      1.minute
+    when age_minutes < 10
+      true
+    when age_minutes < 60
+      (age_minutes % 5).zero?
     else
-      5.minutes
+      false
     end
   end
 end

@@ -8,6 +8,8 @@ class Views::Entries::Show < Views::Base
   end
 
   def view_template
+    turbo_stream_from :entry, @entry.id
+
     div(class: "lexxy-show") { @entry.content.to_s }
 
     div(class: "time") do

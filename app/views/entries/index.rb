@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  include Phlex::Rails::Helpers::StripTags
 
   def initialize(entries:)
     @entries = entries
   end
 
   def view_template
+    turbo_stream_from "entries_index"
     @entries.each do |entry|
       div(class: "block  mb-3") do
         cache(entry) do
