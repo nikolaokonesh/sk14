@@ -30,7 +30,7 @@
 ru:
   datetime:
     relative: 
-      past: "опубликовано %{time} назад"
+      past: "%{time}"
       future: "осталось %{time}"
   unauthorized:
     default: "У вас нет прав доступа к этой странице!"

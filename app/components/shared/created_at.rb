@@ -16,10 +16,12 @@ class Components::Shared::CreatedAt < Phlex::HTML
 
     if local_date.year != now.year
       time_tag(@entry.created_at, format: "%d %B %Y")
+    elsif now < local_date + 1.hour
+      span(id: "created_at_#{@entry.id}") { render Components::Shared::RelativeTimeInWords.new(entry: @entry) }
     elsif now < local_date + 1.day
-      span(id: "created_at_#{@entry.id}") do
-        render Components::Shared::RelativeTimeInWords.new(entry: @entry)
-      end
+      time_tag(@entry.created_at, format: "в %H:%M")
+    elsif now < local_date + 2.days
+      time_tag(@entry.created_at, format: "вчера в %H:%M")
     else
       time_tag(@entry.created_at, format: "%d %B в %H:%M")
     end
