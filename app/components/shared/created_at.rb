@@ -2,7 +2,6 @@
 
 class Components::Shared::CreatedAt < Phlex::HTML
   include Phlex::Rails::Helpers::TimeTag
-  include Phlex::Rails::Helpers::TurboStreamFrom
 
   def initialize(
     entry:
@@ -11,19 +10,30 @@ class Components::Shared::CreatedAt < Phlex::HTML
   end
 
   def view_template
-    local_date = @entry.created_at.in_time_zone(Time.zone)
-    now = Time.current
+    local_time = @entry.created_at.in_time_zone(Time.zone)
+    local_date = local_time.to_date
+    now = Time.current.in_time_zone(Time.zone)
+    today = now.to_date
 
-    if local_date.year != now.year
+    if local_time.year != today.year
       time_tag(@entry.created_at, format: "%d %B %Y")
-    elsif now < local_date + 1.hour
-      span(id: "created_at_#{@entry.id}") { render Components::Shared::RelativeTimeInWords.new(entry: @entry) }
-    elsif now < local_date + 1.day
-      time_tag(@entry.created_at, format: "в %H:%M")
-    elsif now < local_date + 2.days
+
+    # Если прошло меньше 2 часов — показываем "X минут назад"
+    elsif now < local_time + 2.hours
+      span(id: "created_at_#{@entry.id}") { render Components::Shared::TimeInWords.new(entry: @entry) }
+
+    # Если прошло больше 2 часов, но всё еще сегодня
+    elsif local_date == today
+      time_tag(@entry.created_at, format: "сегодня в %H:%M")
+
+    elsif local_date == today - 1.day
       time_tag(@entry.created_at, format: "вчера в %H:%M")
+
+    elsif local_date == today - 2.days
+      time_tag(@entry.created_at, format: "позавчера в %H:%M")
+
     else
-      time_tag(@entry.created_at, format: "%d %B в %H:%M")
+      time_tag(@entry.created_at, format: "%e %B в %H:%M")
     end
   end
 end

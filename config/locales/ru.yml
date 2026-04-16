@@ -29,9 +29,38 @@
 
 ru:
   datetime:
-    relative: 
-      past: "%{time}"
-      future: "осталось %{time}"
+    distance_in_words:
+      # Заменяет "Меньше минуты" на "только что"
+      less_than_x_seconds:
+        one: "только что"
+        few: "только что"
+        many: "только что"
+        other: "только что"
+      less_than_x_minutes:
+        one: "только что"
+        few: "только что"
+        many: "только что"
+        other: "только что"
+      x_minutes:
+        one: "минуту назад"
+        few: "%{count} минуты назад"
+        many: "%{count} минут назад"
+        other: "%{count} минут назад"
+      about_x_minutes:
+        one: "минуту назад"
+        few: "%{count} минуты назад"
+        many: "%{count} минут назад"
+        other: "%{count} минут назад"
+      x_hours:
+        one: "час назад"
+        few: "%{count} часа назад"
+        many: "%{count} часов назад"
+        other: "%{count} часов назад"
+      about_x_hours:
+        one: "час назад"
+        few: "%{count} часа назад"
+        many: "%{count} часов назад"
+        other: "%{count} часов назад"
   unauthorized:
     default: "У вас нет прав доступа к этой странице!"
   activerecord:
