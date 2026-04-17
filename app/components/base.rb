@@ -8,6 +8,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::Truncate
   include Phlex::Rails::Helpers::AssetPath
   include Phlex::Rails::Helpers::TimeTag
+  include Phlex::Rails::Helpers::TurboFrameTag
   include Phlex::Rails::Helpers::TurboStreamFrom
   include Phlex::Rails::Helpers::StripTags
   include Phlex::Rails::Helpers::DOMID

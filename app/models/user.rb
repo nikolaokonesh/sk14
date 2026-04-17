@@ -8,6 +8,7 @@ class User < ApplicationRecord
   include Name
   include Slug
   include Validate
+  include ReadState
   include Association
 
   def content_type

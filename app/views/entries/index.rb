@@ -6,19 +6,14 @@ class Views::Entries::Index < Views::Base
   end
 
   def view_template
-    turbo_stream_from "entries"
+    turbo_stream_from(:entries)
 
-    @entries.each do |entry|
-      div(class: "block mb-3") do
-        span(class: "mr-2") { entry.user.username }
-        span(class: "text-xs") { render Components::Shared::CreatedAt.new(entry: entry) }
-        cache(entry) do
-          a(href: entry_path(entry), class: "block hover:opacity-70 duration-200") do
-            plain truncate strip_tags(entry.content.to_s).strip, length: 100
-          end
-        end
+    render Components::Entries::IndexCardTop.new
+
+    ul(class: "list bg-base-100 rounded-box shadow-md") do
+      @entries.each do |entry|
+        render Components::Entries::Card.new(entry: entry)
       end
-      div(class: "divider")
     end
   end
 end

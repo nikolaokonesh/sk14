@@ -2,6 +2,7 @@
 
 class Components::Shared::CreatedAt < Phlex::HTML
   include Phlex::Rails::Helpers::TimeTag
+  include Phlex::Rails::Helpers::DOMID
 
   def initialize(
     entry:
@@ -20,7 +21,7 @@ class Components::Shared::CreatedAt < Phlex::HTML
 
     # Если прошло меньше 2 часов — показываем "X минут назад"
     elsif now < local_time + 2.hours
-      span(id: "created_at_#{@entry.id}") { render Components::Shared::TimeInWords.new(entry: @entry) }
+      span(id: dom_id(@entry, :created_at)) { render Components::Shared::TimeInWords.new(entry: @entry) }
 
     # Если прошло больше 2 часов, но всё еще сегодня
     elsif local_date == today

@@ -13,9 +13,16 @@ class TimeInWordsJob < ApplicationJob
 
       if should_update?(age_minutes)
         Turbo::StreamsChannel.broadcast_update_to(
-          "entries",
-          target: "created_at_#{entry.id}",
-          renderable: Components::Shared::TimeInWords.new(entry: entry)
+          :entries,
+          target: [ entry, :created_at ],
+          renderable: Components::Shared::TimeInWords.new(entry: entry),
+          layout: false
+        )
+        Turbo::StreamsChannel.broadcast_update_to(
+          [ :entry, entry.id ],
+          target: [ entry, :created_at ],
+          renderable: Components::Shared::TimeInWords.new(entry: entry),
+          layout: false
         )
       end
     end

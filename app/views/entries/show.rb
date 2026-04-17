@@ -6,10 +6,13 @@ class Views::Entries::Show < Views::Base
   end
 
   def view_template
-    turbo_stream_from "entries"
+    turbo_stream_from(:entry, @entry.id)
 
-    span(class: "mr-2") { @entry.user.username(:full) }
-    span(class: "text-xs") { render Components::Shared::CreatedAt.new(entry: @entry) }
+    div(class: "flex items-center") do
+      span(class: "mr-2") { @entry.user.username(:full) }
+      span(class: "text-xs") { render Components::Shared::CreatedAt.new(entry: @entry) }
+    end
+
     div(class: "lexxy-show") { @entry.content.to_s }
 
     if @entry.entryable.no_comments?

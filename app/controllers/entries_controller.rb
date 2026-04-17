@@ -12,6 +12,12 @@ class EntriesController < ApplicationController
   end
 
   def show
+    if turbo_frame_request_id == "read" && current_user
+      Current.user.mark_entry_as_read!(@entry)
+      render Components::Entries::ReadBadge.new(entry: @entry, user: Current.user), layout: false
+      return
+    end
+
     render Views::Entries::Show.new(entry: @entry)
   end
 
