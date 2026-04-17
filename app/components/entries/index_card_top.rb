@@ -2,7 +2,7 @@
 
 class Components::Entries::IndexCardTop < Components::Base
   def view_template
-    div(class: "card w-1/2 mx-auto") do
+    div(class: "card mx-auto") do
       div(class: "card-body") do
         span(class: "badge badge-secondary") { "Родной Среднеколымск" }
         div(class: "flex justify-between") do
@@ -42,7 +42,7 @@ class Components::Entries::IndexCardTop < Components::Base
           end
         end
       end
-      a(href: new_entry_path, class: "btn") { "Начать" }
+      a(href: new_entry_path, class: "btn btn-primary") { "Начать" }
     end
   end
 end
