@@ -35,6 +35,8 @@ class EntriesController < ApplicationController
     @entry = Current.user.entries.new(entry_params)
 
     if @entry.save
+      Entries::Streams::CreateJob.perform_later(@entry.id)
+
       flash[:success] = "Пост успешно создан"
       respond_to do |format|
         format.html { redirect_to @entry }
@@ -47,6 +49,8 @@ class EntriesController < ApplicationController
   def update
     authorize! :update, @entry
     if @entry.update(entry_params)
+      Entries::Streams::UpdateJob.perform_later(@entry.id)
+
       flash[:success] = "Пост обновлён"
       redirect_to @entry, status: :see_other
     else
@@ -59,17 +63,16 @@ class EntriesController < ApplicationController
     authorize! :destroy, @entry
     if can?(:hard_destroy, @entry) && current_user.has_role?(:admin) && @entry.user_id != current_user.id
       @entry.destroy!
+      Entries::Streams::DestroyJob.perform_later(nil)
       flash[:alert] = "Пост удалён навсегда"
       redirect_to root_path, status: :see_other
       return
     end
 
     if @entry.update(trash: true, trash_data: Time.current)
+      Entries::Streams::DestroyJob.perform_later(@entry.id)
       flash[:alert] = "Пост перемещен в удаленные посты"
-      respond_to do |format|
-        format.html { redirect_to root_path, status: :see_other }
-        format.turbo_stream { render Views::Entries::Streams::Destroy.new(entry: @entry, message: flash[:alert]), layout: false }
-      end
+      redirect_to root_path, status: :see_other
     else
       redirect_to @entry, alert: @entry.errors.full_messages.to_sentence
     end

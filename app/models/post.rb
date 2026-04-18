@@ -1,4 +1,5 @@
 class Post < ApplicationRecord
+  broadcasts_refreshes
   include FirstImage
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 

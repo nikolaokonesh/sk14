@@ -19,7 +19,7 @@ class TimeInWordsJob < ApplicationJob
           layout: false
         )
         Turbo::StreamsChannel.broadcast_update_to(
-          [ :entry, entry.id ],
+          entry,
           target: [ entry, :created_at ],
           renderable: Components::Shared::TimeInWords.new(entry: entry),
           layout: false

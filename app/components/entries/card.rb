@@ -31,6 +31,7 @@ class Components::Entries::Card < Components::Base
 
   def show_read_state_badge?
     return false unless current_user
+    return false unless @entry.user != current_user
     return false unless @entry.entryable_type == "Post"
     true
   end

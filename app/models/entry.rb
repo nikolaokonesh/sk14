@@ -1,4 +1,6 @@
 class Entry < ApplicationRecord
+  broadcasts_refreshes
+
   POST_TYPE = "Post".freeze
 
   delegated_type :entryable, types: [ POST_TYPE ], dependent: :destroy
