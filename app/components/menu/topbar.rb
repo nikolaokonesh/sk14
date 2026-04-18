@@ -8,7 +8,7 @@ class Components::Menu::Topbar < Components::Base
           div(tabindex: "0", role: "button", class: "btn btn-ghost btn-circle") do
             lucide_icon("menu")
           end
-          ul(tabindex: "-1", class: "menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow") do
+          ul(tabindex: "-1", class: "menu menu-sm dropdown-content bg-base-100 rounded-box z-20 mt-3 w-52 p-2 shadow") do
             li do
               a(href: root_path) { "Главное" }
             end
@@ -29,7 +29,10 @@ class Components::Menu::Topbar < Components::Base
         end
       end
       div(class: "navbar-center") do
-        a(class: "btn btn-ghost text-xl") { "SK14" }
+        a(class: "btn btn-ghost text-xl") do
+          plain img(src: image_path("logo.png"), class: "size-12", loading: "lazy")
+          plain "SK14"
+        end
       end
       div(class: "navbar-end") do
         button(class: "btn btn-ghost btn-circle") do

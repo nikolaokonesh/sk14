@@ -8,7 +8,7 @@ class Components::Entries::Card < Components::Base
   end
 
   def view_template
-    li(class: "list-row gap-0 hover:bg-base-200 active:bg-base-200 duration-100 p-2") do
+    li(class: "list-row text-lg gap-0 hover:bg-base-200 active:bg-base-200 duration-100 p-2") do
       a(href: entry_path(@entry), class: "absolute inset-0 z-10", aria_label: "Читать далее")
       div(class: "flex items-end") do
         span(class: "mr-2") { @entry.user.username }

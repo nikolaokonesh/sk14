@@ -6,6 +6,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::Routes
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Truncate
+  include Phlex::Rails::Helpers::ImagePath
   include Phlex::Rails::Helpers::AssetPath
   include Phlex::Rails::Helpers::TimeTag
   include Phlex::Rails::Helpers::TurboFrameTag
