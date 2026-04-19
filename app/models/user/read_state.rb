@@ -13,8 +13,9 @@ module User::ReadState
   end
 
   def entry_read_state_for(entry)
-    root_entry = entry.root || entry
-    entry_reads.find_by(entry: root_entry)
+    # root_entry = entry.root || entry
+    # entry_reads.find_by(entry: root_entry)
+    entry_reads.detect { |read| read.entry_id == (entry.root_id || entry.id) }
   end
 
   def post_read_for?(entry)

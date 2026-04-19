@@ -5,9 +5,12 @@ class EntriesController < ApplicationController
   # GET /entries or /entries.json
   def index
     @entries = Entry.active
-                    .includes([ entryable: [ :entry ] ])
                     .where(entryable_type: "Post")
+                    .includes(:user, :entry_reads, :rich_text_content)
                     .recent
+
+    Current.user.entry_reads.load if authenticated?
+
     render Views::Entries::Index.new(entries: @entries)
   end
 
@@ -86,6 +89,6 @@ class EntriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def entry_params
-      params.expect(entry: [ :entryable_type, entryable_attributes: [ :id, :content, :no_comments ] ])
+      params.expect(entry: [ :content, :entryable_type, entryable_attributes: [ :id, :no_comments ] ])
     end
 end

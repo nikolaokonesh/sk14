@@ -1,10 +1,10 @@
 class Entry < ApplicationRecord
   broadcasts_refreshes
 
+  include Content
   POST_TYPE = "Post".freeze
 
   delegated_type :entryable, types: [ POST_TYPE ], dependent: :destroy
-  delegate :content, to: :entryable, allow_nil: true
   accepts_nested_attributes_for :entryable
 
   before_validation :set_root_from_parent, if: :parent_id?
@@ -28,18 +28,14 @@ class Entry < ApplicationRecord
 
   has_many :entry_reads, dependent: :destroy
 
-  private
-
   def post?
     entryable_type == POST_TYPE
   end
 
+  private
+
   def active?
     !trash
-  end
-
-  def entryable_content
-    entryable&.content
   end
 
   def participants

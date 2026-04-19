@@ -8,7 +8,7 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    div(class: "flex items-center") do
+    div(class: "flex items-center text-lg") do
       span(class: "mr-2") { @entry.user.username(:full) }
       span(class: "text-xs") { render Components::Shared::CreatedAt.new(entry: @entry) }
       if show_read_state_badge?
@@ -18,7 +18,7 @@ class Views::Entries::Show < Views::Base
       end
     end
 
-    div(class: "lexxy-show") { @entry.content.to_s }
+    div(class: "lexxy-show text-lg") { @entry.content.to_s }
 
     if @entry.entryable.no_comments?
       plain "Без комментариев"

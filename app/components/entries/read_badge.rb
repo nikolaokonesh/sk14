@@ -10,13 +10,13 @@ class Components::Entries::ReadBadge < Phlex::HTML
 
   def view_template
     turbo_frame_tag "read" do
-      span(id: dom_id(@entry, :read_badge), class: "flex items-center pr-1") do
+      span(id: dom_id(@entry, :read_badge), class: "flex items-center") do
         render_post_state_badge
       end
     end
   end
 
   def render_post_state_badge
-    span(class: [ "ml-3", (@user.post_read_for?(@entry) ? "text-info" : "text-gray-500 opacity-30") ]) { lucide_icon("check-check", size: 18) }
+    span(class: [ (@user.post_read_for?(@entry) ? "text-info" : "text-gray-500 opacity-30") ]) { lucide_icon("check-check", size: 18) }
   end
 end

@@ -14,15 +14,15 @@ class Views::Entries::Form < Views::Base
       h1(class: "text-4xl font-bold my-5 mx-2") { page_title }
 
       form_with(model: @entry, class: "contents") do |form|
+        if @entry.errors[:content].any?
+          p(class: "text-red-500 mx-2") { @entry.errors[:content].join(", ") }
+        else
+          form.label :content, "Содержание", class: "mx-2"
+        end
+        form.rich_text_area :content, placeholder: "Добавить описание", require: true, rows: 5, class: "lexxy-content pb-4 shadow-sm rounded-md mt-2"
+
         div(class: "my-5") do
           form.fields_for :entryable do |fields|
-            if @entry.entryable.errors[:content].any?
-              p(class: "text-red-500 mx-2") { @entry.entryable.errors[:content].join(", ") }
-            else
-              fields.label :content, "Содержание", class: "mx-2"
-            end
-            fields.rich_text_area :content, placeholder: "Добавить описание", require: true, rows: 5, class: "lexxy-content pb-4 shadow-sm rounded-md mt-2"
-
             fields.label :no_comments, "Без комментариев", class: "mx-2"
             fields.check_box :no_comments, checked: @entry.entryable.no_comments?, require: true
           end
