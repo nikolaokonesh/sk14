@@ -29,6 +29,7 @@ module Authentication
     end
 
     def resume_session
+      # Current.session ||= find_session_by_cookie
       # Используем обычную переменную инстанса контроллера.
       # Она сохранит nil или объект на время всего запроса.
       return @_current_session if defined?(@_current_session)
