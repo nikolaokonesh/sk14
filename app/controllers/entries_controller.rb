@@ -5,7 +5,7 @@ class EntriesController < ApplicationController
   # GET /entries or /entries.json
   def index
     set_page_and_extract_portion_from Entry.active
-                                           .where(entryable_type: "Post")
+                                           .posts
                                            .includes(:user, :entry_reads, :rich_text_content)
                                            .recent
 
