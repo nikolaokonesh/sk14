@@ -28,10 +28,6 @@ class Entry < ApplicationRecord
 
   has_many :entry_reads, dependent: :destroy
 
-  def post?
-    entryable_type == POST_TYPE
-  end
-
   private
 
   def active?

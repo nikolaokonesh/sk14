@@ -8,20 +8,33 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    div(class: "flex items-center text-lg") do
-      span(class: "mr-2") { @entry.user.username(:full) }
-      span(class: "text-xs") { render Components::Shared::CreatedAt.new(entry: @entry) }
-      if show_read_state_badge?
-        turbo_frame_tag "read", src: entry_path(@entry),
-                                class: "opacity-0 w-0",
-                                loading: :lazy
+    div(class: "max-w-4xl mx-auto py-4") do
+      # Блок автора (мета)
+      div(class: "flex items-center text-lg mb-4 px-2") do
+        span(class: "mr-2 font-bold") { @entry.user.username(:full) }
+        span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
+        if show_read_state_badge?
+          turbo_frame_tag "read", src: entry_path(@entry), class: "hidden", loading: :lazy
+        end
       end
-    end
 
-    div(class: "lexxy-show text-lg") { @entry.content.to_s }
+      # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ
+      div(class: "relative") do
+        # Радужная подложка (glow)
+        render Components::Shared::BgGradient.new
 
-    if @entry.entryable.no_comments?
-      plain "Без комментариев"
+        # Основная карточка
+        div(class: "relative bg-base-200 rounded-2xl shadow-3xl overflow-hidden") do
+          div(class: "p-4") do
+            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
+
+            if @entry.entryable.no_comments?
+              div(class: "divider opacity-10 mt-2")
+              p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
+            end
+          end
+        end
+      end
     end
   end
 
@@ -31,7 +44,7 @@ class Views::Entries::Show < Views::Base
     return false unless current_user
     return false if @entry.user == current_user
     return false if Current.user.post_read_for?(@entry)
-    return false unless @entry.entryable_type == "Post"
+    return false unless @entry.post?
     true
   end
 end
