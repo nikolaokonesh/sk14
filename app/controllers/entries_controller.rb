@@ -4,14 +4,14 @@ class EntriesController < ApplicationController
 
   # GET /entries or /entries.json
   def index
-    @entries = Entry.active
-                    .where(entryable_type: "Post")
-                    .includes(:user, :entry_reads, :rich_text_content)
-                    .recent
+    set_page_and_extract_portion_from Entry.active
+                                           .where(entryable_type: "Post")
+                                           .includes(:user, :entry_reads, :rich_text_content)
+                                           .recent
 
     Current.user.entry_reads.load if authenticated?
 
-    render Views::Entries::Index.new(entries: @entries)
+    render Views::Entries::Index.new(page: @page)
   end
 
   def show
