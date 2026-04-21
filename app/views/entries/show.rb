@@ -18,14 +18,20 @@ class Views::Entries::Show < Views::Base
         end
       end
 
-      # Основная карточка
-      div(class: "relative bg-base-200 rounded-2xl shadow-3xl overflow-hidden") do
-        div(class: "p-4") do
-          div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
+      # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ
+      div(class: "relative") do
+        # Радужная подложка (glow)
+        render Components::Shared::BgGradient.new
 
-          if @entry.entryable.no_comments?
-            div(class: "divider opacity-10 mt-2")
-            p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
+        # Основная карточка
+        div(class: "relative bg-base-200/90 dark:bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+          div(class: "p-4") do
+            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
+
+            if @entry.entryable.no_comments?
+              div(class: "divider opacity-10 mt-2")
+              p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
+            end
           end
         end
       end
