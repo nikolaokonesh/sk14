@@ -13,9 +13,9 @@ module Entry::Content
     plain_text = ActionController::Base.helpers.strip_tags(content.to_s).strip
 
     if plain_text.blank?
-      errors.add(:content, "обязательно должен содержать текст")
+      errors.add(:content, "должен содержать текст")
     elsif plain_text.length < 10
-      errors.add(:content, "Слишком короткий (минимум 10 сиволов текста)")
+      errors.add(:content, "Слишком короткий (минимум 10)")
     end
   end
 end

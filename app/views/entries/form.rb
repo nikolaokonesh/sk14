@@ -14,17 +14,12 @@ class Views::Entries::Form < Views::Base
       form_with(model: @entry, class: "space-y-6") do |form|
         div(class: "form-control") do
           if @entry.errors[:content].any?
-            p(class: "text-error text-sm font-bold mb-2") { @entry.errors[:content].join(", ") }
+            p(class: "text-error font-bold mb-2") { @entry.errors[:content].join(", ") }
           else
-            form.label :content, "Содержание", class: "label font-bold opacity-70"
+            form.label :content, "Содержание", class: "label font-bold opacity-70 mb-2"
           end
 
-          # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ
-          div(class: "relative") do
-            # Радужная подложка (glow)
-            render Components::Shared::BgGradient.new
-            plain form.rich_text_area :content, placeholder: "Добавить описание", require: true, class: "lexxy-content min-h-[300px]"
-          end
+          plain form.rich_text_area :content, placeholder: "Добавить описание", require: true, class: "lexxy-content min-h-[300px]"
         end
 
         div(class: "form-control") do

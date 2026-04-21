@@ -57,7 +57,6 @@ class EntriesController < ApplicationController
       flash[:success] = "Пост обновлён"
       redirect_to @entry, status: :see_other
     else
-      @entry.entryable.reload if @entry.entryable.content.blank?
       render Views::Entries::Form.new(entry: @entry), status: :unprocessable_entity
     end
   end
