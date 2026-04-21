@@ -15,6 +15,8 @@ admin = User.create!(
   last_name: "Оконешников",
   slug: "nikola"
 )
+admin.add_role "admin"
+
 
 # Жители
 users = [ admin ]

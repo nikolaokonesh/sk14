@@ -9,15 +9,15 @@ class Views::Auth::Name < Views::Auth
 
   def view_template
     div(class: "min-h-screen flex items-stretch md:items-center justify-center bg-base-100") do
-      main(class: "w-full max-w-5xl md:p-4") do
+      main(class: "relative w-full max-w-5xl md:p-4") do
+        render Components::Shared::BgGradient.new(opacity: "opacity-100")
         div(
-          class: "hero min-h-screen md:min-h-[600px] md:rounded-3xl overflow-hidden shadow-2xl bg-no-repeat bg-center bg-cover relative flex flex-col",
-          style: %(background-image: url('#{asset_path("bg_auth.png")}'))
+          class: "hero min-h-screen md:min-h-[600px] md:rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
         ) do
+          # Затемняющий слой для глубины
           div(class: "absolute inset-0 bg-neutral/60 backdrop-blur-[3px]")
 
           div(class: "hero-content relative z-10 flex-col lg:flex-row gap-8 lg:gap-12 p-6 md:p-16 w-full") do
-            
             # Левая часть: Приветствие
             div(class: "text-center lg:text-left text-neutral-content max-w-md") do
               div(class: "mb-6 inline-flex p-3 bg-white/10 rounded-2xl backdrop-blur-md") do
@@ -29,7 +29,7 @@ class Views::Auth::Name < Views::Auth
                 br(class: "hidden md:block")
                 span(class: "text-primary ml-2 md:ml-0") { "знакомиться" }
               end
-              
+
               p(class: "text-sm md:text-lg opacity-90 font-medium leading-relaxed") do
                 plain "Представьтесь, чтобы другим пользователям было удобнее к вам обращаться."
                 span(class: "block mt-2 text-xs md:text-sm opacity-60") { "Это не обязательно — вы можете сделать это позже." }
@@ -43,19 +43,19 @@ class Views::Auth::Name < Views::Auth
 
                 form_with(model: @user, url: auth_name_path(@user), method: :put, class: "space-y-6") do |f|
                   div(class: "form-control") do
-                    label(class: "label px-1") do
+                    label(class: "label p-2") do
                       span(class: "label-text font-bold") { "Имя или Псевдоним" }
                     end
-                    
-                    plain f.text_field :name, 
-                                      maxlength: 50, 
+
+                    plain f.text_field :name,
+                                      maxlength: 50,
                                       placeholder: "Иванов Иван",
                                       autofocus: true,
                                       class: [
                                         "input input-bordered input-lg w-full focus:input-primary transition-all shadow-inner",
                                         { "input-error": @user.errors[:name].any? }
                                       ]
-                    
+
                     if @user.errors[:name].any?
                       label(class: "label") do
                         span(class: "label-text-alt text-error font-medium") { @user.errors[:name].join(", ") }
@@ -65,7 +65,7 @@ class Views::Auth::Name < Views::Auth
 
                   div(class: "flex flex-col gap-3 mt-4") do
                     plain f.submit "Сохранить и войти", class: "btn btn-primary btn-lg w-full shadow-lg shadow-primary/30"
-                    
+
                     # Кнопка пропуска
                     a(href: root_path, class: "btn btn-ghost btn-md w-full opacity-60 hover:opacity-100 transition-opacity") do
                       "Пропустить этот шаг"

@@ -16,7 +16,9 @@ class Components::Base < Phlex::HTML
 
   register_value_helper :current_user
   register_value_helper :lucide_icon
-  register_value_helper :relative_time_in_words
+  register_value_helper :authenticated?
+  register_value_helper :can?
+
   # More caching options at https://www.phlex.fun/components/caching
   def cache_store = Rails.cache
 

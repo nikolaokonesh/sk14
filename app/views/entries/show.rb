@@ -14,7 +14,29 @@ class Views::Entries::Show < Views::Base
         span(class: "mr-2 font-bold") { @entry.user.username(:full) }
         span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
         if show_read_state_badge?
-          turbo_frame_tag "read", src: entry_path(@entry), class: "hidden", loading: :lazy
+          turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
+        end
+
+        if authenticated? && can?(:manage, @entry)
+          div(class: "dropdown dropdown-end") do
+            div(tabindex: 0, role: "button", class: "px-2 cursor-pointer") { lucide_icon("ellipsis") }
+            ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-100 p-2 shadow-sm") do
+              div(class: "flex gap-2") do
+                a(href: edit_entry_path(@entry), class: "btn btn-success") { lucide_icon("pencil") } if can?(:update, @entry)
+                if @entry.trash == true
+                  if can?(:restore, @entry)
+                    a(href: trash_path(@entry, format: :html),
+                      data: { turbo_method: :put, turbo_confirm: "Вы точно хотите восстановить?" },
+                      class: "btn btn-warning") { lucide_icon("rotate-ccw") }
+                  end
+                else
+                  a(href: entry_path(@entry, format: :html),
+                    data: { turbo_method: :delete, turbo_confirm: (current_user&.has_role?(:admin) && @entry.user_id != current_user.id ? "Удалить навсегда?" : "Вы точно хотите удалить?") },
+                    class: "btn btn-error") { lucide_icon("trash") }
+                end
+              end
+            end
+          end
         end
       end
 
@@ -24,7 +46,7 @@ class Views::Entries::Show < Views::Base
         render Components::Shared::BgGradient.new
 
         # Основная карточка
-        div(class: "relative bg-base-200/90 dark:bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+        div(class: "relative bg-base-200/80 rounded-2xl shadow-xl overflow-hidden") do
           div(class: "p-4") do
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
 
