@@ -15,7 +15,7 @@ class Components::Entries::Card < Components::Base
         span { render(Components::Entries::ReadBadge.new(entry: @entry, user: @user)) if show_read_state_badge? }
       end
       p(class: "list-col-wrap") do
-        plain truncate strip_tags(@entry.content.to_plain_text).strip, length: 100
+        plain truncate(@entry.title, length: 200, omission: "... Читать далее")
       end
     end
   end

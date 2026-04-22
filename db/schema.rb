@@ -66,6 +66,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
     t.integer "parent_id"
     t.integer "position", default: 0
     t.integer "root_id"
+    t.string "title", limit: 500
     t.boolean "trash", default: false
     t.datetime "trash_data"
     t.datetime "updated_at", null: false

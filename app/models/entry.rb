@@ -3,6 +3,7 @@ class Entry < ApplicationRecord
 
   include Content
   POST_TYPE = "Post".freeze
+  TITLE_PREVIEW_LENGTH = 500
 
   delegated_type :entryable, types: [ POST_TYPE ], dependent: :destroy
   accepts_nested_attributes_for :entryable

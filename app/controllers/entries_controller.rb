@@ -6,7 +6,7 @@ class EntriesController < ApplicationController
   def index
     set_page_and_extract_portion_from Entry.active
                                            .posts
-                                           .includes(:user, :entry_reads, rich_text_content: [ embeds_attachments: :blob ])
+                                           .includes(:user, :entry_reads)
                                            .recent
 
     Current.user.entry_reads.load if authenticated?
