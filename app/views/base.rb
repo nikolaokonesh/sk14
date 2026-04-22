@@ -9,7 +9,7 @@ class Views::Base < Components::Base
     render Layout.new(page_info) do
       main(class: "w-full md:w-2xl mx-auto") do
         render Menu::Topbar.new
-        div(class: "p-2") { super }
+        super
       end
     end
   end

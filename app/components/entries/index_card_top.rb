@@ -2,9 +2,9 @@
 
 class Components::Entries::IndexCardTop < Components::Base
   def view_template
-    div(class: "relative group mx-auto m-8 max-w-md") do
+    div(class: "relative group mx-auto my-8 max-w-[97%] md:max-w-md") do
       # Эффектное свечение
-      render Components::Shared::BgGradient.new(opacity: "opacity-40", inset: "-inset-3")
+      render Components::Shared::BgGradient.new(opacity: "opacity-40")
 
       div(class: "relative card bg-base-200/80 -rotate-1 shadow-2xl border border-white/5") do
         unless current_user

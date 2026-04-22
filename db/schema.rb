@@ -63,6 +63,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
     t.datetime "created_at", null: false
     t.integer "entryable_id", null: false
     t.string "entryable_type", null: false
+    t.integer "images_count", default: 0
     t.integer "parent_id"
     t.integer "position", default: 0
     t.integer "root_id"

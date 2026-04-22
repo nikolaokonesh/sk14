@@ -50,7 +50,6 @@ class Views::Auth::Name < Views::Auth
                     plain f.text_field :name,
                                       maxlength: 50,
                                       placeholder: "Иванов Иван",
-                                      autofocus: true,
                                       class: [
                                         "input input-bordered input-lg w-full focus:input-primary transition-all shadow-inner",
                                         { "input-error": @user.errors[:name].any? }

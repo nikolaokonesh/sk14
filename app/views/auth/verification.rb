@@ -64,7 +64,6 @@ class Views::Auth::Verification < Views::Auth
                                       pattern: "[0-9]*",
                                       inputmode: "numeric",
                                       autocomplete: "one-time-code",
-                                      autofocus: true,
                                       oninput: "this.value = this.value.slice(0, 6)",
                                       required: true,
                                       class: "input input-bordered h-20 w-full text-center text-4xl font-mono tracking-[0.3em] focus:input-primary transition-all shadow-inner placeholder:opacity-20"

@@ -8,7 +8,7 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    div(class: "max-w-4xl mx-auto py-4") do
+    div(class: "py-4") do
       # Блок автора (мета)
       div(class: "flex items-center text-lg mb-4 px-2") do
         span(class: "mr-2 font-bold") { @entry.user.username(:full) }
@@ -46,7 +46,7 @@ class Views::Entries::Show < Views::Base
         render Components::Shared::BgGradient.new
 
         # Основная карточка
-        div(class: "relative bg-base-200/80 rounded-2xl shadow-xl overflow-hidden") do
+        div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
           div(class: "p-4") do
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
 

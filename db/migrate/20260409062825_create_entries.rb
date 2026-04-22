@@ -5,6 +5,7 @@ class CreateEntries < ActiveRecord::Migration[8.2]
       t.references :entryable, polymorphic: true, null: false
 
       t.string   :title, limit: 500      # Запись части из :content
+      t.integer  :images_count, default: 0
 
       t.boolean  :trash, default: false
       t.datetime :trash_data

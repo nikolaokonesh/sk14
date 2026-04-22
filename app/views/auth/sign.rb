@@ -45,15 +45,12 @@ class Views::Auth::Sign < Views::Auth
             div(class: "card bg-base-100 shadow-2xl border border-white/10 w-full max-w-sm sm:rounded-3xl lg:mt-4") do
               div(class: "card-body p-6 md:p-8") do
                 h2(class: "card-title text-xl md:text-2xl font-bold mb-1") { "Вход в аккаунт" }
-                p(class: "text-[10px] md:text-xs opacity-50 mb-4 uppercase tracking-widest font-semibold") do
+                p(class: "text-[10px] md:text-xs opacity-50 uppercase tracking-widest font-semibold") do
                   "Авторизация по Email"
                 end
 
                 form_with(url: auth_sign_path, class: "space-y-6") do |f|
                   div(class: "form-control") do
-                    label(class: "label px-1") do
-                      span(class: "label-text font-bold text-xs opacity-70") { "Ваша почта" }
-                    end
                     plain f.email_field :email,
                                         value: @params,
                                         inputmode: "email",
