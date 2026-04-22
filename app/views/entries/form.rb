@@ -22,7 +22,7 @@ class Views::Entries::Form < Views::Base
           div(class: "relative") do
             # Радужная подложка (glow)
             render Components::Shared::BgGradient.new
-            plain form.rich_text_area :content, placeholder: "Добавить описание", require: true, class: "lexxy-content min-h-[300px]"
+            plain form.rich_text_area :content, placeholder: "Добавить описание", require: true, class: "lexxy-content"
           end
         end
 
