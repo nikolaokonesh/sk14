@@ -28,9 +28,31 @@ class Views::Entries::Form < Views::Base
 
         div(class: "form-control") do
           form.fields_for :entryable do |fields|
-            label(class: "label cursor-pointer justify-start gap-4 p-2 bg-base-300/30 rounded-xl") do
-              plain fields.check_box :no_comments, checked: @entry.entryable.no_comments?, class: "checkbox checkbox-primary"
-              span(class: "label-text font-medium") { "Без комментариев" }
+            div(class: "form-control bg-base-200 m-2 rounded-md p-2 w-full flex items-center") do
+              label(class: "label cursor-pointer justify-start gap-4 py-2 bg-base-300/30 rounded-xl") do
+                plain raw lucide_icon("messages-square")
+                span(class: "label-text font-medium") { "Без комментариев" }
+                plain fields.check_box :no_comments, checked: @entry.entryable.no_comments?, class: "checkbox checkbox-primary"
+              end
+            end
+
+            div(class: "form-control bg-base-200 m-2 rounded-md p-2 w-full flex items-center") do
+              label(class: "label font-bold opacity-70 mr-2") do
+                plain raw lucide_icon("clock-fading")
+                plain "Срок публикации"
+              end
+              plain fields.select :duration,
+                    [
+                      [ "Навсегда", "forever" ],
+                      [ "на 3 дня", "three" ],
+                      [ "Неделя", "week" ],
+                      [ "Месяц", "month" ],
+                      [ "Полгода", "half_year" ],
+                      [ "Год", "year" ]
+                    ],
+                    {},
+                    { class: "select select-bordered bg-base-300/70 rounded-xl" }
+              div(class: "text-xs opacity-50 badge") { "По истечении срока пост будет удален навсегда" }
             end
           end
         end

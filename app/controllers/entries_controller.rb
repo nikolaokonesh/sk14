@@ -6,7 +6,7 @@ class EntriesController < ApplicationController
   def index
     set_page_and_extract_portion_from Entry.active
                                            .posts
-                                           .includes(:user, :entry_reads)
+                                           .includes(:user, :entry_reads, :entryable)
                                            .recent
 
     Current.user.entry_reads.load if authenticated?
@@ -88,6 +88,6 @@ class EntriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def entry_params
-      params.expect(entry: [ :content, :entryable_type, entryable_attributes: [ :id, :no_comments ] ])
+      params.expect(entry: [ :content, :entryable_type, entryable_attributes: [ :id, :no_comments, :duration ] ])
     end
 end
