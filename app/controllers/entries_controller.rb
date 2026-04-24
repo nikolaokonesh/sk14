@@ -88,6 +88,6 @@ class EntriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def entry_params
-      params.expect(entry: [ :content, :entryable_type, entryable_attributes: [ :id, :no_comments, :duration ] ])
+      params.expect(entry: [ :content, :entryable_type, entryable_attributes: [ :id, :no_comments, :duration, :urgent, :important, :event, :question, :sell, :buy, :help] ])
     end
 end

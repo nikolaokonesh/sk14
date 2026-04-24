@@ -10,7 +10,7 @@ class Views::Entries::Show < Views::Base
 
     div(class: "py-4") do
       # Блок автора (мета)
-      div(class: "flex items-center text-lg mb-4 px-2") do
+      div(class: "flex items-center text-lg px-2") do
         span(class: "mr-2 font-bold") { @entry.user.username(:full) }
         span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
         if show_read_state_badge?
@@ -38,6 +38,9 @@ class Views::Entries::Show < Views::Base
             end
           end
         end
+      end
+      div(class: "p-2") do
+        render Components::Entries::TagsListing.new(entry: @entry)
       end
 
       # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ

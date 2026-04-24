@@ -129,6 +129,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
     t.datetime "created_at", null: false
     t.datetime "premiera"
     t.json "setting"
+    t.json "tags_listing"
     t.datetime "updated_at", null: false
   end
 

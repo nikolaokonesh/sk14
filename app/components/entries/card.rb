@@ -12,10 +12,11 @@ class Components::Entries::Card < Components::Base
       div(class: "flex items-center gap-2") do
         span { @entry.user.username }
         span(class: "text-xs pt-1") { render Components::Shared::CreatedAt.new(entry: @entry) }
-        span { render(Components::Entries::ReadBadge.new(entry: @entry, user: @user)) if show_read_state_badge? }
         render_images_indicator
+        span { render(Components::Entries::ReadBadge.new(entry: @entry, user: @user)) if show_read_state_badge? }
       end
-      p(class: "list-col-wrap") do
+      div(class: "list-col-wrap") do
+        render Components::Entries::TagsListing.new(entry: @entry)
         plain truncate(@entry.title, length: 200, omission: "... Читать далее")
       end
     end
@@ -27,20 +28,16 @@ class Components::Entries::Card < Components::Base
     count = @entry.images_count.to_i
     return if count.zero?
 
-    div(class: "flex items-center ml-1") do # Добавляем небольшой отступ слева
+    div(class: "flex items-center") do
       if count == 1
-        # Одиночная иконка для одного фото
         div(class: "text-base-content/40") do
           plain raw lucide_icon("image", class: "size-4")
         end
       else
-        # Стек из двух иконок для нескольких фото
         div(class: "relative flex items-center") do
-          # Задняя иконка (смещена чуть вправо и вверх)
           div(class: "absolute left-1.5 -top-1 text-base-content/20") do
             plain raw lucide_icon("image", class: "size-4")
           end
-          # Передняя иконка
           div(class: "relative z-10 text-base-content/50 bg-base-100 rounded-sm") do
             plain raw lucide_icon("image", class: "size-4")
           end

@@ -28,7 +28,7 @@ class Views::Entries::Form < Views::Base
 
         div(class: "form-control") do
           form.fields_for :entryable do |fields|
-            div(class: "form-control bg-base-200 m-2 rounded-md p-2 w-full flex items-center") do
+            div(class: "form-control bg-base-200 m-2 rounded-md p-2 flex items-center") do
               label(class: "label cursor-pointer justify-start gap-4 py-2 bg-base-300/30 rounded-xl") do
                 plain raw lucide_icon("messages-square")
                 span(class: "label-text font-medium") { "Без комментариев" }
@@ -36,23 +36,58 @@ class Views::Entries::Form < Views::Base
               end
             end
 
-            div(class: "form-control bg-base-200 m-2 rounded-md p-2 w-full flex items-center") do
-              label(class: "label font-bold opacity-70 mr-2") do
-                plain raw lucide_icon("clock-fading")
-                plain "Срок публикации"
+            div(class: "form-control bg-base-200 m-2 rounded-md p-2") do
+              div(class: "flex items-center") do
+                label(class: "label font-bold opacity-70 mr-2") do
+                  plain raw lucide_icon("clock-fading")
+                  plain "Срок публикации"
+                end
+                plain fields.select :duration,
+                      [
+                        [ "Навсегда", "forever" ],
+                        [ "на 3 дня", "three" ],
+                        [ "Неделя", "week" ],
+                        [ "Месяц", "month" ],
+                        [ "Полгода", "half_year" ],
+                        [ "Год", "year" ]
+                      ],
+                      {},
+                      { class: "select select-bordered bg-base-300/70 rounded-xl" }
               end
-              plain fields.select :duration,
-                    [
-                      [ "Навсегда", "forever" ],
-                      [ "на 3 дня", "three" ],
-                      [ "Неделя", "week" ],
-                      [ "Месяц", "month" ],
-                      [ "Полгода", "half_year" ],
-                      [ "Год", "year" ]
-                    ],
-                    {},
-                    { class: "select select-bordered bg-base-300/70 rounded-xl" }
-              div(class: "text-xs opacity-50 badge") { "По истечении срока пост будет удален навсегда" }
+              div(class: "block text-xs opacity-50 w-full text-center") { "По истечении срока пост будет удален навсегда" }
+            end
+
+            div(class: "form-control bg-base-200 m-2 rounded-md p-2 flex items-center") do
+              # Внутри form.fields_for :entryable
+              div(class: "form-control", data_controller: "form-select-tags") do
+                label(class: "label font-bold opacity-70") do
+                  plain raw lucide_icon("tags")
+                  plain "Категории сообщения"
+                end
+
+                div(class: "flex flex-wrap gap-2 p-2 bg-base-300/20 rounded-2xl") do
+                  Post::TAG_CONFIG.each do |key, data|
+                    is_selected = @entry.entryable.send(key)
+
+                    label(class: "cursor-pointer group", data_action: "click->form-select-tags#toggle") do
+                      # Добавляем target для Stimulus
+                      plain fields.check_box key, {
+                        checked: is_selected,
+                        class: "hidden",
+                        data: { form_select_tags_target: "checkbox" }
+                      }
+
+                      div(
+                        class: [
+                          "badge badge-lg  border-2 transition-all duration-200 font-bold",
+                          (is_selected ? "#{data[:color]} border-transparent scale-105" : "badge-ghost opacity-50")
+                        ],
+                        data_active_color: data[:color]
+                      ) { data[:label] }
+                    end
+                  end
+                end
+              end
             end
           end
         end

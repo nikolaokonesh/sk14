@@ -3,6 +3,7 @@ class CreatePosts < ActiveRecord::Migration[8.2]
     create_table :posts do |t|
       t.datetime :premiera
       t.json :setting
+      t.json :tags_listing
 
       t.timestamps
     end
