@@ -12,7 +12,7 @@ class Components::Shared::BgGradient < Components::Base
         "absolute blur-2xl rounded-[3rem]",
         @opacity,
         @inset,
-        "bg-gradient-to-br from-error via-success via-primary to-info"
+        "bg-gradient-to-br from-error via-secondary via-success via-primary to-blue-600"
       ]
     )
   end

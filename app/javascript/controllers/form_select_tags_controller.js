@@ -35,14 +35,15 @@ export default class extends Controller {
   refreshVisuals() {
     this.checkboxTargets.forEach(cb => {
       const badge = cb.closest('label').querySelector('.badge')
-      const activeClass = badge.dataset.activeColor
+      const activeClassBg = badge.dataset.activeColorBg
+      const activeClassText = badge.dataset.activeColorText
       
       if (cb.checked) {
         badge.classList.remove('badge-ghost', 'opacity-50')
-        badge.classList.add(activeClass, 'border-transparent', 'scale-105')
+        badge.classList.add(activeClassBg, activeClassText, 'border-transparent', 'scale-105')
       } else {
         badge.classList.add('badge-ghost', 'opacity-50')
-        badge.classList.remove(activeClass, 'border-transparent', 'scale-105')
+        badge.classList.remove(activeClassBg, activeClassText, 'border-transparent', 'scale-105')
       }
     })
   }

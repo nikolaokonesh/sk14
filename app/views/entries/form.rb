@@ -117,9 +117,10 @@ class Views::Entries::Form < Views::Base
                       div(
                         class: [
                           "badge badge-lg border-2 transition-all duration-200 font-bold",
-                          (is_selected ? "#{data[:color]} border-transparent scale-105" : "badge-ghost opacity-50")
+                          (is_selected ? "#{data[:color_bg]} #{data[:color_text]} border-transparent scale-105" : "badge-ghost opacity-50")
                         ],
-                        data_active_color: data[:color]
+                        data_active_color_bg: data[:color_bg],
+                        data_active_color_text: data[:color_text]
                       ) { data[:label] }
                     end
                   end
