@@ -29,13 +29,13 @@ class Post < ApplicationRecord
 
   # Справочник для рендеринга
   TAG_CONFIG = {
-    urgent:    { label: "Срочно!",  color: "bg-rose-700" },
-    important: { label: "Важное",   color: "bg-yellow-700" },
-    event:     { label: "Событие",  color: "bg-blue-700" },
-    question:  { label: "Вопрос",   color: "bg-teal-700" },
-    sell:      { label: "Продам",   color: "bg-green-700" },
-    buy:       { label: "Куплю",    color: "bg-orange-700" },
-    help:      { label: "Помощь",   color: "bg-purple-700" }
+    urgent:    { label: "Срочно!",  color_bg: "bg-rose-500/20", color_text: "text-rose-500" },
+    important: { label: "Важное",   color_bg: "bg-yellow-500/20", color_text: "text-yellow-500" },
+    event:     { label: "Событие",  color_bg: "bg-blue-500/20", color_text: "text-blue-500" },
+    question:  { label: "Вопрос",   color_bg: "bg-teal-500/20", color_text: "text-teal-500" },
+    sell:      { label: "Продам",   color_bg: "bg-green-500/20", color_text: "text-green-500" },
+    buy:       { label: "Куплю",    color_bg: "bg-orange-500/20", color_text: "text-orange-500" },
+    help:      { label: "Помощь",   color_bg: "bg-purple-500/20", color_text: "text-purple-500" }
   }.freeze
 
   # Валидация: поле event_date должно быть заполнено, если это афиша

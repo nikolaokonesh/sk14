@@ -13,7 +13,6 @@ class Components::Entries::Card < Components::Base
         span { @entry.user.username }
         span(class: "text-xs pt-1") { render Components::Shared::CreatedAt.new(entry: @entry) }
         render_images_indicator
-        span(class: "badge badge-error badge-xs font-bold") { "АФИША" } if @entry.entryable.is_afisha?
         span { render(Components::Entries::ReadBadge.new(entry: @entry, user: @user)) if show_read_state_badge? }
       end
       div(class: "list-col-wrap") do
