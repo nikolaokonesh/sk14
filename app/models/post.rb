@@ -6,15 +6,16 @@ class Post < ApplicationRecord
                      no_comments: false,
                      duration: "forever",
                      is_afisha: false,     # Режим афиши
-                     event_date: ""       # Дата события
+                     event_date: "" ,      # Дата события
+                     event_duration: 1 
 
-  # Scope для раздела АФИША: неделя до события + сам день события
   scope :afisha_active, -> {
-    where("setting->>'is_afisha' = ?", "true")
-    .where("setting->>'event_date' IS NOT NULL")
-    .where("(setting->>'event_date')::timestamp BETWEEN ? AND ?",
-           1.week.ago.beginning_of_day,
-           Time.current.end_of_day)
+    today = Time.current.to_date
+    
+    # Извлекаем все поля из JSON-столбца 'setting'
+    where("json_extract(setting, '$.is_afisha') = ?", true)
+      .where("date(json_extract(setting, '$.event_date')) <= ?", today + 7.days)
+      .where("date(json_extract(setting, '$.event_date'), '+' || CAST(json_extract(setting, '$.event_duration') AS INT) || ' days') >= ?", today.to_s)
   }
 
   # Все теги как логические поля
@@ -56,12 +57,11 @@ class Post < ApplicationRecord
 
   def sanitize_settings_logic
     if is_afisha?
-      # Если Афиша — чистим категории и ставим срок forever
       self.duration = "forever"
       TAG_CONFIG.each_key { |key| self.send("#{key}=", false) }
     else
-      # Если не Афиша — чистим дату
       self.event_date = ""
+      self.event_duration = 1
     end
   end
 end

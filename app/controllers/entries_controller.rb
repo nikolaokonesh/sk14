@@ -2,16 +2,24 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
-  # GET /entries or /entries.json
   def index
-    set_page_and_extract_portion_from Entry.active
-                                           .posts
-                                           .includes(:user, :entry_reads, :entryable)
-                                           .recent
+    # 1. Загружаем афиши
+    @afishas = Post.afisha_active
+                  .includes(:entry)
+                  .order(Arel.sql("json_extract(setting, '$.event_date') ASC"))
+
+    # 2. Получаем ID записей (entries), которые уже есть в афише
+    afisha_entry_ids = @afishas.map(&:entry).compact.map(&:id)
+
+    # 3. Исключаем их из основной ленты через .where.not
+    scope = Entry.active.posts
+    scope = scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
+
+    set_page_and_extract_portion_from scope.includes(:user, :entry_reads, :entryable).recent
 
     Current.user.entry_reads.load if authenticated?
 
-    render Views::Entries::Index.new(page: @page)
+    render Views::Entries::Index.new(page: @page, afishas: @afishas)
   end
 
   def show
@@ -90,7 +98,7 @@ class EntriesController < ApplicationController
     def entry_params
       params.expect(entry: [
         :content, :entryable_type, entryable_attributes: [
-          :id, :no_comments, :duration, :is_afisha, :event_date,
+          :id, :no_comments, :duration, :is_afisha, :event_date, :event_duration,
           :urgent, :important, :event, :question, :sell, :buy, :help
         ]
       ])

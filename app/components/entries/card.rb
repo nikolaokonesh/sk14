@@ -12,12 +12,14 @@ class Components::Entries::Card < Components::Base
       div(class: "flex items-center gap-2") do
         span { @entry.user.username }
         span(class: "text-xs pt-1") { render Components::Shared::CreatedAt.new(entry: @entry) }
+
         render_images_indicator
         span { render(Components::Entries::ReadBadge.new(entry: @entry, user: @user)) if show_read_state_badge? }
       end
       div(class: "list-col-wrap") do
         span(class: "flex items-center") do
           render Components::Entries::TagsListing.new(entry: @entry)
+          render_afisha_mini_badge if @entry.entryable.is_afisha?
         end
         plain truncate(@entry.title, length: 200, omission: "... Читать далее")
       end
@@ -50,5 +52,30 @@ class Components::Entries::Card < Components::Base
 
   def show_read_state_badge?
     @user && @entry.user_id != @user.id && @entry.post?
+  end
+
+  def render_afisha_mini_badge
+    span(class: "font-bold uppercase rounded text-[9px] px-1 bg-cyan-500/20 text-cyan-500 mr-1") { "Афиша" }
+
+    post = @entry.entryable
+    start_date = Time.zone.parse(post.event_date) rescue nil
+    return unless start_date
+
+    duration = post.event_duration.to_i
+    end_date = start_date + (duration > 0 ? duration : 1).days
+    now = Time.current
+
+    if now > end_date
+      # СОБЫТИЕ ПРОШЛО
+      span(class: "badge text-ghost badge-xs opacity-50 font-bold uppercase text-[9px] px-1") { "Прошло" }
+    elsif now >= start_date && now <= end_date
+      # ИДЕТ СЕЙЧАС
+      span(class: "badge text-error badge-xs font-bold uppercase text-[9px] px-1 animate-pulse") { "Идет!" }
+    else
+      # БУДУЩЕЕ (Дата начала)
+      span(class: "badge text-primary badge-xs font-bold uppercase text-[9px] px-1") do
+        now.to_date == start_date.to_date ? "Сегодня" : I18n.l(start_date, format: "%-d %b")
+      end
+    end
   end
 end

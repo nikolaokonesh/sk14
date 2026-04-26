@@ -50,6 +50,8 @@ class Views::Entries::Show < Views::Base
 
         # Основная карточка
         div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+          render_afisha_status if @entry.entryable.is_afisha?
+
           div(class: "p-4") do
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
             if @entry.entryable.no_comments?
@@ -70,5 +72,63 @@ class Views::Entries::Show < Views::Base
     return false if Current.user.post_read_for?(@entry)
     return false unless @entry.post?
     true
+  end
+
+  def render_afisha_status
+    post = @entry.entryable
+    start_date = Time.zone.parse(post.event_date) rescue nil
+    return unless start_date
+
+    duration = post.event_duration.to_i
+    # Считаем дату окончания
+    end_date = start_date + (duration > 0 ? duration : 1).days
+    now = Time.current
+
+    # ЛОГИКА СТАТУСОВ
+    is_finished      = now > end_date
+    is_ongoing       = now >= start_date && now <= end_date
+    is_upcoming_today = now.to_date == start_date.to_date && now < start_date
+
+    div(class: "w-full p-4 pb-0") do
+      # Если событие прошло, делаем контейнер более тусклым (opacity-70)
+      div(class: [ "flex items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5", ("opacity-70" if is_finished) ]) do
+        if is_finished
+          # СТАТУС: ЗАКОНЧИЛОСЬ
+          div(class: "flex items-center gap-2 bg-base-content/10 text-base-content/50 px-3 py-1 rounded-lg border border-base-content/20") do
+            plain raw lucide_icon("calendar-x", size: 14)
+            span(class: "text-xs font-black uppercase") { "Событие завершено" }
+          end
+        elsif is_ongoing
+          # СТАТУС: ИДЕТ СЕЙЧАС
+          div(class: "flex items-center gap-2 bg-error/20 text-error px-3 py-1 rounded-lg border border-error/30 animate-pulse") do
+            span(class: "relative flex h-2 w-2") do
+              span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75")
+              span(class: "relative inline-flex rounded-full h-2 w-2 bg-error")
+            end
+            span(class: "text-xs font-black uppercase") { "Идет сейчас" }
+          end
+        elsif is_upcoming_today
+          # СТАТУС: СЕГОДНЯ
+          div(class: "bg-warning/20 text-warning px-3 py-1 rounded-lg border border-warning/30 text-xs font-black uppercase") do
+            plain "Сегодня"
+          end
+        else
+          # СТАТУС: БУДУЩАЯ ДАТА
+          div(class: "bg-primary/20 text-primary px-3 py-1 rounded-lg border border-primary/30 text-xs font-black uppercase") do
+            plain I18n.l(start_date, format: "%-d %b")
+          end
+        end
+
+        # ДЕТАЛИ ВРЕМЕНИ (скрываем время, если событие уже совсем старое, или оставляем для инфо)
+        div(class: "flex flex-col") do
+          span(class: [ "text-sm font-black", ("line-through opacity-30" if is_finished) ]) do
+            start_date.strftime("%H:%M")
+          end
+          if duration > 1
+            span(class: "text-[10px] opacity-50 font-bold uppercase") { "Длительность: #{duration} дн." }
+          end
+        end
+      end
+    end
   end
 end

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  def initialize(page:)
+  def initialize(page:, afishas:)
     @page = page
+    @afishas = afishas
   end
 
   def view_template
@@ -10,6 +11,9 @@ class Views::Entries::Index < Views::Base
     if @page.first?
       turbo_stream_from(:entries)
       render Components::Entries::IndexCardTop.new
+
+      render Components::Entries::AfishaSection.new(afishas: @afishas)
+
       ul(id: "entries_list", class: "list bg-base-100 rounded-box shadow-md") do
         render_records
         render_next_page_frame

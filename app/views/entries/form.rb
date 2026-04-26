@@ -50,26 +50,49 @@ class Views::Entries::Form < Views::Base
           end
 
           # --- 2. ПОЛЯ АФИШИ (Скрыты по умолчанию) ---
-          #
           div(class: [ "m-2 mb-6", ("hidden" unless is_afisha) ], data_post_form_target: "afishaFields") do
-            div(class: "bg-cyan-800 p-4 rounded-md border-2 border-cyan-800/30") do
-              # Вывод ошибки валидации
-              if @entry.entryable.errors[:event_date].any?
-                p(class: "text-error text-sm font-bold mb-2") { @entry.entryable.errors[:event_date].join(", ") }
-              else
-                label(class: "label font-bold opacity-70") { "Дата и время события" }
+            div(class: "bg-cyan-900/40 p-4 rounded-2xl border-2 border-cyan-500/30") do
+              
+              div(class: "flex flex-col md:flex-row gap-4") do
+                # Блок Даты (занимает основное место)
+                div(class: "flex-1") do
+                  # Ошибка валидации
+                  if @entry.entryable.errors[:event_date].any?
+                    label(class: "label text-xs text-error uppercase") { @entry.entryable.errors[:event_date].first }
+                  else
+                    label(class: "label font-black text-xs uppercase opacity-60") { "Начало события" }
+                  end
+                  plain fields.datetime_field :event_date,
+                        class: [
+                          "input input-bordered border-cyan-500/50 w-full bg-base-300 rounded-xl text-sm",
+                          ("input-error" if @entry.entryable.errors[:event_date].any?)
+                        ]
+                end
+
+                # Блок Длительности (статичный выбор)
+                div(class: "w-full md:w-40") do
+                  label(class: "label font-black text-xs uppercase opacity-60 text-cyan-400") { "Длительность" }
+                  plain fields.select :event_duration,
+                        (1..14).map { |d| ["#{d} #{Russian.p(d, 'день', 'дня', 'дней')}", d] },
+                        {},
+                        { class: "select select-bordered border-cyan-500/50 w-full bg-base-300 rounded-xl text-sm font-bold" }
+                end
               end
-              plain fields.datetime_field :event_date,
-                    class: [
-                      "input input-border border-cyan-500 w-full bg-base-300/70 rounded-xl text-lg",
-                      ("input-error" if @entry.entryable.errors[:event_date].any?) # Подсветка рамки красным
-                    ]
-              p(class: "text-[10px] mt-2 text-center uppercase font-bold") do
-                span(class: "badge badge-error badge-xs rounded-full mr-1") { }
-                span(class: "opacity-50") { "Пост появится за неделю до события и будет автоматически удален после завершения." }
+
+              # Описание логики работы
+              div(class: "mt-4 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20") do
+                div(class: "flex items-start gap-3") do
+                  plain raw lucide_icon("info", class: "size-4 text-cyan-400 mt-0.5")
+                  div do
+                    p(class: "text-[11px] font-bold text-cyan-100 leading-tight") do
+                      "Пост появится в Афише автоматически за 7 дней до начала и исчезнет через выбранное количество дней после даты старта."
+                    end
+                  end
+                end
               end
             end
           end
+
 
           # --- 3. СТАНДАРТНЫЕ ПОЛЯ (Срок и Категории) ---
           div(class: [ "", ("hidden" if is_afisha) ], data_post_form_target: "standardFields") do
