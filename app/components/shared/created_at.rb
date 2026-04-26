@@ -24,7 +24,7 @@ class Components::Shared::CreatedAt < Phlex::HTML
       end
 
     # Если прошло меньше 2 часов — показываем "X минут назад"
-    elsif now < local_time + 2.hours
+    elsif now < local_time + 3.hours
       span(class: "flex items-top gap-1") do
         plain raw lucide_icon("clock", size: 12, class: "text-error")
         span(id: dom_id(@entry, :created_at)) { render Components::Shared::TimeInWords.new(entry: @entry) }

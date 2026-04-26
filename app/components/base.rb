@@ -13,6 +13,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::TurboStreamFrom
   include Phlex::Rails::Helpers::StripTags
   include Phlex::Rails::Helpers::DOMID
+  include Phlex::Rails::Helpers::ButtonTo
 
   register_value_helper :current_user
   register_value_helper :lucide_icon

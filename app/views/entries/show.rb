@@ -80,26 +80,25 @@ class Views::Entries::Show < Views::Base
     return unless start_date
 
     duration = post.event_duration.to_i
-    # Считаем дату окончания
     end_date = start_date + (duration > 0 ? duration : 1).days
     now = Time.current
 
     # ЛОГИКА СТАТУСОВ
-    is_finished      = now > end_date
-    is_ongoing       = now >= start_date && now <= end_date
+    manually_finished = post.manual_finished?
+    time_expired = now > end_date
+    is_finished = time_expired || manually_finished
+
+    is_ongoing = now >= start_date && now <= end_date
     is_upcoming_today = now.to_date == start_date.to_date && now < start_date
 
     div(class: "w-full p-4 pb-0") do
-      # Если событие прошло, делаем контейнер более тусклым (opacity-70)
       div(class: [ "flex items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5", ("opacity-70" if is_finished) ]) do
         if is_finished
-          # СТАТУС: ЗАКОНЧИЛОСЬ
           div(class: "flex items-center gap-2 bg-base-content/10 text-base-content/50 px-3 py-1 rounded-lg border border-base-content/20") do
             plain raw lucide_icon("calendar-x", size: 14)
-            span(class: "text-xs font-black uppercase") { "Событие завершено" }
+            span(class: "text-xs font-black uppercase") { "Завершено" }
           end
         elsif is_ongoing
-          # СТАТУС: ИДЕТ СЕЙЧАС
           div(class: "flex items-center gap-2 bg-error/20 text-error px-3 py-1 rounded-lg border border-error/30 animate-pulse") do
             span(class: "relative flex h-2 w-2") do
               span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75")
@@ -108,24 +107,46 @@ class Views::Entries::Show < Views::Base
             span(class: "text-xs font-black uppercase") { "Началось" }
           end
         elsif is_upcoming_today
-          # СТАТУС: СЕГОДНЯ
           div(class: "bg-warning/20 text-warning px-3 py-1 rounded-lg border border-warning/30 text-xs font-black uppercase") do
             plain "Сегодня"
           end
         else
-          # СТАТУС: БУДУЩАЯ ДАТА
           div(class: "bg-primary/20 text-primary px-3 py-1 rounded-lg border border-primary/30 text-xs font-black uppercase") do
             plain I18n.l(start_date, format: "%-d %b")
           end
         end
 
-        # ДЕТАЛИ ВРЕМЕНИ (скрываем время, если событие уже совсем старое, или оставляем для инфо)
         div(class: "flex flex-col") do
           span(class: [ "text-sm font-black", ("line-through opacity-30" if is_finished) ]) do
             start_date.strftime("%H:%M")
           end
           if duration > 1
             span(class: "text-[10px] opacity-50 font-bold uppercase") { "Длительность: #{duration} дн." }
+          end
+        end
+
+        # БЛОК УПРАВЛЕНИЯ (Кнопка)
+        if authenticated? && can?(:update, @entry)
+          # Кнопка доступна, если событие идет сейчас ИЛИ если оно было остановлено вручную
+          if is_ongoing || manually_finished
+            div(class: "ml-auto") do
+              button_to entry_path(@entry),
+                        params: {
+                          entry: {
+                            entryable_attributes: {
+                              id: post.id,
+                              is_afisha: true,
+                              manual_finished: !manually_finished, # Инвертируем состояние
+                              finished_at: (!manually_finished ? Time.current.utc.iso8601 : "")
+                            }
+                          }
+                        },
+                        method: :patch,
+                        class: [ "btn btn-xs rounded-lg", (manually_finished ? "btn-success" : "btn-outline btn-error") ],
+                        data: { turbo_confirm: (manually_finished ? "Возобновить мероприятие?" : "Событие закончилось? Оно пропадет из Афиши, но останется в ленте. Его можно будет вернуть до конца срока") } do
+                manually_finished ? "Возобновить" : "Завершить"
+              end
+            end
           end
         end
       end

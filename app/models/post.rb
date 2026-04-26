@@ -6,15 +6,25 @@ class Post < ApplicationRecord
                      no_comments: false,
                      duration: "forever",
                      is_afisha: false,     # Режим афиши
-                     event_date: "" ,      # Дата события
-                     event_duration: 1 
+                     event_date: "",      # Дата события
+                     event_duration: 1,
+                     manual_finished: false,
+                     finished_at: ""
 
   scope :afisha_active, -> {
     today = Time.current.to_date
-    
-    # Извлекаем все поля из JSON-столбца 'setting'
+    # Время 6 часов назад в формате ISO для SQLite
+    limit_time = 6.hours.ago.utc.iso8601
+
     where("json_extract(setting, '$.is_afisha') = ?", true)
       .where("date(json_extract(setting, '$.event_date')) <= ?", today + 7.days)
+      # ЛОГИКА: Показываем если НЕ завершено вручную
+      # ИЛИ если завершено, но время в finished_at свежее, чем 12 часов назад
+      .where(
+        "(json_extract(setting, '$.manual_finished') IS NOT ? OR json_extract(setting, '$.finished_at') >= ?)",
+        true,
+        limit_time
+      )
       .where("date(json_extract(setting, '$.event_date'), '+' || CAST(json_extract(setting, '$.event_duration') AS INT) || ' days') >= ?", today.to_s)
   }
 

@@ -30,25 +30,34 @@ class Components::Entries::AfishaSection < Components::Base
   private
 
   def render_afisha_card(post)
-    # 1. Используем Time.zone.parse — он прочитает "13:00" как 13:00 вашего города
     start_date = Time.zone.parse(post.event_date) rescue Time.current
-
     duration   = post.event_duration.to_i
     duration   = 1 if duration < 1
     end_date   = start_date + duration.days
+    now        = Time.current
 
-    now = Time.current
+    # ЛОГИКА СТАТУСОВ
+    manually_finished = post.manual_finished?
+    time_expired      = now > end_date
+    is_finished       = time_expired || manually_finished # Флаг завершения
 
-    # 2. Логика переключения
-    is_ongoing        = now >= start_date && now <= end_date
-    is_upcoming_today = now.to_date == start_date.to_date && now < start_date
+    is_ongoing        = !is_finished && now >= start_date && now <= end_date
+    is_upcoming_today = !is_finished && now.to_date == start_date.to_date && now < start_date
 
     # --- ВЕРСТКА КАРТОЧКИ ---
-    div(class: "snap-center shrink-0 w-64 bg-base-200 rounded-3xl p-4 shadow-sm border border-base-300 relative overflow-hidden transition-all active:scale-95 hover:border-primary/50") do
+    # Добавляем фильтр (opacity и grayscale), если событие завершено
+    div(class: [
+          "snap-center shrink-0 w-64 bg-base-200 rounded-3xl p-4 shadow-sm border relative overflow-hidden transition-all active:scale-95 hover:border-primary/50",
+          (is_finished ? "opacity-60 grayscale-[0.5] border-base-300" : "border-base-300")
+        ]) do
       # ПРАВЫЙ ВЕРХНИЙ УГОЛ: Бейджи статуса
       div(class: "absolute top-0 right-0 overflow-hidden flex") do
-        if is_ongoing
-          # ПУЛЬСИРУЮЩИЙ КРАСНЫЙ: когда время наступило или событие в процессе
+        if is_finished
+          # СТАТУС: ЗАВЕРШЕНО
+          div(class: "bg-base-content/20 text-base-content/60 px-3 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase") do
+            plain "Завершено"
+          end
+        elsif is_ongoing
           div(class: "bg-error text-error-content px-3 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase flex items-center gap-2 shadow-lg shadow-error/20") do
             span(class: "relative flex h-2 w-2") do
               span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75")
@@ -57,12 +66,10 @@ class Components::Entries::AfishaSection < Components::Base
             plain "Началось"
           end
         elsif is_upcoming_today
-          # ЖЕЛТЫЙ: только если сегодня, но время еще НЕ пришло
           div(class: "bg-warning text-warning-content px-3 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase shadow-lg shadow-warning/20") do
             plain "Сегодня"
           end
         else
-          # СИНИЙ: стандартная дата для будущих дней
           div(class: "bg-primary text-primary-content px-3 py-1.5 rounded-bl-2xl font-black text-xs shadow-lg shadow-primary/20") do
             plain I18n.l(start_date, format: "%-d %b")
           end
@@ -71,30 +78,28 @@ class Components::Entries::AfishaSection < Components::Base
 
       # ОСНОВНОЙ КОНТЕНТ
       div(class: "flex flex-col gap-3 mt-2") do
-        # Первая строка: Время и флаг длительности
         div(class: "flex items-center justify-between") do
-          div(class: "flex items-center gap-1 text-primary") do
+          div(class: [ "flex items-center gap-1", (is_finished ? "opacity-30" : "text-primary") ]) do
             plain raw lucide_icon("clock", size: 14)
             span(class: "text-xs font-black tracking-widest") { start_date.strftime("%H:%M") }
           end
 
           if duration > 1
-            span(class: "badge badge-ghost badge-sm text-[10px] font-bold opacity-60 px-2") do
-              # Короткое обозначение длительности
+            span(class: "badge badge-ghost badge-sm text-[10px] font-bold opacity-40 px-2") do
               plain "#{duration} дн."
             end
           end
         end
 
-        # Вторая строка: Заголовок поста
-        div(class: "font-black leading-tight line-clamp-3 min-h-[2.5rem] text-sm text-base-content/90") do
-          # Берем заголовок из связанной записи Entry
+        div(class: [ "font-black leading-tight line-clamp-3 min-h-[2.5rem] text-sm", (is_finished ? "text-base-content/40" : "text-base-content/90") ]) do
           plain post.entry.title.presence || "Событие"
         end
 
-        # Третья строка: Кнопка действия
         a(href: entry_path(post.entry),
-          class: "btn btn-sm btn-primary w-full rounded-xl mt-1 border-none hover:text-primary-content group transition-all") do
+          class: [
+            "btn btn-sm w-full rounded-xl mt-1 border-none group transition-all",
+            (is_finished ? "btn-neutral opacity-50" : "btn-primary hover:text-primary-content")
+          ]) do
           span(class: "text-[11px] font-bold uppercase tracking-wider") { "Подробнее" }
           plain raw lucide_icon("arrow-right", class: "size-3 transition-transform group-hover:translate-x-1")
         end

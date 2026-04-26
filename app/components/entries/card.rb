@@ -55,9 +55,9 @@ class Components::Entries::Card < Components::Base
   end
 
   def render_afisha_mini_badge
-    span(class: "font-bold uppercase rounded text-[9px] px-1 bg-cyan-500/20 text-cyan-500 mr-1") { "Афиша" }
-
+    # Оставляем метку "Афиша", но делаем её чуть тусклее, если событие завершено
     post = @entry.entryable
+
     start_date = Time.zone.parse(post.event_date) rescue nil
     return unless start_date
 
@@ -65,15 +65,28 @@ class Components::Entries::Card < Components::Base
     end_date = start_date + (duration > 0 ? duration : 1).days
     now = Time.current
 
-    if now > end_date
-      # СОБЫТИЕ ПРОШЛО
-      span(class: "badge text-ghost badge-xs opacity-50 font-bold uppercase text-[9px] px-1") { "Прошло" }
+    # ЛОГИКА СТАТУСОВ
+    manually_finished = post.manual_finished?
+    time_expired      = now > end_date
+    is_finished       = time_expired || manually_finished
+
+    # Отрисовка основной метки "Афиша"
+    span(class: [
+      "font-bold uppercase rounded text-[9px] px-1 mr-1",
+      (is_finished ? "bg-base-content/10 text-base-content/40" : "bg-cyan-500/20 text-cyan-500")
+    ]) { "Афиша" }
+
+    if is_finished
+      # СОБЫТИЕ ЗАВЕРШЕНО (вручную или по времени)
+      span(class: "badge badge-ghost badge-xs opacity-50 font-bold uppercase text-[9px] px-1") do
+        manually_finished ? "Завершено" : "Прошло"
+      end
     elsif now >= start_date && now <= end_date
       # ИДЕТ СЕЙЧАС
-      span(class: "badge text-error badge-xs font-bold uppercase text-[9px] px-1 animate-pulse") { "Идет!" }
+      span(class: "badge badge-error badge-xs font-bold uppercase text-[9px] px-1 animate-pulse") { "Идет!" }
     else
-      # БУДУЩЕЕ (Дата начала)
-      span(class: "badge text-primary badge-xs font-bold uppercase text-[9px] px-1") do
+      # БУДУЩЕЕ
+      span(class: "badge badge-primary badge-xs font-bold uppercase text-[9px] px-1") do
         now.to_date == start_date.to_date ? "Сегодня" : I18n.l(start_date, format: "%-d %b")
       end
     end

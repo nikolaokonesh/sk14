@@ -8,14 +8,17 @@ class EntriesController < ApplicationController
                   .includes(:entry)
                   .order(Arel.sql("json_extract(setting, '$.event_date') ASC"))
 
-    # 2. Получаем ID записей (entries), которые уже есть в афише
-    afisha_entry_ids = @afishas.map(&:entry).compact.map(&:id)
+    # 2. Получаем ID связанных Entry максимально эффективно
+    # Мы обращаемся к объекту entry и берем его id.
+    # Так как мы сделали .includes(:entry), это не вызовет N+1.
+    afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact
 
-    # 3. Исключаем их из основной ленты через .where.not
-    scope = Entry.active.posts
-    scope = scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
+    # 3. Исключаем их из ленты
+    entries_scope = Entry.active.posts.recent
+    entries_scope = entries_scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
 
-    set_page_and_extract_portion_from scope.includes(:user, :entry_reads, :entryable).recent
+    # 4. Пагинация и рендер
+    set_page_and_extract_portion_from entries_scope.includes(:user, :entry_reads, :entryable)
 
     Current.user.entry_reads.load if authenticated?
 
@@ -98,7 +101,7 @@ class EntriesController < ApplicationController
     def entry_params
       params.expect(entry: [
         :content, :entryable_type, entryable_attributes: [
-          :id, :no_comments, :duration, :is_afisha, :event_date, :event_duration,
+          :id, :no_comments, :duration, :is_afisha, :event_date, :event_duration, :manual_finished, :finished_at,
           :urgent, :important, :event, :question, :sell, :buy, :help
         ]
       ])
