@@ -54,7 +54,7 @@ class Components::Entries::AfishaSection < Components::Base
               span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75")
               span(class: "relative inline-flex rounded-full h-2 w-2 bg-white")
             end
-            plain "Идет сейчас"
+            plain "Началось"
           end
         elsif is_upcoming_today
           # ЖЕЛТЫЙ: только если сегодня, но время еще НЕ пришло

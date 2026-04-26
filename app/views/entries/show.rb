@@ -105,7 +105,7 @@ class Views::Entries::Show < Views::Base
               span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75")
               span(class: "relative inline-flex rounded-full h-2 w-2 bg-error")
             end
-            span(class: "text-xs font-black uppercase") { "Идет сейчас" }
+            span(class: "text-xs font-black uppercase") { "Началось" }
           end
         elsif is_upcoming_today
           # СТАТУС: СЕГОДНЯ
