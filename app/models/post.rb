@@ -9,7 +9,7 @@ class Post < ApplicationRecord
 
   scope :afisha_active, -> {
     today = Time.current.to_date
-    limit_time = 6.hours.ago.utc
+    limit_time = 3.hours.ago.utc
 
     where(is_afisha: true)
       .where("event_date <= ?", today + 7.days)
