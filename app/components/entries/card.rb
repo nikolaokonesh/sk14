@@ -58,7 +58,7 @@ class Components::Entries::Card < Components::Base
     # Оставляем метку "Афиша", но делаем её чуть тусклее, если событие завершено
     post = @entry.entryable
 
-    start_date = Time.zone.parse(post.event_date) rescue nil
+    start_date = post.event_date
     return unless start_date
 
     duration = post.event_duration.to_i
@@ -83,10 +83,10 @@ class Components::Entries::Card < Components::Base
       end
     elsif now >= start_date && now <= end_date
       # ИДЕТ СЕЙЧАС
-      span(class: "badge badge-error badge-xs font-bold uppercase text-[9px] px-1 animate-pulse") { "Идет!" }
+      span(class: "badge badge-error badge-xs font-bold uppercase text-[9px] px-1 animate-pulse") { "Началось" }
     else
       # БУДУЩЕЕ
-      span(class: "badge badge-primary badge-xs font-bold uppercase text-[9px] px-1") do
+      span(class: "badge bg-cyan-500/20 badge-xs text-blue-300 font-bold uppercase text-[9px] px-1") do
         now.to_date == start_date.to_date ? "Сегодня" : I18n.l(start_date, format: "%-d %b")
       end
     end

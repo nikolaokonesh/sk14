@@ -3,21 +3,21 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
-    # 1. Загружаем афиши
+    # 1. Загружаем афиши.
+    # Теперь просто используем колонку event_date.
+    # Если в самой модели Post в scope уже прописан order, то здесь .order можно вообще убрать.
     @afishas = Post.afisha_active
                   .includes(:entry)
-                  .order(Arel.sql("json_extract(setting, '$.event_date') ASC"))
+                  .order(event_date: :asc)
 
-    # 2. Получаем ID связанных Entry максимально эффективно
-    # Мы обращаемся к объекту entry и берем его id.
-    # Так как мы сделали .includes(:entry), это не вызовет N+1.
+    # 2. Получаем ID связанных Entry.
     afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact
 
-    # 3. Исключаем их из ленты
+    # 3. Исключаем их из ленты.
     entries_scope = Entry.active.posts.recent
     entries_scope = entries_scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
 
-    # 4. Пагинация и рендер
+    # 4. Пагинация и рендер.
     set_page_and_extract_portion_from entries_scope.includes(:user, :entry_reads, :entryable)
 
     Current.user.entry_reads.load if authenticated?

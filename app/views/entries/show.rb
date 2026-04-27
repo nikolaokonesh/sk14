@@ -13,6 +13,7 @@ class Views::Entries::Show < Views::Base
       div(class: "flex items-center text-lg px-2") do
         span(class: "mr-2 font-bold") { @entry.user.username(:full) }
         span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
+
         if show_read_state_badge?
           turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
         end
@@ -23,6 +24,7 @@ class Views::Entries::Show < Views::Base
             ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-100 p-2 shadow-sm") do
               div(class: "flex gap-2") do
                 a(href: edit_entry_path(@entry), class: "btn btn-success") { lucide_icon("pencil") } if can?(:update, @entry)
+
                 if @entry.trash == true
                   if can?(:restore, @entry)
                     a(href: trash_path(@entry, format: :html),
@@ -39,21 +41,23 @@ class Views::Entries::Show < Views::Base
           end
         end
       end
+
       div(class: "p-2") do
         render Components::Entries::TagsListing.new(entry: @entry)
       end
 
       # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ
       div(class: "relative") do
-        # Радужная подложка (glow)
         render Components::Shared::BgGradient.new(opacity: "opacity-30")
 
         # Основная карточка
         div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+          # Рендерим статус афиши
           render_afisha_status if @entry.entryable.is_afisha?
 
           div(class: "p-4") do
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
+
             if @entry.entryable.no_comments?
               div(class: "divider opacity-10 mt-2")
               p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
@@ -76,7 +80,7 @@ class Views::Entries::Show < Views::Base
 
   def render_afisha_status
     post = @entry.entryable
-    start_date = Time.zone.parse(post.event_date) rescue nil
+    start_date = Time.zone.parse(post.event_date.to_s) rescue nil
     return unless start_date
 
     duration = post.event_duration.to_i
@@ -85,14 +89,18 @@ class Views::Entries::Show < Views::Base
 
     # ЛОГИКА СТАТУСОВ
     manually_finished = post.manual_finished?
-    time_expired = now > end_date
-    is_finished = time_expired || manually_finished
+    time_expired      = now > end_date
+    is_finished       = time_expired || manually_finished
 
-    is_ongoing = now >= start_date && now <= end_date
-    is_upcoming_today = now.to_date == start_date.to_date && now < start_date
+    # Флаг: наступило ли время начала события
+    time_has_come     = now >= start_date
+
+    is_ongoing        = !is_finished && time_has_come && now <= end_date
+    is_upcoming_today = !is_finished && now.to_date == start_date.to_date && !time_has_come
 
     div(class: "w-full p-4 pb-0") do
       div(class: [ "flex items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5", ("opacity-70" if is_finished) ]) do
+        # Бейджи состояния
         if is_finished
           div(class: "flex items-center gap-2 bg-base-content/10 text-base-content/50 px-3 py-1 rounded-lg border border-base-content/20") do
             plain raw lucide_icon("calendar-x", size: 14)
@@ -116,6 +124,7 @@ class Views::Entries::Show < Views::Base
           end
         end
 
+        # Время начала
         div(class: "flex flex-col") do
           span(class: [ "text-sm font-black", ("line-through opacity-30" if is_finished) ]) do
             start_date.strftime("%H:%M")
@@ -125,10 +134,11 @@ class Views::Entries::Show < Views::Base
           end
         end
 
-        # БЛОК УПРАВЛЕНИЯ (Кнопка)
+        # БЛОК УПРАВЛЕНИЯ (Только для автора)
         if authenticated? && can?(:update, @entry)
-          # Кнопка доступна, если событие идет сейчас ИЛИ если оно было остановлено вручную
-          if is_ongoing || manually_finished
+          # Кнопка доступна, только если время начала УЖЕ наступило
+          # (или если пост уже был завершен вручную, чтобы вернуть его)
+          if (time_has_come && !time_expired) || manually_finished
             div(class: "ml-auto") do
               button_to entry_path(@entry),
                         params: {
@@ -136,14 +146,14 @@ class Views::Entries::Show < Views::Base
                             entryable_attributes: {
                               id: post.id,
                               is_afisha: true,
-                              manual_finished: !manually_finished, # Инвертируем состояние
-                              finished_at: (!manually_finished ? Time.current.utc.iso8601 : "")
+                              manual_finished: !manually_finished,
+                              finished_at: (!manually_finished ? Time.current.utc : nil)
                             }
                           }
                         },
                         method: :patch,
                         class: [ "btn btn-xs rounded-lg", (manually_finished ? "btn-success" : "btn-outline btn-error") ],
-                        data: { turbo_confirm: (manually_finished ? "Возобновить мероприятие?" : "Событие закончилось? Оно пропадет из Афиши, но останется в ленте. Его можно будет вернуть до конца срока") } do
+                        data: { turbo_confirm: (manually_finished ? "Возобновить мероприятие?" : "Завершить событие? Оно переместится из Афиши в общую ленту.") } do
                 manually_finished ? "Возобновить" : "Завершить"
               end
             end

@@ -127,10 +127,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
 
   create_table "posts", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "premiera"
-    t.json "setting"
-    t.json "tags_listing"
+    t.datetime "event_date"
+    t.integer "event_duration", default: 1
+    t.datetime "finished_at"
+    t.boolean "is_afisha", default: false, null: false
+    t.boolean "manual_finished", default: false
+    t.json "setting", default: {}, null: false
+    t.json "tags_listing", default: {}, null: false
     t.datetime "updated_at", null: false
+    t.index ["event_date"], name: "index_posts_on_event_date"
+    t.index ["is_afisha"], name: "index_posts_on_is_afisha"
   end
 
   create_table "roles", force: :cascade do |t|
