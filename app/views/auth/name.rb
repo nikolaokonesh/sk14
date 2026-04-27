@@ -21,17 +21,17 @@ class Views::Auth::Name < Views::Auth
             # Левая часть: Приветствие
             div(class: "text-center lg:text-left text-neutral-content max-w-md") do
               div(class: "mb-6 inline-flex p-3 bg-white/10 rounded-2xl backdrop-blur-md") do
-                plain raw lucide_icon("user", class: "size-10 text-primary")
+                plain raw lucide_icon("user", class: "size-10 text-info")
               end
 
               h1(class: "text-4xl md:text-6xl font-black tracking-tighter leading-tight mb-6") do
                 plain "Давайте"
                 br(class: "hidden md:block")
-                span(class: "text-primary ml-2 md:ml-0") { "знакомиться" }
+                span(class: "text-info ml-2 md:ml-0") { "знакомиться" }
               end
 
               p(class: "text-sm md:text-lg opacity-90 font-medium leading-relaxed") do
-                plain "Представьтесь, чтобы другим пользователям было удобнее к вам обращаться."
+                plain "Представьтесь, чтобы другим пользователям было удобнее к вам обращаться. Ваше имя, псевдоним или акроним вашей организации."
                 span(class: "block mt-2 text-xs md:text-sm opacity-60") { "Это не обязательно — вы можете сделать это позже." }
               end
             end
@@ -44,7 +44,7 @@ class Views::Auth::Name < Views::Auth
                 form_with(model: @user, url: auth_name_path(@user), method: :put, class: "space-y-6") do |f|
                   div(class: "form-control") do
                     label(class: "label p-2") do
-                      span(class: "label-text font-bold") { "Имя или Псевдоним" }
+                      span(class: "label-text font-bold") { "Имя" }
                     end
 
                     plain f.text_field :name,

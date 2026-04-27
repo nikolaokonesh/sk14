@@ -23,13 +23,13 @@ class Views::Auth::Sign < Views::Auth
             # ЛЕВАЯ ЧАСТЬ: Приветствие
             div(class: "text-center lg:text-left text-neutral-content max-w-md lg:mt-10") do
               div(class: "mb-6 inline-flex p-3 bg-white/10 rounded-2xl backdrop-blur-md shadow-inner") do
-                plain raw lucide_icon("log-in", class: "size-10 text-primary")
+                plain raw lucide_icon("log-in", class: "size-10 text-info")
               end
 
               h1(class: "text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-8") do
                 plain "Добро"
                 br(class: "hidden lg:block")
-                span(class: "text-primary lg:block") { " пожаловать" }
+                span(class: "text-info lg:block") { " пожаловать" }
               end
 
               p(class: "text-lg md:text-xl opacity-90 font-medium leading-relaxed mb-6") do
