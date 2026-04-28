@@ -17,7 +17,7 @@ class Components::Shared::CreatedAt < Phlex::HTML
     now = Time.current.in_time_zone(Time.zone)
     today = now.to_date
 
-    if local_time.year != today.year
+    if !local_time.this_year?
       span(class: "flex items-top gap-1") do
         plain raw lucide_icon("clock", size: 12, class: "opacity-25")
         time_tag(@entry.created_at, format: "%d %B %Y")
@@ -31,13 +31,13 @@ class Components::Shared::CreatedAt < Phlex::HTML
       end
 
     # Если прошло больше 2 часов, но всё еще сегодня
-    elsif local_date == today
+    elsif local_date.today?
       span(class: "flex items-top gap-1") do
         plain raw lucide_icon("clock", size: 12, class: "text-warning")
         time_tag(@entry.created_at, format: "сегодня в %H:%M")
       end
 
-    elsif local_date == today - 1.day
+    elsif local_date.yesterday?
       span(class: "flex items-top gap-1") do
         plain raw lucide_icon("clock", size: 12, class: "text-success")
         time_tag(@entry.created_at, format: "вчера в %H:%M")

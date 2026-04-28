@@ -8,14 +8,14 @@ class Post < ApplicationRecord
                      duration: "forever"
 
   scope :afisha_active, -> {
-    today = Time.current.to_date
-    limit_time = 3.hours.ago.utc
+    limit_manual = 1.hour.ago.utc
 
     where(is_afisha: true)
-      .where("event_date <= ?", today + 7.days)
-      .where("manual_finished = ? OR finished_at >= ?", false, limit_time)
-      .where("date(event_date, '+' || event_duration || ' days') >= ?", today.to_s)
+      .where("event_date <= ?", Time.current.to_date + 7.days)
+      .where("manual_finished = ? OR finished_at >= ?", false, limit_manual)
+      .order(event_date: :asc)
   }
+
 
   # Теги остаются в JSON (это удобно)
   has_delegated_json :tags_listing,
