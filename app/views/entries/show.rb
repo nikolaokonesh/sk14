@@ -9,7 +9,7 @@ class Views::Entries::Show < Views::Base
     turbo_stream_from(@entry)
 
     div(class: "py-4") do
-      # Блок автора (мета)
+      # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
       div(class: "flex items-center text-lg px-2") do
         span(class: "mr-2 font-bold") { @entry.user.username(:full) }
         span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
@@ -18,46 +18,28 @@ class Views::Entries::Show < Views::Base
           turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
         end
 
-        if authenticated? && can?(:manage, @entry)
-          div(class: "dropdown dropdown-end") do
-            div(tabindex: 0, role: "button", class: "px-2 cursor-pointer") { lucide_icon("ellipsis") }
-            ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-100 p-2 shadow-sm") do
-              div(class: "flex gap-2") do
-                a(href: edit_entry_path(@entry), class: "btn btn-success") { lucide_icon("pencil") } if can?(:update, @entry)
-
-                if @entry.trash == true
-                  if can?(:restore, @entry)
-                    a(href: trash_path(@entry, format: :html),
-                      data: { turbo_method: :put, turbo_confirm: "Вы точно хотите восстановить?" },
-                      class: "btn btn-warning") { lucide_icon("rotate-ccw") }
-                  end
-                else
-                  a(href: entry_path(@entry, format: :html),
-                    data: { turbo_method: :delete, turbo_confirm: (current_user&.has_role?(:admin) && @entry.user_id != current_user.id ? "Удалить навсегда?" : "Вы точно хотите удалить?") },
-                    class: "btn btn-error") { lucide_icon("trash") }
-                end
-              end
-            end
-          end
-        end
+        # Кнопки управления (Редактировать / Удалить)
+        render_management_dropdown if authenticated? && can?(:manage, @entry)
       end
 
+      # Теги (категории)
       div(class: "p-2") do
-        render Components::Entries::TagsListing.new(entry: @entry)
+        render Components::Entries::TagBadge.new(entry: @entry)
       end
 
-      # КОНТЕЙНЕР С РАДУЖНЫМ СВЕЧЕНИЕМ
+      # --- ОСНОВНОЙ КОНТЕНТ ПОСТА ---
       div(class: "relative") do
         render Components::Shared::BgGradient.new(opacity: "opacity-30")
 
-        # Основная карточка
         div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
-          # Рендерим статус афиши
+          # Если это афиша — рендерим специальный блок статуса
           render_afisha_status if @entry.entryable.is_afisha?
 
           div(class: "p-4") do
+            # Тело поста (Rich Text)
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
 
+            # Плашка "Без комментариев", если отключены
             if @entry.entryable.no_comments?
               div(class: "divider opacity-10 mt-2")
               p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
@@ -70,6 +52,67 @@ class Views::Entries::Show < Views::Base
 
   private
 
+  # Блок с деталями афиши (время, статус, кнопка завершения)
+  def render_afisha_status
+    post = @entry.entryable
+    state = post.afisha_state
+    is_finished = (state == :finished)
+
+    div(class: "w-full p-4 pb-0") do
+      div(class: [
+        "flex flex-wrap items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5",
+        ("opacity-70" if is_finished)
+      ]) do
+        # 1. Используем наш новый универсальный бейдж
+        render Components::Entries::AfishaBadge.new(entry: post, size: :md)
+
+        # 2. Информация о времени (используем методы модели)
+        div(class: "flex flex-col") do
+          span(class: [ "text-sm font-black tracking-tight", ("line-through opacity-30" if is_finished) ]) do
+            "#{post.event_date.strftime('%H:%M')} — #{post.end_date.strftime('%H:%M')}"
+          end
+          span(class: "text-[10px] opacity-50 font-bold uppercase") do
+            "Длительность: #{post.duration_text}"
+          end
+        end
+
+        # 3. Кнопка управления для автора
+        render_afisha_toggle_button(post)
+      end
+    end
+  end
+
+  # Кнопка "Завершить / Возобновить" для автора
+  def render_afisha_toggle_button(post)
+    return unless authenticated? && can?(:update, @entry)
+
+    state = post.afisha_state
+    # Кнопку показываем, если событие уже идет или уже завершено (чтобы возобновить)
+    if state == :ongoing || post.manual_finished?
+      manually = post.manual_finished?
+
+      div(class: "ml-auto") do
+        button_to entry_path(@entry),
+                  params: {
+                    entry: {
+                      entryable_attributes: {
+                        id: post.id,
+                        manual_finished: !manually,
+                        # Если возобновляем — возвращаем расчетное время окончания
+                        finished_at: (!manually ? Time.current : post.end_date)
+                      }
+                    }
+                  },
+                  method: :patch,
+                  class: [ "btn btn-xs rounded-lg shadow-sm", (manually ? "btn-success" : "btn-outline btn-error") ],
+                  data: { turbo_confirm: (manually ? "Возобновить мероприятие?" : "Завершить событие досрочно?") } do
+          manually ? "Возобновить" : "Завершить"
+        end
+      end
+    end
+  end
+
+  # Логика показа бейджа "не прочитано"
   def show_read_state_badge?
     return false unless current_user
     return false if @entry.user == current_user
@@ -78,85 +121,29 @@ class Views::Entries::Show < Views::Base
     true
   end
 
-  def render_afisha_status
-    post = @entry.entryable
-    start_date = Time.zone.parse(post.event_date.to_s) rescue nil
-    return unless start_date
-
-    duration = post.event_duration.to_i
-    end_date = start_date + (duration > 0 ? duration : 1).days
-    now = Time.current
-
-    # ЛОГИКА СТАТУСОВ
-    manually_finished = post.manual_finished?
-    time_expired      = now > end_date
-    is_finished       = time_expired || manually_finished
-
-    # Флаг: наступило ли время начала события
-    time_has_come     = now >= start_date
-
-    is_ongoing        = !is_finished && time_has_come && now <= end_date
-    is_upcoming_today = !is_finished && now.to_date == start_date.to_date && !time_has_come
-
-    div(class: "w-full p-4 pb-0") do
-      div(class: [ "flex items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5", ("opacity-70" if is_finished) ]) do
-        # Бейджи состояния
-        if is_finished
-          div(class: "flex items-center gap-2 bg-base-content/10 text-base-content/50 px-3 py-1 rounded-lg border border-base-content/20") do
-            plain raw lucide_icon("calendar-x", size: 14)
-            span(class: "text-xs font-black uppercase") { "Завершено" }
+  # Вынес дропдаун в отдельный метод для чистоты view_template
+  def render_management_dropdown
+    div(class: "dropdown dropdown-end ml-auto") do
+      div(tabindex: 0, role: "button", class: "px-2 cursor-pointer opacity-50 hover:opacity-100") { raw lucide_icon("ellipsis") }
+      ul(tabindex: -1, class: "dropdown-content menu bg-base-300 rounded-box z-[100] p-2 shadow-xl border border-white/5") do
+        div(class: "flex gap-2") do
+          if can?(:update, @entry)
+            a(href: edit_entry_path(@entry), class: "btn btn-square btn-sm btn-success") { raw lucide_icon("pencil", size: 16) }
           end
-        elsif is_ongoing
-          div(class: "flex items-center gap-2 bg-error/20 text-error px-3 py-1 rounded-lg border border-error/30 animate-pulse") do
-            span(class: "relative flex h-2 w-2") do
-              span(class: "animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75")
-              span(class: "relative inline-flex rounded-full h-2 w-2 bg-error")
+
+          if @entry.trash?
+            if can?(:restore, @entry)
+              a(href: trash_path(@entry, format: :html),
+                data: { turbo_method: :put, turbo_confirm: "Восстановить пост?" },
+                class: "btn btn-square btn-sm btn-warning") { raw lucide_icon("rotate-ccw", size: 16) }
             end
-            span(class: "text-xs font-black uppercase") { "Началось" }
-          end
-        elsif is_upcoming_today
-          div(class: "bg-warning/20 text-warning px-3 py-1 rounded-lg border border-warning/30 text-xs font-black uppercase") do
-            plain "Сегодня"
-          end
-        else
-          div(class: "bg-primary/20 text-primary px-3 py-1 rounded-lg border border-primary/30 text-xs font-black uppercase") do
-            plain I18n.l(start_date, format: "%-d %b")
-          end
-        end
-
-        # Время начала
-        div(class: "flex flex-col") do
-          span(class: [ "text-sm font-black", ("line-through opacity-30" if is_finished) ]) do
-            start_date.strftime("%H:%M")
-          end
-          if duration > 1
-            span(class: "text-[10px] opacity-50 font-bold uppercase") { "Длительность: #{duration} дн." }
-          end
-        end
-
-        # БЛОК УПРАВЛЕНИЯ (Только для автора)
-        if authenticated? && can?(:update, @entry)
-          # Кнопка доступна, только если время начала УЖЕ наступило
-          # (или если пост уже был завершен вручную, чтобы вернуть его)
-          if (time_has_come && !time_expired) || manually_finished
-            div(class: "ml-auto") do
-              button_to entry_path(@entry),
-                        params: {
-                          entry: {
-                            entryable_attributes: {
-                              id: post.id,
-                              is_afisha: true,
-                              manual_finished: !manually_finished,
-                              finished_at: (!manually_finished ? Time.current.utc : nil)
-                            }
-                          }
-                        },
-                        method: :patch,
-                        class: [ "btn btn-xs rounded-lg", (manually_finished ? "btn-success" : "btn-outline btn-error") ],
-                        data: { turbo_confirm: (manually_finished ? "Возобновить мероприятие?" : "Завершить событие? Оно переместится из Афиши в общую ленту.") } do
-                manually_finished ? "Возобновить" : "Завершить"
-              end
-            end
+          else
+            a(href: entry_path(@entry, format: :html),
+              data: {
+                turbo_method: :delete,
+                turbo_confirm: (current_user&.has_role?(:admin) && @entry.user_id != current_user.id ? "Удалить навсегда?" : "Удалить в корзину?")
+              },
+              class: "btn btn-square btn-sm btn-error") { raw lucide_icon("trash", size: 16) }
           end
         end
       end

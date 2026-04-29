@@ -1,44 +1,48 @@
 class TimeInWordsJob < ApplicationJob
   queue_as :default
 
+  # Защита на уровне Solid Queue: только один такой джоб в очереди одновременно
+  limits_concurrency key: -> { "time_in_words_singleton" }, duration: 50.seconds
+
   def perform
-    # Ограничиваем выборку только теми, кому реально нужно обновлять "минуты"
-    # Те, кто старше 2-3 часов, обычно уже имеют статичную дату (например, "9 мая")
-    entries = Entry.where("created_at >= ?", 3.hours.ago)
+    now = Time.current
 
-    entries.find_each do |entry|
-      # Вычисляем текущее "время словами"
-      current_words = ActionController::Base.helpers.time_ago_in_words(entry.created_at)
+    # Защита 1: Собираем ID всех записей, которые подлежат обновлению
+    # Если новых записей нет и минута не кратна 5 или 30 — выходим сразу
+    fresh_entries = Entry.where(created_at: 11.minutes.ago..now)
 
-      # Ключ в кэше, чтобы помнить, что мы уже отправляли
-      cache_key = "entry_#{entry.id}_time_words"
-      last_sent_words = Rails.cache.read(cache_key)
+    # Если нет совсем свежих, и время не "кратное", то делать нечего
+    is_5_min_tick = (now.min % 5 == 0)
+    is_30_min_tick = (now.min % 30 == 0)
 
-      # Отправляем Broadcast ТОЛЬКО если текст изменился
-      if current_words != last_sent_words
-        broadcast_time_update(entry)
+    return if fresh_entries.none? && !is_5_min_tick && !is_30_min_tick
 
-        # Запоминаем новый текст в кэш на 1 час
-        Rails.cache.write(cache_key, current_words, expires_in: 1.hour)
-      end
+    # --- Далее идет основная логика ---
+
+    # Свежие (до 10-11 мин) обновляем всегда
+    fresh_entries.find_each { |e| broadcast_time(e) }
+
+    # Средние (11-60 мин) — только в 0, 5, 10... минут
+    if is_5_min_tick
+      Entry.where(created_at: 1.hour.ago..11.minutes.ago).find_each { |e| broadcast_time(e) }
+    end
+
+    # Старые (1-3 часа) — только в 0 и 30 минут
+    if is_30_min_tick
+      Entry.where(created_at: 3.hours.ago..1.hour.ago).find_each { |e| broadcast_time(e) }
     end
   end
 
   private
 
-  def broadcast_time_update(entry)
-    # Стрим для общего списка
+  def broadcast_time(entry)
+    # Защита 2: Проверка на существование записи перед отправкой (на случай удаления)
+    return unless entry.present?
+
     Turbo::StreamsChannel.broadcast_update_to(
       :entries,
       target: "created_at_entry_#{entry.id}",
-      renderable: Components::Shared::TimeInWords.new(entry: entry)
-    )
-
-    # Стрим для страницы Show (если там другой таргет)
-    Turbo::StreamsChannel.broadcast_update_to(
-      entry,
-      target: "created_at_entry_#{entry.id}",
-      renderable: Components::Shared::TimeInWords.new(entry: entry)
+      html: ActionController::Base.helpers.time_ago_in_words(entry.created_at)
     )
   end
 end

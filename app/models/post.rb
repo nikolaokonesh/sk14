@@ -2,20 +2,32 @@ class Post < ApplicationRecord
   broadcasts_refreshes
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 
+  # Добавляем варианты длительности в часах
+  DURATION_VARIANTS = {
+    1 => "1 час",
+    2 => "2 часа",
+    3 => "3 часа",
+    6 => "6 часов",
+    12 => "12 часов",
+    24 => "1 день",
+    48 => "2 дня",
+    72 => "3 дня"
+  }.freeze
+
   # Теперь здесь только системные настройки
   has_delegated_json :setting,
                      no_comments: false,
                      duration: "forever"
 
   scope :afisha_active, -> {
-    limit_manual = 1.hour.ago.utc
+    # Точка отсечения: 1 час назад
+    limit_time = 1.hour.ago
 
     where(is_afisha: true)
-      .where("event_date <= ?", Time.current.to_date + 7.days)
-      .where("manual_finished = ? OR finished_at >= ?", false, limit_manual)
+      .where("event_date <= ?", Time.current + 7.days) # Показываем за неделю до начала
+      .where("finished_at >= ?", limit_time)         # Показываем, если завершилось (само или кнопкой) менее часа назад
       .order(event_date: :asc)
   }
-
 
   # Теги остаются в JSON (это удобно)
   has_delegated_json :tags_listing,
@@ -33,11 +45,49 @@ class Post < ApplicationRecord
   }.freeze
 
   validates :event_date, presence: { message: "нужно указать для Афиши" }, if: :is_afisha?
+  # Валидация новой длительности
+  validates :event_duration, inclusion: { in: DURATION_VARIANTS.keys }, if: :is_afisha?
   validate :event_date_cannot_be_in_the_past, if: -> { is_afisha? && event_date.present? && event_date_changed? }
 
   before_validation :sanitize_settings_logic
+  # Рассчитываем finished_at перед сохранением
+  before_save :calculate_afisha_expiry, if: :is_afisha?
+
+  def afisha_state
+    now = Time.current
+    end_time = finished_at || (event_date + event_duration.hours)
+
+    if manual_finished? || now > end_time
+      :finished
+    elsif now >= event_date && now <= end_time
+      :ongoing
+    elsif now.to_date == event_date.to_date
+      :today
+    else
+      :upcoming
+    end
+  end
+
+  def duration_text
+    return "" if event_duration.blank?
+    if event_duration >= 24
+      "#{event_duration / 24} дн."
+    else
+      "#{event_duration} ч."
+    end
+  end
+
+  def end_date
+    finished_at || (event_date + event_duration.hours)
+  end
 
   private
+
+  def calculate_afisha_expiry
+    if event_date.present? && event_duration.present?
+      self.finished_at = event_date.to_datetime + event_duration.hours
+    end
+  end
 
   def event_date_cannot_be_in_the_past
     # Используем .to_datetime для надежности сравнения
@@ -51,6 +101,8 @@ class Post < ApplicationRecord
       # Если Афиша — чистим теги категорий и ставим срок forever
       self.duration = "forever"
       TAG_CONFIG.each_key { |key| self.send("#{key}=", false) }
+      # Дефолтное значение для корректного расчета
+      self.event_duration ||= 1
     else
       # Если не Афиша — обнуляем все колонки афиши
       self.event_date = nil

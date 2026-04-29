@@ -52,7 +52,6 @@ class Views::Entries::Form < Views::Base
           # --- 2. ПОЛЯ АФИШИ (Скрыты по умолчанию) ---
           div(class: [ "m-2 mb-6", ("hidden" unless is_afisha) ], data_post_form_target: "afishaFields") do
             div(class: "bg-cyan-900/40 p-4 rounded-2xl border-2 border-cyan-500/30") do
-              
               div(class: "flex flex-col md:flex-row gap-4") do
                 # Блок Даты (занимает основное место)
                 div(class: "flex-1") do
@@ -72,8 +71,16 @@ class Views::Entries::Form < Views::Base
                 # Блок Длительности (статичный выбор)
                 div(class: "w-full md:w-40") do
                   label(class: "label font-black text-xs uppercase opacity-60 text-cyan-400") { "Длительность" }
+
+                  # Опции: [Текст, Значение в часах]
+                  duration_options = [
+                    [ "1 час", 1 ], [ "2 часа", 2 ], [ "3 часа", 3 ],
+                    [ "6 часов", 6 ], [ "12 часов", 12 ], [ "1 день", 24 ],
+                    [ "2 дня", 48 ], [ "3 дня", 72 ]
+                  ]
+
                   plain fields.select :event_duration,
-                        (1..14).map { |d| ["#{d} #{Russian.p(d, 'день', 'дня', 'дней')}", d] },
+                        duration_options,
                         {},
                         { class: "select select-bordered border-cyan-500/50 w-full bg-base-300 rounded-xl text-sm font-bold" }
                 end

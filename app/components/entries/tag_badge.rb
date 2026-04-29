@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Components::Entries::TagsListing < Components::Base
+class Components::Entries::TagBadge < Components::Base
   def initialize(entry:)
     @entry = entry
   end
