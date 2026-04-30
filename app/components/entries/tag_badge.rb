@@ -17,7 +17,7 @@ class Components::Entries::TagBadge < Components::Base
       active_tags.each do |key, data|
         span(
           class: [
-            "font-bold uppercase rounded text-[9px] px-1",
+            "font-bold uppercase tracking-widest rounded text-[9px] px-1",
             data[:color_bg],
             data[:color_text]
           ]

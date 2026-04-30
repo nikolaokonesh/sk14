@@ -62,6 +62,7 @@ class Views::Entries::Form < Views::Base
                     label(class: "label font-black text-xs uppercase opacity-60") { "Начало события" }
                   end
                   plain fields.datetime_field :event_date,
+                        step: 60, # Убирает секунды, оставляя только часы и минуты
                         class: [
                           "input input-bordered border-cyan-500/50 w-full bg-base-300 rounded-xl text-sm",
                           ("input-error" if @entry.entryable.errors[:event_date].any?)

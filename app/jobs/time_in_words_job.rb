@@ -44,5 +44,10 @@ class TimeInWordsJob < ApplicationJob
       target: "created_at_entry_#{entry.id}",
       html: ActionController::Base.helpers.time_ago_in_words(entry.created_at)
     )
+    Turbo::StreamsChannel.broadcast_update_to(
+      entry,
+      target: "created_at_entry_#{entry.id}",
+      html: ActionController::Base.helpers.time_ago_in_words(entry.created_at)
+    )
   end
 end

@@ -12,7 +12,7 @@ class Components::Entries::AfishaBadge < Components::Base
     div(class: "flex items-center gap-1") do
       # Основная метка "АФИША"
       span(class: [
-        "font-bold uppercase rounded px-1",
+        "font-bold tracking-widest uppercase rounded px-1",
         @size == :sm ? "text-[8px]" : "text-[10px]",
         (state == :finished ? "bg-base-content/10 text-base-content/40" : "bg-cyan-500/20 text-cyan-500")
       ]) { "Афиша" }
@@ -35,7 +35,7 @@ class Components::Entries::AfishaBadge < Components::Base
 
   def badge_tag(text, class_m: "")
     span(class: [
-      "badge font-bold uppercase whitespace-nowrap",
+      "badge tracking-widest font-bold uppercase whitespace-nowrap",
       @size == :sm ? "badge-xs text-[8px] px-1" : "badge-sm text-[10px] px-2",
       class_m
     ]) { text }
