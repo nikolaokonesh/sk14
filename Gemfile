@@ -81,7 +81,7 @@ gem "noticed", "~> 3"
 gem "cancancan", "~> 3.6"
 gem "rotp", "~> 6.3"
 gem "rolify", "~> 6.0"
-gem "activestorage-validator", "~> 0.5.0"
+gem "activestorage-validator", "~> 0.6.0"
 
 gem "web-push"
 gem "net-http-persistent"
