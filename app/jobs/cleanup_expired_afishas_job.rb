@@ -2,16 +2,22 @@ class CleanupExpiredAfishasJob < ApplicationJob
   queue_as :default
 
   def perform
-    # Просто ищем всё, что должно было закончиться к текущему моменту
-    expired_posts = Post.where(is_afisha: true, manual_finished: false)
-                        .where("finished_at < ?", Time.current)
+    changed = false
 
-    return if expired_posts.none?
+    Post.where(is_afisha: true).find_each do |post|
+      next_status = post.calculate_afisha_status
+      attrs = {}
 
-    expired_posts.find_each do |post|
-      post.update(manual_finished: true) # finished_at у нас уже записан
+      if post.afisha_status != next_status.to_s
+        attrs[:afisha_status] = next_status.to_s
+      end
+
+      next if attrs.empty?
+
+      post.update_columns(attrs.merge(updated_at: Time.current))
+      changed = true
     end
 
-    Turbo::StreamsChannel.broadcast_refresh_to(:entries)
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries) if changed
   end
 end
