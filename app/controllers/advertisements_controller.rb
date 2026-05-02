@@ -1,25 +1,31 @@
 # frozen_string_literal: true
 
 class AdvertisementsController < ApplicationController
-  allow_unauthenticated_access only: :index
-  before_action :require_authentication, except: :index
-  before_action :set_advertisement, only: %i[update destroy]
+  allow_unauthenticated_access only: %i[index show]
+  before_action :require_authentication, except: %i[index show]
+  before_action :set_advertisement, only: %i[show update destroy]
 
   def index
-    @top_advertisements = Advertisement.on_top.limit(6).includes(:user)
+    scope = Advertisement.on_top.includes(:user, :rich_text_content)
+    set_page_and_extract_portion_from scope
+
     @advertisement = authenticated? ? Current.user.advertisements.new : nil
 
-    render Views::Advertisements::Index.new(top_advertisements: @top_advertisements, advertisement: @advertisement)
+    render Views::Advertisements::Index.new(page: @page, advertisement: @advertisement)
+  end
+
+  def show
+    render Views::Advertisements::Show.new(advertisement: @advertisement)
   end
 
   def create
     @advertisement = Current.user.advertisements.new(advertisement_params)
 
     if @advertisement.save
-      redirect_to advertisements_path, notice: "Реклама опубликована и поднята в топ"
+      redirect_to advertisement_path(@advertisement), notice: "Реклама опубликована"
     else
-      @top_advertisements = Advertisement.on_top.limit(6).includes(:user)
-      render Views::Advertisements::Index.new(top_advertisements: @top_advertisements, advertisement: @advertisement), status: :unprocessable_entity
+      set_page_and_extract_portion_from Advertisement.on_top.includes(:user, :rich_text_content)
+      render Views::Advertisements::Index.new(page: @page, advertisement: @advertisement), status: :unprocessable_entity
     end
   end
 
@@ -47,7 +53,7 @@ class AdvertisementsController < ApplicationController
   end
 
   def advertisement_params
-    params.expect(advertisement: %i[title description cta_text cta_url theme])
+    params.expect(advertisement: %i[content theme])
   end
 
   def moderation_params
