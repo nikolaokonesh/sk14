@@ -26,7 +26,7 @@ class Components::Entries::AfishaSection < Components::Base
   private
 
   def render_afisha_card(post)
-    state = post.afisha_state
+    state = post.afisha_status
     is_finished = (state == :finished)
 
     a(href: entry_path(post.entry), class: [

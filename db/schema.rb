@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
+ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
   create_table "access_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
@@ -56,6 +56,23 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "advertisements", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "images_count", default: 0
+    t.datetime "paid_until"
+    t.string "theme", default: "sunset", null: false
+    t.string "title", limit: 500
+    t.boolean "top_placement", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["active"], name: "index_advertisements_on_active"
+    t.index ["created_at"], name: "index_advertisements_on_created_at"
+    t.index ["paid_until"], name: "index_advertisements_on_paid_until"
+    t.index ["top_placement"], name: "index_advertisements_on_top_placement"
+    t.index ["user_id"], name: "index_advertisements_on_user_id"
   end
 
   create_table "entries", force: :cascade do |t|
@@ -126,18 +143,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
   end
 
   create_table "posts", force: :cascade do |t|
+    t.string "afisha_status"
     t.datetime "created_at", null: false
     t.datetime "event_date"
     t.integer "event_duration", default: 1
     t.datetime "finished_at"
     t.boolean "is_afisha", default: false, null: false
     t.boolean "manual_finished", default: false
-    t.string "afisha_status"
     t.json "setting", default: {}, null: false
     t.json "tags_listing", default: {}, null: false
     t.datetime "updated_at", null: false
-    t.index ["event_date"], name: "index_posts_on_event_date"
     t.index ["afisha_status"], name: "index_posts_on_afisha_status"
+    t.index ["event_date"], name: "index_posts_on_event_date"
     t.index ["is_afisha"], name: "index_posts_on_is_afisha"
   end
 
@@ -185,6 +202,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
   add_foreign_key "access_tokens", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "advertisements", "users"
   add_foreign_key "entries", "entries", column: "parent_id"
   add_foreign_key "entries", "entries", column: "root_id"
   add_foreign_key "entries", "users"

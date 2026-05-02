@@ -6,7 +6,7 @@ class AdvertisementsController < ApplicationController
   before_action :set_advertisement, only: %i[show edit update destroy]
 
   def index
-    scope = Advertisement.on_top.includes(:user, :rich_text_content)
+    scope = Advertisement.on_top.includes(:user)
     set_page_and_extract_portion_from scope
 
     render Views::Advertisements::Index.new(page: @page)

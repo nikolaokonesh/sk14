@@ -43,8 +43,7 @@ class Views::Advertisements::Index < Views::Base
       div(class: "bg-base-100 rounded-3xl overflow-hidden p-4") do
         a(href: advertisement_path(advertisement), class: "block") do
           p(class: "text-xs opacity-60 mb-2") { "В топе · #{advertisement.user.name}" }
-          h2(class: "text-xl font-extrabold mb-2 line-clamp-2") { advertisement.title }
-          p(class: "text-sm opacity-80 line-clamp-4") { advertisement.content.to_plain_text }
+          h2(class: "text-xl font-extrabold mb-2 line-clamp-4") { advertisement.title }
         end
 
         if can?(:update, advertisement)

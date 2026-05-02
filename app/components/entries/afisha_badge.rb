@@ -24,9 +24,9 @@ class Components::Entries::AfishaBadge < Components::Base
       when :ongoing
         badge_tag("Идет сейчас", class_m: "badge-error animate-pulse")
       when :today
-        badge_tag("Сегодня в #{@entry.event_date.strftime('%H:%M')}", class_m: "bg-cyan-500/20 text-blue-300 border-none")
+        badge_tag("Сегодня в #{@entry.event_date.strftime('%H:%M')}", class_m: "bg-cyan-500/20 text-blue-500 border-none")
       else
-        badge_tag(I18n.l(@entry.event_date, format: "%-d %b"), class_m: "bg-cyan-500/20 text-blue-300 border-none")
+        badge_tag(I18n.l(@entry.event_date, format: "%-d %b"), class_m: "bg-cyan-500/20 text-blue-500 border-none")
       end
     end
   end

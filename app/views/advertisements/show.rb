@@ -11,8 +11,7 @@ class Views::Advertisements::Show < Views::Base
         div(class: "bg-base-100 rounded-3xl overflow-hidden") do
           div(class: "p-5") do
             p(class: "text-xs opacity-60") { "Рекламная публикация · #{@advertisement.user.name}" }
-            h1(class: "text-3xl font-black mt-2 mb-4") { @advertisement.title }
-            div(class: "prose max-w-none") { plain @advertisement.content }
+            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @advertisement.content.to_s }
 
             if can?(:update, @advertisement)
               div(class: "mt-6 flex flex-wrap gap-2") do

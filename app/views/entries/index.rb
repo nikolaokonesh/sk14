@@ -41,8 +41,7 @@ class Views::Entries::Index < Views::Base
           @top_advertisements.each do |advertisement|
             a(href: advertisement_path(advertisement), class: "snap-center shrink-0 w-64 rounded-2xl p-[1px] bg-gradient-to-r #{advertisement.theme_gradient}") do
               div(class: "bg-base-100 rounded-2xl p-3") do
-                h3(class: "font-bold line-clamp-2 mb-1") { advertisement.title }
-                p(class: "text-sm opacity-80 line-clamp-3") { advertisement.content.to_plain_text }
+                h3(class: "font-bold line-clamp-3 mb-1") { advertisement.title }
               end
             end
           end
