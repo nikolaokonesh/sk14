@@ -6,9 +6,7 @@ class Ability
   def initialize(user)
     can :read, :all
 
-    return if Current.user.blank?
-
-    user = Current.user
+    return if user.blank?
 
     if user.has_role?(:admin)
       can :manage, :all
@@ -38,11 +36,7 @@ class Ability
       post.entry.user_id == user.id
     end
 
-    can :manage, Advertisement, user_id: user.id
 
-    if user.has_role?(:moderator)
-      can :manage, Advertisement
-    end
 
     # can :manage, Comment do |comment|
     #   comment.entry.user_id == user.id

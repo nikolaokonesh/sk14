@@ -10,7 +10,9 @@ class Advertisement < ApplicationRecord
 
   include Entry::Content
 
-  belongs_to :user
+  has_one :entry, as: :entryable, touch: true, dependent: :destroy
+
+  delegate :user, to: :entry
 
   validates :theme, inclusion: { in: THEMES.keys }
 
@@ -18,6 +20,11 @@ class Advertisement < ApplicationRecord
   scope :paid_top, -> { where(top_placement: true).where("paid_until IS NULL OR paid_until > ?", Time.current) }
   scope :on_top, -> { active.order(top_placement: :desc, created_at: :desc) }
   scope :expired, -> { where("created_at < ?", 1.month.ago) }
+
+
+  def first_image_embed
+    content.embeds.find(&:image?)
+  end
 
   def theme_gradient
     THEMES.fetch(theme, THEMES["sunset"])

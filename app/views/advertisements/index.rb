@@ -34,26 +34,10 @@ class Views::Advertisements::Index < Views::Base
 
   def render_records
     @page.records.each do |advertisement|
-      li { render_card(advertisement) }
+      li { render Components::Advertisements::Card.new(advertisement: advertisement, show_actions: true) }
     end
   end
 
-  def render_card(advertisement)
-    article(class: "rounded-3xl p-[1px] bg-gradient-to-r #{advertisement.theme_gradient} shadow-xl") do
-      div(class: "bg-base-100 rounded-3xl overflow-hidden p-4") do
-        a(href: advertisement_path(advertisement), class: "block") do
-          p(class: "text-xs opacity-60 mb-2") { "В топе · #{advertisement.user.name}" }
-          h2(class: "text-xl font-extrabold mb-2 line-clamp-4") { advertisement.title }
-        end
-
-        if can?(:update, advertisement)
-          div(class: "mt-3 flex gap-2") do
-            a(href: edit_advertisement_path(advertisement), class: "btn btn-xs") { "Редактировать" }
-          end
-        end
-      end
-    end
-  end
 
   def render_next_page_frame
     unless @page.last?

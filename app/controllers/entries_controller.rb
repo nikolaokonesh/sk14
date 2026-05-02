@@ -10,7 +10,10 @@ class EntriesController < ApplicationController
                   .includes(:entry)
                   .order(event_date: :asc)
 
-    @top_advertisements = Advertisement.on_top.limit(10)
+    @top_advertisements = Advertisement.on_top
+                                         .includes(entry: :user)
+                                         .with_rich_text_content_and_embeds
+                                         .limit(10)
 
     # 2. Получаем ID связанных Entry.
     afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact
@@ -20,9 +23,9 @@ class EntriesController < ApplicationController
     entries_scope = entries_scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
 
     # 4. Пагинация и рендер.
-    set_page_and_extract_portion_from entries_scope.includes(:user, :entry_reads, :entryable)
+    set_page_and_extract_portion_from entries_scope.includes(:user, :entryable)
 
-    Current.user.entry_reads.load if authenticated?
+    preload_current_user_read_states if authenticated?
 
     render Views::Entries::Index.new(page: @page, afishas: @afishas, top_advertisements: @top_advertisements)
   end
@@ -94,6 +97,14 @@ class EntriesController < ApplicationController
   end
 
   private
+
+    def preload_current_user_read_states
+      root_entry_ids = @page.records.map { |entry| entry.root_id || entry.id }.uniq
+      return if root_entry_ids.empty?
+
+      Current.user.entry_reads.where(entry_id: root_entry_ids).load
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
       @entry = Entry.find(params.expect(:id))

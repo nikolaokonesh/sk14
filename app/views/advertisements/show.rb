@@ -13,7 +13,7 @@ class Views::Advertisements::Show < Views::Base
             p(class: "text-xs opacity-60") { "Рекламная публикация · #{@advertisement.user.name}" }
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @advertisement.content.to_s }
 
-            if can?(:update, @advertisement)
+            if can?(:update, @advertisement.entry)
               div(class: "mt-6 flex flex-wrap gap-2") do
                 a(href: edit_advertisement_path(@advertisement), class: "btn btn-sm btn-primary") { "Редактировать" }
 

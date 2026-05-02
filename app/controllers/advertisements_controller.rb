@@ -6,7 +6,7 @@ class AdvertisementsController < ApplicationController
   before_action :set_advertisement, only: %i[show edit update destroy]
 
   def index
-    scope = Advertisement.on_top.includes(:user)
+    scope = Advertisement.on_top.includes(entry: :user).with_rich_text_content_and_embeds
     set_page_and_extract_portion_from scope
 
     render Views::Advertisements::Index.new(page: @page)
@@ -17,19 +17,20 @@ class AdvertisementsController < ApplicationController
   end
 
   def new
-    @advertisement = Current.user.advertisements.new
+    @advertisement = Current.user.entries.new(entryable: Advertisement.new).entryable
     render Views::Advertisements::Form.new(advertisement: @advertisement)
   end
 
   def edit
-    authorize! :update, @advertisement
+    authorize! :update, @advertisement.entry
     render Views::Advertisements::Form.new(advertisement: @advertisement)
   end
 
   def create
-    @advertisement = Current.user.advertisements.new(advertisement_params)
+    @entry = Current.user.entries.new(entryable: Advertisement.new(advertisement_params))
+    @advertisement = @entry.entryable
 
-    if @advertisement.save
+    if @entry.save
       redirect_to advertisement_path(@advertisement), notice: "Реклама опубликована"
     else
       render Views::Advertisements::Form.new(advertisement: @advertisement), status: :unprocessable_entity
@@ -37,7 +38,7 @@ class AdvertisementsController < ApplicationController
   end
 
   def update
-    authorize! :update, @advertisement
+    authorize! :update, @advertisement.entry
 
     if @advertisement.update(moderation_params)
       redirect_to advertisements_path, notice: "Реклама обновлена"
@@ -47,7 +48,7 @@ class AdvertisementsController < ApplicationController
   end
 
   def destroy
-    authorize! :destroy, @advertisement
+    authorize! :destroy, @advertisement.entry
     @advertisement.destroy!
 
     redirect_to advertisements_path, notice: "Реклама удалена"
@@ -56,7 +57,7 @@ class AdvertisementsController < ApplicationController
   private
 
   def set_advertisement
-    @advertisement = Advertisement.find(params.expect(:id))
+    @advertisement = Advertisement.includes(entry: :user).find(params.expect(:id))
   end
 
   def advertisement_params
