@@ -50,22 +50,12 @@ class Post < ApplicationRecord
   validate :event_date_cannot_be_in_the_past, if: -> { is_afisha? && event_date.present? && event_date_changed? }
 
   before_validation :sanitize_settings_logic
+  before_validation :sync_afisha_status
   # Рассчитываем finished_at перед сохранением
   before_save :calculate_afisha_expiry, if: :is_afisha?
 
   def afisha_state
-    now = Time.current
-    end_time = finished_at || (event_date + event_duration.hours)
-
-    if manual_finished? || now > end_time
-      :finished
-    elsif now >= event_date && now <= end_time
-      :ongoing
-    elsif now.to_date == event_date.to_date
-      :today
-    else
-      :upcoming
-    end
+    afisha_status&.to_sym || calculate_afisha_status
   end
 
   def duration_text
@@ -109,6 +99,29 @@ class Post < ApplicationRecord
       self.event_duration = 1
       self.manual_finished = false
       self.finished_at = nil
+      self.afisha_status = nil
     end
+  end
+
+  def calculate_afisha_status(now = Time.current)
+    return :upcoming unless is_afisha? && event_date.present?
+
+    end_time = finished_at || (event_date + event_duration.hours)
+
+    if manual_finished? || now > end_time
+      :finished
+    elsif now >= event_date && now <= end_time
+      :ongoing
+    elsif now.to_date == event_date.to_date
+      :today
+    else
+      :upcoming
+    end
+  end
+
+  def sync_afisha_status
+    return unless is_afisha?
+
+    self.afisha_status = calculate_afisha_status.to_s
   end
 end

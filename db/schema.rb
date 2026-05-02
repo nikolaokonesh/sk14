@@ -132,10 +132,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_16_091723) do
     t.datetime "finished_at"
     t.boolean "is_afisha", default: false, null: false
     t.boolean "manual_finished", default: false
+    t.string "afisha_status"
     t.json "setting", default: {}, null: false
     t.json "tags_listing", default: {}, null: false
     t.datetime "updated_at", null: false
     t.index ["event_date"], name: "index_posts_on_event_date"
+    t.index ["afisha_status"], name: "index_posts_on_afisha_status"
     t.index ["is_afisha"], name: "index_posts_on_is_afisha"
   end
 
