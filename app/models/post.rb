@@ -1,7 +1,7 @@
 class Post < ApplicationRecord
   broadcasts_refreshes
-  include Post::Afisha
-  include Post::SettingsCleanup
+  include Afisha
+  include SettingsCleanup
 
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 

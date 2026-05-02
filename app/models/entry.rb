@@ -1,7 +1,6 @@
 class Entry < ApplicationRecord
   broadcasts_refreshes
-  include Entry::Threading
-
+  include Threading
   include Content
   POST_TYPE = "Post".freeze
   TITLE_PREVIEW_LENGTH = 500
@@ -35,5 +34,4 @@ class Entry < ApplicationRecord
   def participants
     User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
   end
-
 end
