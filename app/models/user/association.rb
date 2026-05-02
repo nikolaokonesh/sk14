@@ -11,5 +11,6 @@ module User::Association
     has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
 
     has_many :entry_reads, dependent: :destroy
+    has_many :advertisements, dependent: :destroy
   end
 end
