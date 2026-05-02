@@ -2,22 +2,25 @@ class CleanupExpiredAfishasJob < ApplicationJob
   queue_as :default
 
   def perform
-    changed = false
+    now = Time.current
+    upcoming_cutoff = now + 7.days
+    finished_cutoff = 1.hour.ago
 
-    Post.where(is_afisha: true).find_each do |post|
-      next_status = post.calculate_afisha_status
-      attrs = {}
+    candidates = Post.where(is_afisha: true)
+                     .where.not(event_date: nil)
+                     .where("event_date <= ?", upcoming_cutoff)
+                     .where("afisha_status IS DISTINCT FROM ? OR finished_at >= ?", "finished", finished_cutoff)
 
-      if post.afisha_status != next_status.to_s
-        attrs[:afisha_status] = next_status.to_s
-      end
+    changed = 0
 
-      next if attrs.empty?
+    candidates.find_each do |post|
+      next_status = post.calculate_afisha_status(now).to_s
+      next if post.afisha_status == next_status
 
-      post.update_columns(attrs.merge(updated_at: Time.current))
-      changed = true
+      post.update_columns(afisha_status: next_status, updated_at: now)
+      changed += 1
     end
 
-    Turbo::StreamsChannel.broadcast_refresh_to(:entries) if changed
+    Turbo::StreamsChannel.broadcast_refresh_to(:entries) if changed.positive?
   end
 end
