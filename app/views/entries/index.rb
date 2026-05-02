@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  def initialize(page:, afishas:)
+  def initialize(page:, afishas:, top_advertisement: nil)
     @page = page
     @afishas = afishas
+    @top_advertisement = top_advertisement
   end
 
   def view_template
@@ -13,6 +14,22 @@ class Views::Entries::Index < Views::Base
       render Components::Entries::IndexCardTop.new
 
       render Components::Entries::AfishaSection.new(afishas: @afishas)
+
+      if @top_advertisement
+        article(class: "mb-4 rounded-3xl p-[1px] bg-gradient-to-r #{@top_advertisement.theme_gradient}") do
+          div(class: "rounded-3xl bg-base-100 p-3") do
+            p(class: "text-xs opacity-60") { "Промо-блок сообщества" }
+            h2(class: "font-bold") { @top_advertisement.title }
+            p(class: "text-sm opacity-80 mb-2") { @top_advertisement.description }
+            div(class: "flex gap-2") do
+              a(href: @top_advertisement.cta_url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm rounded-xl") { @top_advertisement.cta_text }
+              a(href: advertisements_path, class: "btn btn-ghost btn-sm rounded-xl") { "Добавить свою" }
+            end
+          end
+        end
+      else
+        a(href: advertisements_path, class: "btn btn-outline btn-block mb-4 rounded-2xl") { "Добавить рекламу в топ" }
+      end
 
       ul(id: "entries_list", class: "list bg-base-100 rounded-box shadow-md") do
         render_records

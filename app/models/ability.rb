@@ -38,6 +38,12 @@ class Ability
       post.entry.user_id == user.id
     end
 
+    can :manage, Advertisement, user_id: user.id
+
+    if user.has_role?(:moderator)
+      can :manage, Advertisement
+    end
+
     # can :manage, Comment do |comment|
     #   comment.entry.user_id == user.id
     # end
