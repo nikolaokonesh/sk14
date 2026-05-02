@@ -10,6 +10,8 @@ class EntriesController < ApplicationController
                   .includes(:entry)
                   .order(event_date: :asc)
 
+    @top_advertisements = Advertisement.on_top.limit(10).includes(:user, :rich_text_content)
+
     # 2. Получаем ID связанных Entry.
     afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact
 
@@ -22,7 +24,7 @@ class EntriesController < ApplicationController
 
     Current.user.entry_reads.load if authenticated?
 
-    render Views::Entries::Index.new(page: @page, afishas: @afishas)
+    render Views::Entries::Index.new(page: @page, afishas: @afishas, top_advertisements: @top_advertisements)
   end
 
   def show
