@@ -3,19 +3,27 @@
 class AdvertisementsController < ApplicationController
   allow_unauthenticated_access only: %i[index show]
   before_action :require_authentication, except: %i[index show]
-  before_action :set_advertisement, only: %i[show update destroy]
+  before_action :set_advertisement, only: %i[show edit update destroy]
 
   def index
     scope = Advertisement.on_top.includes(:user, :rich_text_content)
     set_page_and_extract_portion_from scope
 
-    @advertisement = authenticated? ? Current.user.advertisements.new : nil
-
-    render Views::Advertisements::Index.new(page: @page, advertisement: @advertisement)
+    render Views::Advertisements::Index.new(page: @page)
   end
 
   def show
     render Views::Advertisements::Show.new(advertisement: @advertisement)
+  end
+
+  def new
+    @advertisement = Current.user.advertisements.new
+    render Views::Advertisements::Form.new(advertisement: @advertisement)
+  end
+
+  def edit
+    authorize! :update, @advertisement
+    render Views::Advertisements::Form.new(advertisement: @advertisement)
   end
 
   def create
@@ -24,8 +32,7 @@ class AdvertisementsController < ApplicationController
     if @advertisement.save
       redirect_to advertisement_path(@advertisement), notice: "Реклама опубликована"
     else
-      set_page_and_extract_portion_from Advertisement.on_top.includes(:user, :rich_text_content)
-      render Views::Advertisements::Index.new(page: @page, advertisement: @advertisement), status: :unprocessable_entity
+      render Views::Advertisements::Form.new(advertisement: @advertisement), status: :unprocessable_entity
     end
   end
 
@@ -35,7 +42,7 @@ class AdvertisementsController < ApplicationController
     if @advertisement.update(moderation_params)
       redirect_to advertisements_path, notice: "Реклама обновлена"
     else
-      redirect_to advertisements_path, alert: @advertisement.errors.full_messages.to_sentence
+      render Views::Advertisements::Form.new(advertisement: @advertisement), status: :unprocessable_entity
     end
   end
 
@@ -57,6 +64,6 @@ class AdvertisementsController < ApplicationController
   end
 
   def moderation_params
-    params.expect(advertisement: %i[active top_placement paid_until])
+    params.expect(advertisement: %i[content theme active top_placement paid_until])
   end
 end

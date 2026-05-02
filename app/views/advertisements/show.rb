@@ -13,6 +13,16 @@ class Views::Advertisements::Show < Views::Base
             p(class: "text-xs opacity-60") { "Рекламная публикация · #{@advertisement.user.name}" }
             h1(class: "text-3xl font-black mt-2 mb-4") { @advertisement.title }
             div(class: "prose max-w-none") { plain @advertisement.content }
+
+            if can?(:update, @advertisement)
+              div(class: "mt-6 flex flex-wrap gap-2") do
+                a(href: edit_advertisement_path(@advertisement), class: "btn btn-sm btn-primary") { "Редактировать" }
+
+                form_with(model: @advertisement, method: :delete, class: "inline") do |form|
+                  plain form.submit "Удалить", class: "btn btn-sm btn-error", data: { turbo_confirm: "Удалить рекламу?" }
+                end
+              end
+            end
           end
         end
       end

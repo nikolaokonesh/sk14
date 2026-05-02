@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     resources :participants, only: :index, module: :entries
   end
 
-  resources :advertisements, only: %i[index show create update destroy]
+  resources :advertisements, only: %i[index show new edit create update destroy]
 
   resources :notifications, only: [ :index ] do
     member do
