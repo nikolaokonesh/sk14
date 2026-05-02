@@ -39,10 +39,8 @@ class Views::Entries::Index < Views::Base
 
         div(class: "flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-4 pb-4") do
           @top_advertisements.each do |advertisement|
-            a(href: advertisement_path(advertisement), class: "snap-center shrink-0 w-64 rounded-2xl p-[1px] bg-gradient-to-r #{advertisement.theme_gradient}") do
-              div(class: "bg-base-100 rounded-2xl p-3") do
-                h3(class: "font-bold line-clamp-3 mb-1") { advertisement.title }
-              end
+            div(class: "snap-center shrink-0 w-64") do
+              render Components::Advertisements::Card.new(advertisement: advertisement, compact: true)
             end
           end
         end

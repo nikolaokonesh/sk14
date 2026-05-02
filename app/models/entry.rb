@@ -3,9 +3,10 @@ class Entry < ApplicationRecord
   include Threading
   include Content
   POST_TYPE = "Post".freeze
+  ADVERTISEMENT_TYPE = "Advertisement".freeze
   TITLE_PREVIEW_LENGTH = 500
 
-  delegated_type :entryable, types: [ POST_TYPE ], dependent: :destroy
+  delegated_type :entryable, types: [ POST_TYPE, ADVERTISEMENT_TYPE ], dependent: :destroy
   accepts_nested_attributes_for :entryable
 
   scope :recent, -> { order(created_at: :desc) }
@@ -25,13 +26,15 @@ class Entry < ApplicationRecord
 
   has_many :entry_reads, dependent: :destroy
 
+  def participants
+    User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
+  end
+
+
   private
 
   def active?
     !trash
   end
 
-  def participants
-    User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
-  end
 end
