@@ -10,10 +10,11 @@ class EntriesController < ApplicationController
                   .includes(:entry)
                   .order(event_date: :asc)
 
-    @top_advertisements = Advertisement.on_top
-                                         .includes(entry: :user)
-                                         .with_rich_text_content_and_embeds
-                                         .limit(10)
+    @top_advertisements = Advertisement.on_top.limit(10)
+      .includes(entry: [
+        :user, :entry_reads,
+        { rich_text_content: { embeds_attachments: :blob } } # Глубокая вложенность для картинок
+      ]).to_a
 
     # 2. Получаем ID связанных Entry.
     afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact

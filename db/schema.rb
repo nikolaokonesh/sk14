@@ -61,18 +61,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
   create_table "advertisements", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
-    t.integer "images_count", default: 0
     t.datetime "paid_until"
     t.string "theme", default: "sunset", null: false
-    t.string "title", limit: 500
     t.boolean "top_placement", default: false, null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
     t.index ["active"], name: "index_advertisements_on_active"
     t.index ["created_at"], name: "index_advertisements_on_created_at"
     t.index ["paid_until"], name: "index_advertisements_on_paid_until"
     t.index ["top_placement"], name: "index_advertisements_on_top_placement"
-    t.index ["user_id"], name: "index_advertisements_on_user_id"
   end
 
   create_table "entries", force: :cascade do |t|
@@ -202,7 +198,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
   add_foreign_key "access_tokens", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "advertisements", "users"
   add_foreign_key "entries", "entries", column: "parent_id"
   add_foreign_key "entries", "entries", column: "root_id"
   add_foreign_key "entries", "users"

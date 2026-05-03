@@ -30,11 +30,9 @@ class Entry < ApplicationRecord
     User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
   end
 
-
   private
 
   def active?
     !trash
   end
-
 end

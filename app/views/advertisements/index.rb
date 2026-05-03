@@ -15,8 +15,6 @@ class Views::Advertisements::Index < Views::Base
           end
         end
 
-        p(class: "opacity-70 text-sm") { "Реклама создаётся как пост: rich text контент, а заголовок кешируется автоматически." }
-
         ul(class: "space-y-4", id: "advertisements_list") do
           render_records
           render_next_page_frame
@@ -33,8 +31,8 @@ class Views::Advertisements::Index < Views::Base
   private
 
   def render_records
-    @page.records.each do |advertisement|
-      li { render Components::Advertisements::Card.new(advertisement: advertisement, show_actions: true) }
+    @page.records.each do |entryable|
+      li { render Components::Advertisements::Card.new(entryable: entryable, show_actions: true) }
     end
   end
 

@@ -8,11 +8,10 @@ class Advertisement < ApplicationRecord
     "night" => "from-slate-800 via-violet-700 to-fuchsia-700"
   }.freeze
 
-  include Entry::Content
-
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 
   delegate :user, to: :entry
+  delegate :title, to: :entry
 
   validates :theme, inclusion: { in: THEMES.keys }
 
@@ -23,7 +22,7 @@ class Advertisement < ApplicationRecord
 
 
   def first_image_embed
-    content.embeds.find(&:image?)
+    entry.content.embeds.find(&:image?) if entry&.content
   end
 
   def theme_gradient

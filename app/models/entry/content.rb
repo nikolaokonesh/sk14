@@ -13,7 +13,7 @@ module Entry::Content
 
     # Кешируем данные в колонки таблицы entries после сохранения
     # Используем after_save_commit, чтобы ActionText гарантированно успел сохранить вложения
-    after_save_commit :update_cached_data, if: :post?
+    after_save_commit :update_cached_data
   end
 
   private

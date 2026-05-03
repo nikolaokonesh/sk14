@@ -30,25 +30,26 @@ class Views::Entries::Index < Views::Base
   private
 
   def render_ads_section
-    if @top_advertisements.any?
-      div(class: "mb-6 mt-2") do
-        div(class: "flex items-center justify-between px-4 mb-3") do
-          h2(class: "text-xl font-black tracking-tight") { "Реклама" }
-          a(href: advertisements_path, class: "btn btn-ghost btn-xs") { "Вся реклама" }
-        end
+    # 1. Если рекламы нет, выходим сразу (можно отрисовать кнопку или ничего)
+    return if @top_advertisements.blank?
 
-        div(class: "flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-4 pb-4") do
-          @top_advertisements.each do |advertisement|
-            div(class: "snap-center shrink-0 w-64") do
-              render Components::Advertisements::Card.new(advertisement: advertisement, compact: true)
-            end
+    # 2. Если мы здесь, значит реклама есть. Рисуем секцию.
+    div(class: "mb-6 mt-2") do
+      div(class: "flex items-center justify-between px-4 mb-3") do
+        h2(class: "text-xl font-black tracking-tight") { "Реклама" }
+        a(href: advertisements_path, class: "btn btn-ghost btn-xs") { "Вся реклама" }
+      end
+
+      div(class: "flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-4 pb-4") do
+        @top_advertisements.each do |ad|
+          div(class: "snap-center shrink-0 w-64") do
+            render Components::Advertisements::Card.new(entryable: ad, compact: true)
           end
         end
       end
-    else
-      a(href: advertisements_path, class: "btn btn-outline btn-block mb-4 rounded-2xl") { "Добавить рекламу в топ" }
     end
   end
+
 
   def render_records
     user = current_user
