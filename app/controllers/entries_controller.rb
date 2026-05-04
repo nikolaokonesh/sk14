@@ -3,49 +3,49 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
-    # 1. Загружаем "корневые" объекты
-    # Используем только базовые условия, чтобы БД отработала быстро
-    @afishas = Post.afisha_active.to_a
-    @top_advertisements = Advertisement.on_top.limit(20).to_a
+    # 1. Добавляем includes(:entry) здесь, чтобы map(&:entry) не бил по базе
+    @afishas = Post.afisha_active.includes(:entry).to_a
+    @top_advertisements = Advertisement.on_top.limit(20).includes(:entry).to_a
 
     @entries_scope = Entry.active.posts.recent
     set_page_and_extract_portion_from @entries_scope
     @records = @page.records.to_a
 
-    # 2. Собираем всё в один массив для массовой предзагрузки
-    # Это ключевой момент: preloader объединит запросы к User и EntryRead
-    all_entries = @records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)
-    all_entries.compact!
+    # 2. Теперь map(&:entry) возьмет данные из памяти (0 запросов к БД)
+    all_entries = (@records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)).compact.uniq
 
-    # 3. Массовая загрузка ассоциаций через Preloader (Rails 7+ syntax)
-    # Это уберет 3 запроса User Load и объединит их в 1
-    preloader = ActiveRecord::Associations::Preloader.new
-    preloader.preload(all_entries, [ :user, :entry_reads, :entryable ])
+    # 3. Массовая загрузка через Preloader (Rails 8)
+    if all_entries.any?
+      ActiveRecord::Associations::Preloader.new(
+        records: all_entries,
+        associations: [ :user, :entry_reads, :entryable ]
+      ).call
 
-    # Для рекламы отдельно догружаем ActionText контент
-    ad_entries = @top_advertisements.map(&:entry).compact
-    preloader.preload(ad_entries, { rich_text_content: { embeds_attachments: :blob } })
+      ad_entries = @top_advertisements.map(&:entry).compact
+      if ad_entries.any?
+        ActiveRecord::Associations::Preloader.new(
+          records: ad_entries,
+          associations: { rich_text_content: { embeds_attachments: :blob } }
+        ).call
+      end
+    end
 
-    # 4. Собираем статусы прочтения (теперь данные уже в памяти, запросов к БД не будет)
+    # 4. Прочитанные записи
     @read_entry_ids = if authenticated?
-      current_user.entry_reads
-                  .where(entry_id: all_entries.map(&:id).uniq)
-                  .pluck(:entry_id)
-                  .to_set
+      user_id = current_user.id
+      all_entries.each_with_object(Set.new) do |entry, set|
+        # Проверяем предзагруженные entry_reads в памяти
+        set << entry.id if entry.entry_reads.any? { |read| read.user_id == user_id }
+      end
     else
       Set.new
     end
 
     render Views::Entries::Index.new(
-      page: @page,
-      records: @records,
-      afishas: @afishas,
-      top_advertisements: @top_advertisements,
-      read_entry_ids: @read_entry_ids
+      page: @page, records: @records, afishas: @afishas,
+      top_advertisements: @top_advertisements, read_entry_ids: @read_entry_ids
     )
   end
-
-
 
   def show
     if turbo_frame_request_id == "read" && current_user
