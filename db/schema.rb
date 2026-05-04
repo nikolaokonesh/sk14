@@ -151,6 +151,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.datetime "updated_at", null: false
     t.index ["afisha_status"], name: "index_posts_on_afisha_status"
     t.index ["event_date"], name: "index_posts_on_event_date"
+    t.index ["finished_at"], name: "index_posts_on_finished_at"
     t.index ["is_afisha"], name: "index_posts_on_is_afisha"
   end
 

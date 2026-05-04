@@ -5,11 +5,15 @@ class AdvertisementsController < ApplicationController
   before_action :set_entry, only: %i[show edit update destroy]
 
   def index
-    scope = Advertisement.on_top.includes(entry: :user)
+    scope = Advertisement.on_top.includes(entry: [ :user, :entry_reads, { rich_text_content: { embeds_attachments: :blob } } ])
     set_page_and_extract_portion_from scope
 
-    render Views::Advertisements::Index.new(page: @page)
+    render Views::Advertisements::Index.new(
+      page: @page,
+      records: @page.records.to_a # Это должно быть здесь для всех страниц
+    )
   end
+
 
   def show
     render Views::Advertisements::Show.new(entry: @entry)

@@ -6,11 +6,7 @@ class Components::Entries::TagBadge < Components::Base
   end
 
   def view_template
-    # Получаем объект entryable (Post)
-    post = @entry.entryable
-
-    # Собираем только активные теги
-    active_tags = Post::TAG_CONFIG.select { |key, _| post.send(key) }
+    active_tags = Post::TAG_CONFIG.select { |key, _| @entry.send(key) }
 
     div(class: "flex flex-wrap gap-1") do
       return if active_tags.empty?

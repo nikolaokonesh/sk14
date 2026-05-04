@@ -1,22 +1,15 @@
-class Components::Entries::ReadBadge < Phlex::HTML
-  include Phlex::Rails::Helpers::DOMID
-  include Phlex::Rails::Helpers::TurboFrameTag
-  register_value_helper :lucide_icon
-
-  def initialize(entry:, user:)
+class Components::Entries::ReadBadge < Components::Base
+  def initialize(entry:, read_entry_ids:)
     @entry = entry
-    @user = user
+    @read_entry_ids = read_entry_ids
   end
 
   def view_template
-    turbo_frame_tag "read" do
-      span(id: dom_id(@entry, :read_badge), class: "flex items-center") do
-        render_post_state_badge
-      end
-    end
-  end
+    # Мгновенная проверка в памяти
+    is_read = @read_entry_ids.include?(@entry.id)
 
-  def render_post_state_badge
-    span(class: [ (@user.post_read_for?(@entry) ? "text-info" : "text-gray-500 opacity-30") ]) { lucide_icon("check-check", size: 18) }
+    span(class: [ is_read ? "text-info" : "text-gray-500 opacity-30" ]) do
+      lucide_icon("check-check", size: 18)
+    end
   end
 end

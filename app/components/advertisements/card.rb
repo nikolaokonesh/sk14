@@ -29,7 +29,7 @@ class Components::Advertisements::Card < Components::Base
       end
 
       div(class: "relative z-10") do
-        p(class: "text-xs opacity-60 mb-2") { "В топе · #{@entryable.user.name}" }
+        p(class: "text-xs opacity-60 mb-2") { "В топе · #{@entryable.user.username}" }
         h2(class: [ "font-extrabold line-clamp-4", (@compact ? "text-base mb-1" : "text-xl mb-2") ]) { @entryable.entry.title }
       end
     end

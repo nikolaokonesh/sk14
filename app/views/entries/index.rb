@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 class Views::Entries::Index < Views::Base
-  def initialize(page:, afishas:, top_advertisements: [])
+  # Добавляем records и read_entry_ids в initialize
+  def initialize(page:, records:, afishas:, read_entry_ids:, top_advertisements: [])
     @page = page
+    @records = records # Массив записей из контроллера
     @afishas = afishas
+    @read_entry_ids = read_entry_ids # Set с ID прочтенных постов
     @top_advertisements = top_advertisements
   end
 
@@ -20,6 +23,7 @@ class Views::Entries::Index < Views::Base
         render_next_page_frame
       end
     else
+      # Для бесконечной прокрутки (пагинации)
       turbo_frame_tag "entries_page_#{@page.number}" do
         render_records
         render_next_page_frame
@@ -30,10 +34,8 @@ class Views::Entries::Index < Views::Base
   private
 
   def render_ads_section
-    # 1. Если рекламы нет, выходим сразу (можно отрисовать кнопку или ничего)
     return if @top_advertisements.blank?
 
-    # 2. Если мы здесь, значит реклама есть. Рисуем секцию.
     div(class: "mb-6 mt-2") do
       div(class: "flex items-center justify-between px-4 mb-3") do
         h2(class: "text-xl font-black tracking-tight") { "Реклама" }
@@ -43,6 +45,8 @@ class Views::Entries::Index < Views::Base
       div(class: "flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-4 pb-4") do
         @top_advertisements.each do |ad|
           div(class: "snap-center shrink-0 w-64") do
+            # Важно: если в рекламе тоже нужно показывать статус "прочитано",
+            # добавьте передачу read_entry_ids и туда
             render Components::Advertisements::Card.new(entryable: ad, compact: true)
           end
         end
@@ -50,16 +54,22 @@ class Views::Entries::Index < Views::Base
     end
   end
 
-
   def render_records
     user = current_user
-    @page.records.each do |entry|
-      render Components::Entries::Card.new(entry: entry, user: user)
+    # Используем @records (массив), а не @page.records (relation),
+    # чтобы избежать повторного запроса COUNT/SELECT
+    @records.each do |entry|
+      render Components::Entries::Card.new(
+        entry: entry,
+        user: user,
+        read_entry_ids: @read_entry_ids
+      )
     end
   end
 
   def render_next_page_frame
     unless @page.last?
+      # Важно: добавляем page в URL, чтобы пагинация знала, что грузить дальше
       turbo_frame_tag "entries_page_#{@page.next_param}",
                       src: entries_path(page: @page.next_param),
                       loading: :lazy,

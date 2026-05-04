@@ -3,38 +3,55 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
-    # 1. Загружаем афиши.
-    # Теперь просто используем колонку event_date.
-    # Если в самой модели Post в scope уже прописан order, то здесь .order можно вообще убрать.
-    @afishas = Post.afisha_active
-                  .includes(:entry)
-                  .order(event_date: :asc)
+    # 1. Загружаем "корневые" объекты
+    # Используем только базовые условия, чтобы БД отработала быстро
+    @afishas = Post.afisha_active.to_a
+    @top_advertisements = Advertisement.on_top.limit(20).to_a
 
-    @top_advertisements = Advertisement.on_top.limit(10)
-      .includes(entry: [
-        :user, :entry_reads,
-        { rich_text_content: { embeds_attachments: :blob } } # Глубокая вложенность для картинок
-      ]).to_a
+    @entries_scope = Entry.active.posts.recent
+    set_page_and_extract_portion_from @entries_scope
+    @records = @page.records.to_a
 
-    # 2. Получаем ID связанных Entry.
-    afisha_entry_ids = @afishas.map { |post| post.entry&.id }.compact
+    # 2. Собираем всё в один массив для массовой предзагрузки
+    # Это ключевой момент: preloader объединит запросы к User и EntryRead
+    all_entries = @records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)
+    all_entries.compact!
 
-    # 3. Исключаем их из ленты.
-    entries_scope = Entry.active.posts.recent
-    entries_scope = entries_scope.where.not(id: afisha_entry_ids) if afisha_entry_ids.any?
+    # 3. Массовая загрузка ассоциаций через Preloader (Rails 7+ syntax)
+    # Это уберет 3 запроса User Load и объединит их в 1
+    preloader = ActiveRecord::Associations::Preloader.new
+    preloader.preload(all_entries, [ :user, :entry_reads, :entryable ])
 
-    # 4. Пагинация и рендер.
-    set_page_and_extract_portion_from entries_scope.includes(:user, :entryable)
+    # Для рекламы отдельно догружаем ActionText контент
+    ad_entries = @top_advertisements.map(&:entry).compact
+    preloader.preload(ad_entries, { rich_text_content: { embeds_attachments: :blob } })
 
-    preload_current_user_read_states if authenticated?
+    # 4. Собираем статусы прочтения (теперь данные уже в памяти, запросов к БД не будет)
+    @read_entry_ids = if authenticated?
+      current_user.entry_reads
+                  .where(entry_id: all_entries.map(&:id).uniq)
+                  .pluck(:entry_id)
+                  .to_set
+    else
+      Set.new
+    end
 
-    render Views::Entries::Index.new(page: @page, afishas: @afishas, top_advertisements: @top_advertisements)
+    render Views::Entries::Index.new(
+      page: @page,
+      records: @records,
+      afishas: @afishas,
+      top_advertisements: @top_advertisements,
+      read_entry_ids: @read_entry_ids
+    )
   end
+
+
 
   def show
     if turbo_frame_request_id == "read" && current_user
       Current.user.mark_entry_as_read!(@entry)
-      render Components::Entries::ReadBadge.new(entry: @entry, user: Current.user), layout: false
+      # Передаем Set с одним ID для совместимости с новым компонентом
+      render Components::Entries::ReadBadge.new(entry: @entry, read_entry_ids: Set.new([ @entry.id ])), layout: false
       return
     end
 

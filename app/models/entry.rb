@@ -8,6 +8,8 @@ class Entry < ApplicationRecord
 
   delegated_type :entryable, types: [ POST_TYPE, ADVERTISEMENT_TYPE ], dependent: :destroy
   accepts_nested_attributes_for :entryable
+  delegate :urgent, :important, :event, :question, :sell, :buy, :help, to: :entryable, allow_nil: true
+  delegate :is_afisha?, :afisha_state, :event_date, to: :entryable, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
   scope :active, -> { where(trash: false) }
@@ -28,6 +30,18 @@ class Entry < ApplicationRecord
 
   def participants
     User.where(id: descendants.select(:user_id)).or(User.where(id: user_id)).distinct
+  end
+
+  # Оптимизируем получение заголовка (чтобы не дергать ActionText лишний раз в ленте)
+  def title
+    # self[:title] обращается напрямую к колонке в базе данных
+    # Если колонка пустая (для старых постов), можно оставить фоллбэк на контент
+    self[:title].presence || content&.to_plain_text&.truncate(200) || "Без заголовка"
+  end
+
+  def images_count
+    # Используем значение из колонки
+    self[:images_count] || 0
   end
 
   private

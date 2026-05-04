@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 class Views::Advertisements::Index < Views::Base
-  def initialize(page:)
+  # 1. Добавляем records в initialize
+  def initialize(page:, records: [])
     @page = page
+    @records = records
   end
 
   def view_template
@@ -31,11 +33,11 @@ class Views::Advertisements::Index < Views::Base
   private
 
   def render_records
-    @page.records.each do |entryable|
+    # 2. Используем массив @records, переданный из контроллера
+    @records.each do |entryable|
       li { render Components::Advertisements::Card.new(entryable: entryable, show_actions: true) }
     end
   end
-
 
   def render_next_page_frame
     unless @page.last?

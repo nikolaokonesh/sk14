@@ -26,12 +26,12 @@ class Components::Entries::AfishaSection < Components::Base
   private
 
   def render_afisha_card(post)
-    state = post.afisha_status
+    state = post.afisha_state
     is_finished = (state == :finished)
 
     a(href: entry_path(post.entry), class: [
           "snap-center shrink-0 w-56 bg-base-200 rounded-lg p-4 shadow-sm border relative overflow-hidden transition-all active:scale-95 hover:border-primary/50 group block",
-          (is_finished ? "opacity-60 grayscale-[0.5] border-base-300" : "border-base-300")
+          (is_finished ? "opacity-50 grayscale-[0.5] border-base-300" : "border-base-300")
         ]) do
       # 1. Используем наш НОВЫЙ универсальный бейдж (вместо ручной отрисовки статуса на плашке)
       div(class: "absolute top-0 right-0 z-20") do
