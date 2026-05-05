@@ -6,6 +6,7 @@ class CreateEntries < ActiveRecord::Migration[8.2]
 
       t.string   :title, limit: 500      # Запись части из :content
       t.integer  :images_count, default: 0
+      t.bigint :preview_blob_id
 
       t.boolean  :trash, default: false
       t.datetime :trash_data
@@ -20,5 +21,6 @@ class CreateEntries < ActiveRecord::Migration[8.2]
     end
 
     add_index :entries, :created_at
+    add_index :entries, :preview_blob_id
   end
 end

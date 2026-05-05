@@ -23,10 +23,13 @@ module User::ReadState
   end
 
   def broadcast_read_state_update!(entry)
+    # Используем root_entry, если прочтение по дереву
+    root_entry = entry.root || entry
+
     broadcast_replace_to(
-      [ :user, id ],
-      target: [ entry, :read_badge ],
-      renderable: Components::Entries::ReadBadge.new(entry: entry, user: self),
+      [ :user, id ], # Стрим в личный канал пользователя
+      target: [ root_entry, :read_badge ],
+      renderable: Components::Entries::ReadBadge.new(entry: root_entry, user: self),
       layout: false
     )
   end

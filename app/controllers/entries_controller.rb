@@ -3,55 +3,47 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
-    # 1. Добавляем includes(:entry) здесь, чтобы map(&:entry) не бил по базе
-    @afishas = Post.afisha_active.includes(:entry).to_a
-    @top_advertisements = Advertisement.on_top.limit(20).includes(:entry).to_a
+      # 1. Сюда добавлять НЕ НУЖНО, так как мы сделаем это ниже через Preloader для всех сразу
+      @afishas = Post.afisha_active.includes(:entry).to_a
+      @top_advertisements = Advertisement.on_top.limit(20).includes(:entry).to_a
 
-    @entries_scope = Entry.active.posts.recent
-    set_page_and_extract_portion_from @entries_scope
-    @records = @page.records.to_a
+      @entries_scope = Entry.active.posts.recent
+      set_page_and_extract_portion_from @entries_scope
+      @records = @page.records.to_a
 
-    # 2. Теперь map(&:entry) возьмет данные из памяти (0 запросов к БД)
-    all_entries = (@records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)).compact.uniq
+      all_entries = (@records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)).compact.uniq
 
-    # 3. Массовая загрузка через Preloader (Rails 8)
-    if all_entries.any?
-      ActiveRecord::Associations::Preloader.new(
-        records: all_entries,
-        associations: [ :user, :entry_reads, :entryable ]
-      ).call
-
-      ad_entries = @top_advertisements.map(&:entry).compact
-      if ad_entries.any?
+      # 3. Массовая загрузка через Preloader (Rails 8)
+      if all_entries.any?
+        # ДОБАВЛЯЕМ СЮДА :preview_blob
+        # Теперь для ВСЕХ записей (лента, афиша, реклама) подтянется только первое фото
         ActiveRecord::Associations::Preloader.new(
-          records: ad_entries,
-          associations: { rich_text_content: { embeds_attachments: :blob } }
+          records: all_entries,
+          associations: [ :user, :entry_reads, :entryable, :preview_blob ]
         ).call
       end
-    end
 
-    # 4. Прочитанные записи
-    @read_entry_ids = if authenticated?
-      user_id = current_user.id
-      all_entries.each_with_object(Set.new) do |entry, set|
-        # Проверяем предзагруженные entry_reads в памяти
-        set << entry.id if entry.entry_reads.any? { |read| read.user_id == user_id }
+      # 4. Прочитанные записи
+      @read_entry_ids = if authenticated?
+        user_id = current_user.id
+        all_entries.each_with_object(Set.new) do |entry, set|
+          set << entry.id if entry.entry_reads.any? { |read| read.user_id == user_id }
+        end
+      else
+        Set.new
       end
-    else
-      Set.new
-    end
 
-    render Views::Entries::Index.new(
-      page: @page, records: @records, afishas: @afishas,
-      top_advertisements: @top_advertisements, read_entry_ids: @read_entry_ids
-    )
+      render Views::Entries::Index.new(
+        page: @page, records: @records, afishas: @afishas,
+        top_advertisements: @top_advertisements, read_entry_ids: @read_entry_ids
+      )
   end
 
   def show
     if turbo_frame_request_id == "read" && current_user
       Current.user.mark_entry_as_read!(@entry)
       # Передаем Set с одним ID для совместимости с новым компонентом
-      render Components::Entries::ReadBadge.new(entry: @entry, read_entry_ids: Set.new([ @entry.id ])), layout: false
+      render Components::Entries::ReadBadge.new(entry: @entry, user: current_user), layout: false
       return
     end
 

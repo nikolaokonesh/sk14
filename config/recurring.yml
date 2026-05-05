@@ -21,7 +21,7 @@ default: &default
     schedule: every 1 hour
   cleanup_expired_afishas_job:
     class: CleanupExpiredAfishasJob
-    schedule: every 5 minutes
+    schedule: every 1 minute
   cleanup_expired_advertisements_job:
     class: CleanupExpiredAdvertisementsJob
     schedule: every 1 hour

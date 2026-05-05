@@ -55,7 +55,7 @@ class Views::Entries::Show < Views::Base
   # Блок с деталями афиши (время, статус, кнопка завершения)
   def render_afisha_status
     post = @entry.entryable
-    state = post.afisha_state
+    state = post.afisha_status&.to_sym
     is_finished = (state == :finished)
 
     div(class: "w-full p-4 pb-0") do
@@ -86,7 +86,7 @@ class Views::Entries::Show < Views::Base
   def render_afisha_toggle_button(post)
     return unless authenticated? && can?(:update, @entry)
 
-    state = post.afisha_state
+    state = post.afisha_status&.to_sym
     # Кнопку показываем, если событие уже идет или уже завершено (чтобы возобновить)
     if state == :ongoing || post.manual_finished?
       manually = post.manual_finished?

@@ -22,11 +22,7 @@ class Advertisement < ApplicationRecord
 
 
   def first_image_embed
-    # Используем .embeds_attachments, чтобы ActiveRecord мог
-    # использовать данные, загруженные через .includes
-    return nil unless entry&.rich_text_content
-
-    entry.rich_text_content.embeds_attachments.first&.blob
+    entry&.preview_blob
   end
 
   def theme_gradient

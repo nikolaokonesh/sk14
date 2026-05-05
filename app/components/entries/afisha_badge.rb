@@ -3,11 +3,12 @@
 class Components::Entries::AfishaBadge < Components::Base
   def initialize(entry:, size: :md)
     @entry = entry
-    @size = size # Можно добавить поддержку разных размеров (:sm, :md, :lg)
+    @size = size
   end
 
   def view_template
-    state = @entry.afisha_state
+    # Читаем статус напрямую из колонки как символ
+    state = @entry.afisha_status&.to_sym || :upcoming
 
     div(class: "flex items-center gap-1") do
       # Основная метка "АФИША"
@@ -17,7 +18,7 @@ class Components::Entries::AfishaBadge < Components::Base
         (state == :finished ? "bg-base-content/10 text-base-content/40" : "bg-cyan-500/20 text-cyan-500")
       ]) { "Афиша" }
 
-      # Конкретный статус
+      # Конкретный статус на основе зафиксированного состояния
       case state
       when :finished
         badge_tag("Прошло #{I18n.l(@entry.event_date, format: "%-d %b")}", class_m: "badge-ghost opacity-50")
@@ -26,6 +27,7 @@ class Components::Entries::AfishaBadge < Components::Base
       when :today
         badge_tag("Сегодня в #{@entry.event_date.strftime('%H:%M')}", class_m: "bg-cyan-500/20 text-blue-500 border-none")
       else
+        # :upcoming
         badge_tag(I18n.l(@entry.event_date, format: "%-d %b"), class_m: "bg-cyan-500/20 text-blue-500 border-none")
       end
     end

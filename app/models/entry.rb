@@ -20,6 +20,8 @@ class Entry < ApplicationRecord
   belongs_to :parent, class_name: "Entry", optional: true
   belongs_to :root, class_name: "Entry", optional: true
 
+  belongs_to :preview_blob, class_name: "ActiveStorage::Blob", optional: true
+
   has_many :replies, class_name: "Entry", foreign_key: :parent_id
   has_many :descendants, class_name: "Entry", foreign_key: :root_id
 
