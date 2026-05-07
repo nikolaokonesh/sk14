@@ -4,9 +4,9 @@ class Views::Entries::Index < Views::Base
   # Добавляем records и read_entry_ids в initialize
   def initialize(page:, records:, afishas:, read_entry_ids:, top_advertisements: [])
     @page = page
-    @records = records # Массив записей из контроллера
+    @records = records
     @afishas = afishas
-    @read_entry_ids = read_entry_ids # Set с ID прочтенных постов
+    @read_entry_ids = read_entry_ids
     @top_advertisements = top_advertisements
   end
 
@@ -56,8 +56,7 @@ class Views::Entries::Index < Views::Base
 
   def render_records
     user = current_user
-    # Используем @records (массив), а не @page.records (relation),
-    # чтобы избежать повторного запроса COUNT/SELECT
+    # Используем @records (уже загруженный массив с джойнами), а не @page.records
     @records.each do |entry|
       render Components::Entries::Card.new(
         entry: entry,

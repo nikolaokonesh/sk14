@@ -33,8 +33,7 @@ class Views::Advertisements::Index < Views::Base
   private
 
   def render_records
-    # 2. Используем массив @records, переданный из контроллера
-    @records.each do |entryable|
+    @records.each do |entryable| # Тут прилетает объект Advertisement
       li { render Components::Advertisements::Card.new(entryable: entryable, show_actions: true) }
     end
   end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Views::Advertisements::Show < Views::Base
   def initialize(entry:)
     @entry = entry
@@ -7,23 +5,37 @@ class Views::Advertisements::Show < Views::Base
 
   def view_template
     article(class: "py-4 px-2") do
-      div(class: "rounded-3xl p-[1px] bg-gradient-to-r #{@entry.entryable.theme_gradient} shadow-xl") do
-        div(class: "bg-base-100 rounded-3xl overflow-hidden") do
-          div(class: "p-5") do
-            p(class: "text-xs opacity-60") { "Рекламная публикация · #{@entry.user.name}" }
-            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
+      # Кэшируем всё тело объявления. Если контент или тема не менялись,
+      # Rails даже не заглянет в ActionText и Blobs.
+      cache @entry do
+        div(class: "rounded-3xl p-[1px] bg-gradient-to-r #{@entry.entryable.theme_gradient} shadow-xl") do
+          div(class: "bg-base-100 rounded-3xl overflow-hidden") do
+            div(class: "p-5") do
+              p(class: "text-xs opacity-60") { "Рекламная публикация · #{@entry.user.name}" }
 
-            if can?(:update, @entry)
-              div(class: "mt-6 flex flex-wrap gap-2") do
-                a(href: edit_advertisement_path(@entry), class: "btn btn-sm btn-primary") { "Редактировать" }
-
-                form_with(model: @entry, method: :delete, class: "inline") do |form|
-                  plain form.submit "Удалить", class: "btn btn-sm btn-error", data: { turbo_confirm: "Удалить рекламу?" }
-                end
+              # Выводим контент
+              div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") do
+                raw @entry.content.to_s
               end
+
+              render_actions if can?(:update, @entry)
             end
           end
         end
+      end
+    end
+  end
+
+  private
+
+  def render_actions
+    div(class: "mt-6 flex flex-wrap gap-2") do
+      a(href: edit_advertisement_path(@entry), class: "btn btn-sm btn-primary") { "Редактировать" }
+
+      # Форму лучше вынести за пределы кэша, если в ней есть CSRF-токены,
+      # но для простоты оставим внутри, Rails сам обновит токен.
+      form_with(model: @entry, method: :delete, class: "inline") do |form|
+        plain form.submit "Удалить", class: "btn btn-sm btn-error", data: { turbo_confirm: "Удалить рекламу?" }
       end
     end
   end

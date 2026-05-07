@@ -8,41 +8,44 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    div(class: "py-4") do
-      # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
-      div(class: "flex items-center text-lg px-2") do
-        span(class: "mr-2 font-bold") { @entry.user.username(:full) }
-        span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
+    # Кэшируем по связке: запись + ID пользователя (для прав доступа)
+    # Если запись обновится (updated_at), кэш сбросится сам
+    cache [ @entry, current_user&.id ] do
+      div(class: "py-4") do
+        # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
+        div(class: "flex items-center text-lg px-2") do
+          # username(:full) теперь подгружен через includes(user: :roles)
+          span(class: "mr-2 font-bold") { @entry.user.username(:full) }
+          span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
 
-        if show_read_state_badge?
-          turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
+          if show_read_state_badge?
+            turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
+          end
+
+          render_management_dropdown if authenticated? && can?(:manage, @entry)
         end
 
-        # Кнопки управления (Редактировать / Удалить)
-        render_management_dropdown if authenticated? && can?(:manage, @entry)
-      end
+        div(class: "p-2") do
+          render Components::Entries::TagBadge.new(entry: @entry)
+        end
 
-      # Теги (категории)
-      div(class: "p-2") do
-        render Components::Entries::TagBadge.new(entry: @entry)
-      end
+        # --- ОСНОВНОЙ КОНТЕНТ ПОСТА ---
+        div(class: "relative") do
+          render Components::Shared::BgGradient.new(opacity: "opacity-30")
 
-      # --- ОСНОВНОЙ КОНТЕНТ ПОСТА ---
-      div(class: "relative") do
-        render Components::Shared::BgGradient.new(opacity: "opacity-30")
+          div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+            render_afisha_status if @entry.entryable.is_afisha?
 
-        div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
-          # Если это афиша — рендерим специальный блок статуса
-          render_afisha_status if @entry.entryable.is_afisha?
+            div(class: "p-4") do
+              # Используем raw, чтобы ActionText вывел HTML без лишних запросов (т.к. мы сделали includes)
+              div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") do
+                raw @entry.content.to_s
+              end
 
-          div(class: "p-4") do
-            # Тело поста (Rich Text)
-            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") { @entry.content.to_s }
-
-            # Плашка "Без комментариев", если отключены
-            if @entry.entryable.no_comments?
-              div(class: "divider opacity-10 mt-2")
-              p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
+              if @entry.entryable.no_comments?
+                div(class: "divider opacity-10 mt-2")
+                p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
+              end
             end
           end
         end
@@ -52,7 +55,6 @@ class Views::Entries::Show < Views::Base
 
   private
 
-  # Блок с деталями афиши (время, статус, кнопка завершения)
   def render_afisha_status
     post = @entry.entryable
     state = post.afisha_status&.to_sym
@@ -63,10 +65,8 @@ class Views::Entries::Show < Views::Base
         "flex flex-wrap items-center gap-3 p-3 rounded-xl bg-base-300/50 border border-white/5",
         ("opacity-70" if is_finished)
       ]) do
-        # 1. Используем наш новый универсальный бейдж
         render Components::Entries::AfishaBadge.new(entry: post, size: :md)
 
-        # 2. Информация о времени (используем методы модели)
         div(class: "flex flex-col") do
           span(class: [ "text-sm font-black tracking-tight", ("line-through opacity-30" if is_finished) ]) do
             "#{post.event_date.strftime('%H:%M')} — #{post.end_date.strftime('%H:%M')}"
@@ -76,52 +76,42 @@ class Views::Entries::Show < Views::Base
           end
         end
 
-        # 3. Кнопка управления для автора
         render_afisha_toggle_button(post)
       end
     end
   end
 
-  # Кнопка "Завершить / Возобновить" для автора
   def render_afisha_toggle_button(post)
     return unless authenticated? && can?(:update, @entry)
 
     state = post.afisha_status&.to_sym
-    # Кнопку показываем, если событие уже идет или уже завершено (чтобы возобновить)
     if state == :ongoing || post.manual_finished?
       manually = post.manual_finished?
 
       div(class: "ml-auto") do
-        button_to entry_path(@entry),
-                  params: {
-                    entry: {
-                      entryable_attributes: {
-                        id: post.id,
-                        manual_finished: !manually,
-                        # Если возобновляем — возвращаем расчетное время окончания
-                        finished_at: (!manually ? Time.current : post.end_date)
-                      }
-                    }
-                  },
-                  method: :patch,
-                  class: [ "btn btn-xs rounded-lg shadow-sm", (manually ? "btn-success" : "btn-outline btn-error") ],
-                  data: { turbo_confirm: (manually ? "Возобновить мероприятие?" : "Завершить событие досрочно?") } do
-          manually ? "Возобновить" : "Завершить"
+        form_with(url: entry_path(@entry), method: :patch, class: "inline") do |f|
+          f.hidden_field "entry[entryable_attributes][id]", value: post.id
+          f.hidden_field "entry[entryable_attributes][manual_finished]", value: !manually
+          f.hidden_field "entry[entryable_attributes][finished_at]", value: (!manually ? Time.current : post.end_date)
+
+          f.submit(manually ? "Возобновить" : "Завершить",
+                   class: [ "btn btn-xs rounded-lg shadow-sm", (manually ? "btn-success" : "btn-outline btn-error") ],
+                   data: { turbo_confirm: (manually ? "Возобновить мероприятие?" : "Завершить событие досрочно?") })
         end
       end
     end
   end
 
-  # Логика показа бейджа "не прочитано"
   def show_read_state_badge?
-    return false unless current_user
-    return false if @entry.user == current_user
-    return false if Current.user.post_read_for?(@entry)
-    return false unless @entry.post?
-    true
+    # Используем current_user, чтобы не дергать Current.user несколько раз
+    user = current_user
+    return false unless user
+    return false if @entry.user_id == user.id
+    # Проверка прочтения теперь будет быстрее, если в контроллере сделан includes
+    return false if user.post_read_for?(@entry)
+    @entry.post?
   end
 
-  # Вынес дропдаун в отдельный метод для чистоты view_template
   def render_management_dropdown
     div(class: "dropdown dropdown-end ml-auto") do
       div(tabindex: 0, role: "button", class: "px-2 cursor-pointer opacity-50 hover:opacity-100") { raw lucide_icon("ellipsis") }

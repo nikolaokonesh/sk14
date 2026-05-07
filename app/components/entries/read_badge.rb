@@ -6,15 +6,17 @@ class Components::Entries::ReadBadge < Components::Base
   end
 
   def view_template
-    is_read = if @read_entry_ids
+    # Сначала проверяем виртуальное поле из SQL (самый быстрый путь для ленты)
+    is_read = if @entry.respond_to?(:read_by_user)
+                @entry.read_by_user
+              elsif @read_entry_ids
                 @read_entry_ids.include?(@entry.id)
-    elsif @user
+              elsif @user
                 @user.post_read_for?(@entry)
-    else
+              else
                 false
-    end
+              end
 
-    # ДОБАВЬТЕ ID СЮДА:
     span(id: dom_id(@entry, :read_badge), class: [ is_read ? "text-info" : "text-gray-500 opacity-30" ]) do
       lucide_icon("check-check", size: 18)
     end

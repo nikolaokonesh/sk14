@@ -1,7 +1,8 @@
 class Entry < ApplicationRecord
   broadcasts_refreshes
-  include Threading
   include Content
+  include ListingPreloader # Подгружает для EntriesContrller#index
+  include Threading
   POST_TYPE = "Post".freeze
   ADVERTISEMENT_TYPE = "Advertisement".freeze
   TITLE_PREVIEW_LENGTH = 500

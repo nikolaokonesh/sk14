@@ -30,41 +30,40 @@ module Entry::Content
     end
   end
 
-def update_cached_data
-  # 1. Берем HTML контент
-  html = content.to_s
+  def update_cached_data
+    # 1. Берем HTML контент
+    html = content.to_s
 
-  # 2. Магия: заменяем закрывающие теги блоков (h1-h6, p, div, li)
-  # на их содержимое + пробел. Это гарантирует разрыв между словами.
-  processed_html = html.gsub(/<\/(h[1-6]|p|div|li)>/, " </\\1>")
+    # 2. Магия: заменяем закрывающие теги блоков (h1-h6, p, div, li)
+    # на их содержимое + пробел. Это гарантирует разрыв между словами.
+    processed_html = html.gsub(/<\/(h[1-6]|p|div|li)>/, " </\\1>")
 
-  # 3. Теперь превращаем в текст.
-  # Используем strip и замену множественных пробелов
-  full_plain_text = ActionController::Base.helpers.strip_tags(processed_html)
-                                          .gsub(/\s+/, " ")
-                                          .strip
+    # 3. Теперь превращаем в текст.
+    # Используем strip и замену множественных пробелов
+    full_plain_text = ActionController::Base.helpers.strip_tags(processed_html)
+                                            .gsub(/\s+/, " ")
+                                            .strip
 
-  # 4. Формируем обрезанный заголовок
-  new_title = truncated_title_from(full_plain_text)
+    # 4. Формируем обрезанный заголовок
+    new_title = truncated_title_from(full_plain_text)
 
-  # Находим только ПЕРВОЕ изображение среди вложений
-  # Мы используем .find, чтобы не выгружать весь массив в память
-  first_image_attachment = content.embeds.find { |e| e.image? }
-  new_preview_blob_id = first_image_attachment&.blob_id
+    # Находим только ПЕРВОЕ изображение среди вложений
+    # Мы используем .find, чтобы не выгружать весь массив в память
+    first_image_attachment = content.embeds.find { |e| e.image? }
+    new_preview_blob_id = first_image_attachment&.blob_id
 
-  # 5. Считаем количество изображений
-  new_images_count = content.embeds.select(&:image?).size
+    # 5. Считаем количество изображений
+    new_images_count = content.embeds.select(&:image?).size
 
-  # 6. Сохраняем
-  if title != new_title || images_count != new_images_count || preview_blob_id != new_preview_blob_id
-    update_columns(
-      title: new_title,
-      images_count: new_images_count,
-      preview_blob_id: new_preview_blob_id
-    )
+    # 6. Сохраняем
+    if title != new_title || images_count != new_images_count || preview_blob_id != new_preview_blob_id
+      update_columns(
+        title: new_title,
+        images_count: new_images_count,
+        preview_blob_id: new_preview_blob_id
+      )
+    end
   end
-end
-
 
   # Логика умной обрезки текста по словам
   def truncated_title_from(plain_text)

@@ -5,15 +5,25 @@ class AdvertisementsController < ApplicationController
   before_action :set_entry, only: %i[show edit update destroy]
 
   def index
-    scope = Advertisement.on_top.includes(entry: [ :user, :entry_reads, { rich_text_content: { embeds_attachments: :blob } } ])
-    set_page_and_extract_portion_from scope
+    # 1. Получаем ID рекламы для текущей страницы
+    @ads_scope = Advertisement.on_top
+    set_page_and_extract_portion_from @ads_scope
+
+    # 2. Загружаем Entry, но во вьюху отдаем их entryable (Advertisement)
+    # Метод load_for_list подтянет User и PreviewBlob и "прошьет" связи
+    entries = Entry.load_for_list(
+      Entry.where(entryable_type: "Advertisement", entryable_id: @page.records.pluck(:id)),
+      current_user
+    )
+
+    # Превращаем Entry обратно в массив Advertisement, но уже "заряженных" данными
+    @records = entries.map(&:entryable).compact
 
     render Views::Advertisements::Index.new(
       page: @page,
-      records: @page.records.to_a # Это должно быть здесь для всех страниц
+      records: @records
     )
   end
-
 
   def show
     render Views::Advertisements::Show.new(entry: @entry)
@@ -60,7 +70,11 @@ class AdvertisementsController < ApplicationController
 
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
-      @entry = Entry.find(params.expect(:id))
+      @entry = Entry.includes(
+        :user,
+        :entryable,
+        rich_text_content: { embeds_attachments: :blob } # Исправленное имя
+      ).find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
