@@ -33,7 +33,4 @@ class Advertisement < ApplicationRecord
     top_placement? && (paid_until.blank? || paid_until.future?)
   end
 
-  def post?
-    true
-  end
 end

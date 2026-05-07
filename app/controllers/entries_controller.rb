@@ -2,42 +2,51 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
-  def index
-      # 1. Сюда добавлять НЕ НУЖНО, так как мы сделаем это ниже через Preloader для всех сразу
-      @afishas = Post.afisha_active.includes(:entry).to_a
-      @top_advertisements = Advertisement.on_top.limit(20).includes(:entry).to_a
+def index
+  # 1. Загружаем Афишу и Рекламу
+  @afishas = Post.afisha_active.includes(:entry).to_a
+  @top_advertisements = Advertisement.on_top.limit(20).includes(:entry).to_a
 
-      @entries_scope = Entry.active.posts.recent
-      set_page_and_extract_portion_from @entries_scope
-      @records = @page.records.to_a
+  # 2. Основная лента постов
+  @entries_scope = Entry.active.posts.recent
+  set_page_and_extract_portion_from @entries_scope
+  @records = @page.records.to_a
 
-      all_entries = (@records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)).compact.uniq
+  # 3. Собираем все Entry в один массив (для прелоада)
+  all_entries = (@records + @afishas.map(&:entry) + @top_advertisements.map(&:entry)).compact.uniq
 
-      # 3. Массовая загрузка через Preloader (Rails 8)
-      if all_entries.any?
-        # ДОБАВЛЯЕМ СЮДА :preview_blob
-        # Теперь для ВСЕХ записей (лента, афиша, реклама) подтянется только первое фото
-        ActiveRecord::Associations::Preloader.new(
-          records: all_entries,
-          associations: [ :user, :entry_reads, :entryable, :preview_blob ]
-        ).call
-      end
-
-      # 4. Прочитанные записи
-      @read_entry_ids = if authenticated?
-        user_id = current_user.id
-        all_entries.each_with_object(Set.new) do |entry, set|
-          set << entry.id if entry.entry_reads.any? { |read| read.user_id == user_id }
-        end
-      else
-        Set.new
-      end
-
-      render Views::Entries::Index.new(
-        page: @page, records: @records, afishas: @afishas,
-        top_advertisements: @top_advertisements, read_entry_ids: @read_entry_ids
-      )
+  # 4. Массово подгружаем тяжелые связи
+  # entry_reads здесь больше не нужен, так как мы вынесли его в эффективный pluck
+  if all_entries.any?
+    ActiveRecord::Associations::Preloader.new(
+      records: all_entries,
+      associations: [ :user, :entryable, :preview_blob ]
+    ).call
   end
+
+  # 5. Определяем прочитанные записи (оптимизировано)
+  @read_entry_ids = if authenticated?
+    # Выбираем только ID записей, прочитанных именно ТЕКУЩИМ пользователем
+    # Это один легкий запрос, возвращающий только массив чисел
+    current_user.entry_reads
+                .where(entry_id: all_entries.map(&:id))
+                .pluck(:entry_id)
+                .to_set
+  else
+    Set.new
+  end
+
+  # 6. Рендерим Phlex-вьюху
+  render Views::Entries::Index.new(
+    page: @page,
+    records: @records,
+    afishas: @afishas,
+    top_advertisements: @top_advertisements,
+    read_entry_ids: @read_entry_ids
+  )
+end
+
+
 
   def show
     if turbo_frame_request_id == "read" && current_user
