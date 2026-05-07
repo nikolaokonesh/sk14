@@ -74,7 +74,7 @@ class AdvertisementsController < ApplicationController
         :user,
         :entryable,
         rich_text_content: { embeds_attachments: :blob } # Исправленное имя
-      ).find(params[:id])
+      ).find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
