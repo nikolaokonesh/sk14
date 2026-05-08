@@ -110,7 +110,11 @@ class EntriesController < ApplicationController
       @entry = Entry.includes(
         :entryable,
         user: :roles, # Чтобы can?(:manage, @entry) не лез в базу за ролями автора
-        rich_text_content: { embeds_attachments: :blob } # Все картинки поста одним запросом
+        rich_text_content: { 
+          embeds_attachments: { 
+            blob: :variant_records # Добавляем это, если используете миниатюры
+          } 
+        }
       ).find(params.expect(:id))
     end
 

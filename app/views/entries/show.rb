@@ -8,44 +8,40 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    # Кэшируем по связке: запись + ID пользователя (для прав доступа)
-    # Если запись обновится (updated_at), кэш сбросится сам
-    cache [ @entry, current_user&.id ] do
-      div(class: "py-4") do
-        # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
-        div(class: "flex items-center text-lg px-2") do
-          # username(:full) теперь подгружен через includes(user: :roles)
-          span(class: "mr-2 font-bold") { @entry.user.username(:full) }
-          span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
+    div(class: "py-4") do
+      # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
+      div(class: "flex items-center text-lg px-2") do
+        # username(:full) теперь подгружен через includes(user: :roles)
+        span(class: "mr-2 font-bold") { @entry.user.username(:full) }
+        span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
 
-          if show_read_state_badge?
-            turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
-          end
-
-          render_management_dropdown if authenticated? && can?(:manage, @entry)
+        if show_read_state_badge?
+          turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
         end
 
-        div(class: "p-2") do
-          render Components::Entries::TagBadge.new(entry: @entry)
-        end
+        render_management_dropdown if authenticated? && can?(:manage, @entry)
+      end
 
-        # --- ОСНОВНОЙ КОНТЕНТ ПОСТА ---
-        div(class: "relative") do
-          render Components::Shared::BgGradient.new(opacity: "opacity-30")
+      div(class: "p-2") do
+        render Components::Entries::TagBadge.new(entry: @entry)
+      end
 
-          div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
-            render_afisha_status if @entry.entryable.is_afisha?
+      # --- ОСНОВНОЙ КОНТЕНТ ПОСТА ---
+      div(class: "relative") do
+        render Components::Shared::BgGradient.new(opacity: "opacity-30")
 
-            div(class: "p-4") do
-              # Используем raw, чтобы ActionText вывел HTML без лишних запросов (т.к. мы сделали includes)
-              div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") do
-                raw @entry.content.to_s
-              end
+        div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+          render_afisha_status if @entry.entryable.is_afisha?
 
-              if @entry.entryable.no_comments?
-                div(class: "divider opacity-10 mt-2")
-                p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
-              end
+          div(class: "p-4") do
+            # Используем raw, чтобы ActionText вывел HTML без лишних запросов (т.к. мы сделали includes)
+            div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") do
+              raw @entry.content.to_s
+            end
+
+            if @entry.entryable.no_comments?
+              div(class: "divider opacity-10 mt-2")
+              p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
             end
           end
         end
