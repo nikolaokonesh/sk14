@@ -11,13 +11,17 @@ module Entry::Content
     validates :content, presence: true
     validate :content_length
 
-    # Кешируем данные в колонки таблицы entries после сохранения
-    after_save_commit :update_cached_data
+    # 1. Текст кешируем ПЕРЕД сохранением.
+    # Это гарантирует, что заголовок попадет в базу в первом же INSERT запросе.
+    before_save :cache_text_data, if: -> { content.changed? }
+
+    # 2. Картинки кешируем ПОСЛЕ коммита.
+    # На этом этапе ActionText уже точно привязал вложения к записи.
+    after_save_commit :cache_images_data
   end
 
   # ПУБЛИЧНЫЙ МЕТОД: Используется в Phlex компонентах
-  # Возвращает объект-вариант (или nil), который Phlex превратит в URL
-  def preview_variant(width: 200, height: 200)
+  def preview_variant(width: 400, height: 400)
     return nil unless preview_blob_id
 
     preview_blob.variant(
@@ -29,10 +33,9 @@ module Entry::Content
 
   private
 
-  # Валидация длины чистого текста (без учета HTML-тегов)
+  # Валидация длины текста
   def content_length
     return if content.nil?
-
     plain_text = content.to_plain_text.strip
     if plain_text.blank?
       errors.add(:content, "должен содержать текст")
@@ -41,43 +44,40 @@ module Entry::Content
     end
   end
 
-  def update_cached_data
-    # 1. Берем HTML контент
+  # Работает в основной транзакции сохранения
+  def cache_text_data
     html = content.to_s
-
-    # 2. Магия: заменяем закрывающие теги блоков на текст + пробел
+    # Заменяем теги блоков на пробелы, чтобы слова не слипались
     processed_html = html.gsub(/<\/(h[1-6]|p|div|li)>/, " </\\1>")
 
-    # 3. Превращаем в чистый текст
     full_plain_text = ActionController::Base.helpers.strip_tags(processed_html)
                                             .gsub(/\s+/, " ")
                                             .strip
 
-    # 4. Формируем обрезанный заголовок
-    new_title = truncated_title_from(full_plain_text)
+    # Прямое присваивание атрибуту. Запишется вместе с постом.
+    self.title = truncated_title_from(full_plain_text)
+  end
 
-    # Ищем ПЕРВОЕ изображение среди вложений
-    first_image_attachment = content.embeds.find { |e| e.image? }
-    new_preview_blob_id = first_image_attachment&.blob_id
+  # Работает после записи в БД
+  def cache_images_data
+    # Ищем картинки в ActionText вложениях
+    attachments = content.embeds.select(&:image?)
+    new_preview_blob_id = attachments.first&.blob_id
+    new_images_count = attachments.size
 
-    # 5. Считаем количество изображений
-    new_images_count = content.embeds.select(&:image?).size
-
-    # 6. Сохраняем изменения в базу (update_columns не вызывает коллбэки повторно)
-    if title != new_title || images_count != new_images_count || preview_blob_id != new_preview_blob_id
+    # Если данные о картинках изменились — обновляем колонки без лишних коллбэков
+    if images_count != new_images_count || preview_blob_id != new_preview_blob_id
       update_columns(
-        title: new_title,
         images_count: new_images_count,
         preview_blob_id: new_preview_blob_id
       )
 
-      # ПРОГРЕВ КЭША: Создаем сжатый файл сразу после сохранения.
-      # Теперь первый посетитель страницы не будет ждать, пока сервер обработает 5МБ картинку.
+      # Сразу генерируем превью, чтобы оно лежало в кэше
       preview_variant&.processed if new_preview_blob_id
     end
   end
 
-  # Логика умной обрезки текста по словам
+  # Обрезка заголовка
   def truncated_title_from(plain_text)
     return plain_text if plain_text.length <= Entry::TITLE_PREVIEW_LENGTH
 

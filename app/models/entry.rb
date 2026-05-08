@@ -39,7 +39,7 @@ class Entry < ApplicationRecord
   def title
     # self[:title] обращается напрямую к колонке в базе данных
     # Если колонка пустая (для старых постов), можно оставить фоллбэк на контент
-    self[:title].presence || content&.to_plain_text&.truncate(200) || "Без заголовка"
+    self[:title].presence || "Без заголовка"
   end
 
   def images_count
