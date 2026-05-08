@@ -21,6 +21,9 @@ class Entry < ApplicationRecord
   belongs_to :parent, class_name: "Entry", optional: true
   belongs_to :root, class_name: "Entry", optional: true
 
+  belongs_to :post, foreign_key: :entryable_id, optional: true
+  belongs_to :advertisement, foreign_key: :entryable_id, optional: true
+
   belongs_to :preview_blob, class_name: "ActiveStorage::Blob", optional: true
 
   has_many :replies, class_name: "Entry", foreign_key: :parent_id

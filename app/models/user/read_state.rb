@@ -13,7 +13,7 @@ module User::ReadState
 
     unless ids_array.include?(target_id)
       ids_array.unshift(target_id)
-      ids_array = ids_array.take(500) # Лимит, чтобы кэш не пух
+      ids_array = ids_array.take(250) # Лимит, чтобы кэш не пух
 
       Rails.cache.write("user/#{id}/read_ids", ids_array)
       @read_entry_ids = ids_array.to_set # Сброс мемоизации

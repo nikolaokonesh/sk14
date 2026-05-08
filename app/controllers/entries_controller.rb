@@ -2,32 +2,53 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
-  def index
-    # 1. Загружаем Афишу и Рекламу
-    # Передаем current_user, чтобы прелоадер разметил их как прочитанные/новые
-    @afisha_entries = Entry.afisha_for_main(current_user)
-    @ad_entries     = Entry.ads_for_main(current_user)
+def index
+  # 1. Быстрые запросы только за ID
+  afisha_ids = Entry.active.joins(:post)
+                    .merge(Post.afisha_active)
+                    .reorder("posts.event_date ASC")
+                    .pluck(:id)
 
-    # 2. Основная лента
-    base_scope = Entry.active.posts.recent
-    set_page_and_extract_portion_from base_scope
+  ads_ids    = Entry.active.joins(:advertisement)
+                    .merge(Advertisement.on_top)
+                    .limit(20)
+                    .pluck(:id)
 
-    # Загружаем записи текущей страницы
-    # Используем load_for_list, который теперь проверяет Solid Cache вместо JOIN
-    @records = Entry.load_for_list(@page.records.pluck(:id), current_user)
+  # Пагинация ленты
+  set_page_and_extract_portion_from Entry.active.where(entryable_type: "Post").recent
+  recent_ids = @page.records.pluck(:id)
 
-    # 3. ID прочтений для хедера (если они там нужны для иконок)
-    # Берем их из кэша через модель User, а не из БД
-    @read_entry_ids = authenticated? ? current_user.read_entry_ids : Set.new
+  # 2. Пакетная загрузка всех данных
+  all_ids = (afisha_ids + ads_ids + recent_ids).uniq
+  all_records = Entry.load_for_list(all_ids, current_user, use_recent: false)
+  indexed_records = all_records.index_by(&:id)
 
-    render Views::Entries::Index.new(
-      page: @page,
-      records: @records,
-      afishas: @afisha_entries.map(&:entryable).compact,
-      top_advertisements: @ad_entries.map(&:entryable).compact,
-      read_entry_ids: @read_entry_ids
-    )
-  end
+  # 3. БЕЗОПАСНОЕ распределение с фильтрацией типов
+  # Это гарантирует, что в афишу попадут ТОЛЬКО посты
+  @afisha_entries = afisha_ids.map { |id| indexed_records[id] }
+                             .compact
+                             .select { |e| e.entryable_type == "Post" }
+
+  @ad_entries     = ads_ids.map { |id| indexed_records[id] }
+                           .compact
+                           .select { |e| e.entryable_type == "Advertisement" }
+
+  @records        = recent_ids.map { |id| indexed_records[id] }
+                              .compact
+                              .select { |e| e.entryable_type == "Post" }
+
+  @read_entry_ids = authenticated? ? current_user.read_entry_ids : Set.new
+
+  render Views::Entries::Index.new(
+    page: @page,
+    records: @records,
+    afishas: @afisha_entries.map(&:entryable).compact,
+    top_advertisements: @ad_entries.map(&:entryable).compact,
+    read_entry_ids: @read_entry_ids
+  )
+end
+
+
 
   def show
     if turbo_frame_request_id == "read" && authenticated?
@@ -109,10 +130,10 @@ class EntriesController < ApplicationController
       @entry = Entry.includes(
         :entryable,
         user: :roles, # Чтобы can?(:manage, @entry) не лез в базу за ролями автора
-        rich_text_content: { 
-          embeds_attachments: { 
+        rich_text_content: {
+          embeds_attachments: {
             blob: :variant_records # Добавляем это, если используете миниатюры
-          } 
+          }
         }
       ).find(params.expect(:id))
     end

@@ -9,23 +9,18 @@ module Entry::ListingPreloader
       res = scope
       res = res.recent if use_recent
 
-      # Чистый запрос без LEFT JOIN entry_reads
-      records = res.includes(:user, :entryable, :preview_blob).to_a
+      # ОПТИМИЗАЦИЯ: добавляем variant_records для мгновенных ссылок на миниатюры
+      records = res.includes(:user, :entryable, preview_blob: :variant_records).to_a
 
       if current_user
-        read_ids = current_user.read_entry_ids # Один запрос к кэшу
-
+        read_ids = current_user.read_entry_ids
         records.each do |e|
-          # Проверяем по корню или по ID
           is_read = read_ids.include?(e.root_id || e.id)
           e.instance_variable_set(:@read_by_user, is_read)
-
-          # Метод для ReadBadge
           def e.read_by_user; instance_variable_get(:@read_by_user); end
         end
       end
 
-      # Прошивка связей
       records.each { |e| e.entryable.association(:entry).target = e if e&.entryable }
       records
     end
