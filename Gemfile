@@ -68,7 +68,7 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 4.4"
-gem "friendly_id", "~> 5.5"
+gem "friendly_id", "~> 5.7"
 gem "phlex-rails", "~> 2.4"
 gem "geared_pagination", "~> 1.2"
 gem "lexxy", "0.9.0.beta"
