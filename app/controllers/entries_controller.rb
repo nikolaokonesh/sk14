@@ -3,23 +3,22 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy ]
 
   def index
-    # 1. Загружаем Афишу и Рекламу (теперь они не исчезнут)
-    @afisha_entries = Entry.afisha_for_main
-    @ad_entries     = Entry.ads_for_main
+    # 1. Загружаем Афишу и Рекламу
+    # Передаем current_user, чтобы прелоадер разметил их как прочитанные/новые
+    @afisha_entries = Entry.afisha_for_main(current_user)
+    @ad_entries     = Entry.ads_for_main(current_user)
 
     # 2. Основная лента
     base_scope = Entry.active.posts.recent
     set_page_and_extract_portion_from base_scope
 
     # Загружаем записи текущей страницы
+    # Используем load_for_list, который теперь проверяет Solid Cache вместо JOIN
     @records = Entry.load_for_list(@page.records.pluck(:id), current_user)
 
-    # 3. ID прочтений для хедера
-    @read_entry_ids = if authenticated?
-      current_user.entry_reads.where(entry_id: @afisha_entries + @ad_entries).pluck(:entry_id).to_set
-    else
-      Set.new
-    end
+    # 3. ID прочтений для хедера (если они там нужны для иконок)
+    # Берем их из кэша через модель User, а не из БД
+    @read_entry_ids = authenticated? ? current_user.read_entry_ids : Set.new
 
     render Views::Entries::Index.new(
       page: @page,
@@ -30,10 +29,10 @@ class EntriesController < ApplicationController
     )
   end
 
-
   def show
     if turbo_frame_request_id == "read" && authenticated?
-      current_user.mark_entry_as_read!(@entry)
+      current_user.mark_entry_as_read!(@entry) # Бродкаст уйдет из модели автоматически
+      # Возвращаем badge (хотя стрим его тоже заменит, лучше вернуть для надежности)
       render Components::Entries::ReadBadge.new(entry: @entry, user: current_user), layout: false
       return
     end

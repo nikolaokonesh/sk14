@@ -18,6 +18,7 @@ module Sk14
 
     config.time_zone = "Asia/Srednekolymsk"
     config.active_storage.variant_processor = :vips
+    config.active_storage.track_variants = true
     config.i18n.default_locale = :ru
 
     # Configuration for the application, engines, and railties goes here.

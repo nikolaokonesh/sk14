@@ -20,7 +20,6 @@ class Advertisement < ApplicationRecord
   scope :on_top, -> { active.order(top_placement: :desc, created_at: :desc) }
   scope :expired, -> { where("created_at < ?", 1.month.ago) }
 
-
   def first_image_embed
     entry&.preview_blob
   end
@@ -32,5 +31,4 @@ class Advertisement < ApplicationRecord
   def paid_top?
     top_placement? && (paid_until.blank? || paid_until.future?)
   end
-
 end

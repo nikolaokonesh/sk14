@@ -30,7 +30,7 @@ class Components::Layout < Components::Base
         meta(name: :turbo_refresh_scroll, content: :preserve)
       end
       body do
-        turbo_stream_from :user, Current.user.id, refresh: :morph if current_user
+        turbo_stream_from(current_user) if authenticated?
         yield
       end
     end

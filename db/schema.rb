@@ -94,17 +94,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.index ["user_id"], name: "index_entries_on_user_id"
   end
 
-  create_table "entry_reads", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "entry_id", null: false
-    t.datetime "read_at"
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["entry_id"], name: "index_entry_reads_on_entry_id"
-    t.index ["user_id", "entry_id"], name: "index_entry_reads_on_user_id_and_entry_id", unique: true
-    t.index ["user_id"], name: "index_entry_reads_on_user_id"
-  end
-
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.datetime "created_at"
     t.string "scope"
@@ -204,7 +193,5 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
   add_foreign_key "entries", "entries", column: "parent_id"
   add_foreign_key "entries", "entries", column: "root_id"
   add_foreign_key "entries", "users"
-  add_foreign_key "entry_reads", "entries"
-  add_foreign_key "entry_reads", "users"
   add_foreign_key "sessions", "users"
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 puts "--- Очистка базы данных ---"
-[ EntryRead, ActionText::RichText, Entry, Post, User ].each(&:delete_all)
+[ ActionText::RichText, Entry, Post, User ].each(&:delete_all)
 
 puts "--- Создание персонажей ---"
 admin = User.create!(

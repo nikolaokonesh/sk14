@@ -99,13 +99,13 @@ class Views::Entries::Show < Views::Base
   end
 
   def show_read_state_badge?
-    # Используем current_user, чтобы не дергать Current.user несколько раз
     user = current_user
     return false unless user
     return false if @entry.user_id == user.id
-    # Проверка прочтения теперь будет быстрее, если в контроллере сделан includes
-    return false if user.post_read_for?(@entry)
-    @entry.post?
+
+    # Теперь этот метод лезет в Solid Cache (через вашу обновленную модель User)
+    # Это работает очень быстро
+    !user.post_read_for?(@entry)
   end
 
   def render_management_dropdown
