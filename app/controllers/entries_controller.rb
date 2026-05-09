@@ -15,7 +15,7 @@ def index
                     .pluck(:id)
 
   # Пагинация ленты
-  set_page_and_extract_portion_from Entry.active.where(entryable_type: "Post").recent
+  set_page_and_extract_portion_from Entry.active.posts.recent
   recent_ids = @page.records.pluck(:id)
 
   # 2. Пакетная загрузка всех данных
@@ -27,15 +27,15 @@ def index
   # Это гарантирует, что в афишу попадут ТОЛЬКО посты
   @afisha_entries = afisha_ids.map { |id| indexed_records[id] }
                              .compact
-                             .select { |e| e.entryable_type == "Post" }
+                             .select { |e| e.post? }
 
   @ad_entries     = ads_ids.map { |id| indexed_records[id] }
                            .compact
-                           .select { |e| e.entryable_type == "Advertisement" }
+                           .select { |e| e.advertisement? }
 
   @records        = recent_ids.map { |id| indexed_records[id] }
                               .compact
-                              .select { |e| e.entryable_type == "Post" }
+                              .select { |e| e.post? }
 
   @read_entry_ids = authenticated? ? current_user.read_entry_ids : Set.new
 
