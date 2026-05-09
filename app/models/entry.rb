@@ -7,10 +7,15 @@ class Entry < ApplicationRecord
   ADVERTISEMENT_TYPE = "Advertisement".freeze
   TITLE_PREVIEW_LENGTH = 500
 
+  attr_accessor :read_by_user
+  def read_by_user?
+    !!read_by_user
+  end
+
   delegated_type :entryable, types: [ POST_TYPE, ADVERTISEMENT_TYPE ], dependent: :destroy
   accepts_nested_attributes_for :entryable
   delegate :urgent, :important, :event, :question, :sell, :buy, :help, to: :entryable, allow_nil: true
-  delegate :is_afisha?, :afisha_state, :event_date, to: :entryable, allow_nil: true
+  delegate :is_afisha?, :afisha_status, :event_date, :theme_gradient, to: :entryable, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
   scope :active, -> { where(trash: false) }

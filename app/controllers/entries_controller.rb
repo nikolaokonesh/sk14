@@ -2,53 +2,58 @@ class EntriesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_entry, only: %i[ show edit update destroy ]
 
-def index
-  # 1. Быстрые запросы только за ID
-  afisha_ids = Entry.active.joins(:post)
-                    .merge(Post.afisha_active)
-                    .reorder("posts.event_date ASC")
-                    .pluck(:id)
+  def index
+    # 1. Сначала определяем основную ленту (пагинация)
+    # Это нужно делать всегда, чтобы @page был доступен
+    set_page_and_extract_portion_from Entry.active.posts.recent
+    recent_ids = @page.records.pluck(:id)
 
-  ads_ids    = Entry.active.joins(:advertisement)
-                    .merge(Advertisement.on_top)
-                    .limit(20)
-                    .pluck(:id)
+    # 2. Инициализируем переменные, чтобы они были доступны для рендера
+    afisha_ids = []
+    ads_ids    = []
 
-  # Пагинация ленты
-  set_page_and_extract_portion_from Entry.active.posts.recent
-  recent_ids = @page.records.pluck(:id)
+    # 3. Дополнительные данные грузим ТОЛЬКО для первой страницы
+    if @page.first?
+      afisha_ids = Entry.active.joins(:post)
+                        .merge(Post.afisha_active)
+                        .reorder("posts.event_date ASC")
+                        .pluck(:id)
 
-  # 2. Пакетная загрузка всех данных
-  all_ids = (afisha_ids + ads_ids + recent_ids).uniq
-  all_records = Entry.load_for_list(all_ids, current_user, use_recent: false)
-  indexed_records = all_records.index_by(&:id)
+      ads_ids    = Entry.active.joins(:advertisement)
+                        .merge(Advertisement.on_top)
+                        .limit(20)
+                        .pluck(:id)
+    end
 
-  # 3. БЕЗОПАСНОЕ распределение с фильтрацией типов
-  # Это гарантирует, что в афишу попадут ТОЛЬКО посты
-  @afisha_entries = afisha_ids.map { |id| indexed_records[id] }
-                             .compact
-                             .select { |e| e.post? }
+    # 4. Пакетная загрузка всех нужных ID одним запросом
+    # На 1-й странице тут будет (~40-50 ID), на 2-й и далее — только 15 ID ленты
+    all_ids = (afisha_ids + ads_ids + recent_ids).uniq
+    all_records = Entry.load_for_list(all_ids, current_user, use_recent: false)
 
-  @ad_entries     = ads_ids.map { |id| indexed_records[id] }
-                           .compact
-                           .select { |e| e.advertisement? }
+    indexed_records = all_records.index_by(&:id)
 
-  @records        = recent_ids.map { |id| indexed_records[id] }
-                              .compact
-                              .select { |e| e.post? }
+    # 5. Распределение по коллекциям (теперь на 2-й странице афиша и реклама будут пустыми массивами)
+    @afisha_entries = afisha_ids.map { |id| indexed_records[id] }
+                                .compact
+                                .select { |e| e.entryable_type == "Post" }
 
-  @read_entry_ids = authenticated? ? current_user.read_entry_ids : Set.new
+    @ad_entries     = ads_ids.map { |id| indexed_records[id] }
+                            .compact
+                            .select { |e| e.entryable_type == "Advertisement" }
 
-  render Views::Entries::Index.new(
-    page: @page,
-    records: @records,
-    afishas: @afisha_entries.map(&:entryable).compact,
-    top_advertisements: @ad_entries.map(&:entryable).compact,
-    read_entry_ids: @read_entry_ids
-  )
-end
+    @records        = recent_ids.map { |id| indexed_records[id] }
+                                .compact
+                                .select { |e| e.entryable_type == "Post" }
 
-
+    # 6. Рендерим Phlex-вьюху
+    render Views::Entries::Index.new(
+      page: @page,
+      records: @records,
+      afishas: @afisha_entries,
+      top_advertisements: @ad_entries,
+      read_entry_ids: (current_user&.read_entry_ids if authenticated?)
+    )
+  end
 
   def show
     if turbo_frame_request_id == "read" && authenticated?

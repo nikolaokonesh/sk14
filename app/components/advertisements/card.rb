@@ -2,15 +2,18 @@
 
 class Components::Advertisements::Card < Components::Base
   def initialize(entryable:, show_actions: false, compact: false)
-    @entryable = entryable
+    # Если передали Entry (оболочку), берем из неё entryable (саму рекламу)
+    # Если уже передали Advertisement — оставляем как есть
+    @ad = entryable.is_a?(Entry) ? entryable.entryable : entryable
+
     @show_actions = show_actions
     @compact = compact
   end
 
   def view_template
-    # Используем градиент из модели рекламы
-    article(class: "rounded-3xl p-[1px] bg-gradient-to-r #{@entryable.theme_gradient} shadow-xl") do
-      a(href: advertisement_path(@entryable.entry), class: "block") do
+    # Используем @ad, у которого точно есть метод theme_gradient
+    article(class: "rounded-3xl p-[1px] bg-gradient-to-r #{@ad.theme_gradient} shadow-xl") do
+      a(href: advertisement_path(@ad.entry), class: "block") do
         render_body
       end
 
@@ -21,8 +24,9 @@ class Components::Advertisements::Card < Components::Base
   private
 
   def render_body
-    # Используем новый метод из Entry::Content, который возвращает уже настроенный вариант
-    variant = @entryable.entry.preview_variant(width: 200, height: 200)
+    # Здесь тоже используем @ad для доступа к связанному entry
+    entry = @ad.entry
+    variant = entry.preview_variant
 
     div(class: [ "bg-base-100 rounded-3xl overflow-hidden relative", (@compact ? "p-3 min-h-24" : "p-4") ]) do
       if variant
@@ -30,18 +34,17 @@ class Components::Advertisements::Card < Components::Base
           src: url_for(variant),
           class: "absolute inset-0 w-full h-full object-cover opacity-35",
           alt: "",
-          loading: "lazy",  # Ленивая загрузка для экономии трафика
-          decoding: "async" # Асинхронное декодирование для плавности скролла
+          loading: "lazy",
+          decoding: "async"
         )
-        # Полупрозрачный слой поверх картинки для читаемости текста
         div(class: "absolute inset-0 bg-base-100/35")
       end
 
-      # Контентная часть (заголовок и автор)
       div(class: "relative z-10") do
-        p(class: "text-xs opacity-60 mb-2") { "В топе · #{@entryable.user.username}" }
+        # Берем данные через @ad
+        p(class: "text-xs opacity-60 mb-2") { "В топе · #{@ad.user.username}" }
         h2(class: [ "font-extrabold line-clamp-4", (@compact ? "text-base mb-1" : "text-xl mb-2") ]) do
-          @entryable.entry.title
+          entry.title
         end
       end
     end
@@ -49,11 +52,12 @@ class Components::Advertisements::Card < Components::Base
 
   def render_actions
     div(class: "px-4 pb-4 pt-3") do
-      a(href: edit_advertisement_path(@entryable.entry), class: "btn btn-xs") { "Редактировать" }
+      a(href: edit_advertisement_path(@ad.entry), class: "btn btn-xs") { "Редактировать" }
     end
   end
 
   def show_actions?
-    @show_actions && can?(:update, @entryable.entry)
+    # can? обычно работает с объектом из БД, передаем @ad.entry
+    @show_actions && can?(:update, @ad.entry)
   end
 end

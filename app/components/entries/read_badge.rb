@@ -7,19 +7,20 @@ class Components::Entries::ReadBadge < Components::Base
   end
 
   def view_template
-    target_id = @entry.root_id || @entry.id
+    # 1. Сначала проверяем наш новый атрибут (самый быстрый путь)
+    # 2. Если его нет (например, в Show), проверяем через переданный Set или метод юзера
+    is_read = if @entry.read_by_user != nil
+      @entry.read_by_user
+    elsif @read_entry_ids
+      @read_entry_ids.include?(@entry.root_id || @entry.id)
+    elsif @user
+      @user.post_read_for?(@entry)
+    else
+      false
+    end
 
-    is_read = if @entry.respond_to?(:read_by_user)
-                @entry.read_by_user
-              elsif @read_entry_ids
-                @read_entry_ids.include?(target_id)
-              elsif @user
-                @user.post_read_for?(@entry)
-              else
-                false
-              end
-
-    span(id: dom_id(@entry, :read_badge), class: [is_read ? "text-info" : "text-gray-500 opacity-30"]) do
+    span(id: dom_id(@entry, :read_badge),
+         class: [ is_read ? "text-info" : "text-gray-500 opacity-30 transition-opacity" ]) do
       lucide_icon("check-check", size: 18)
     end
   end

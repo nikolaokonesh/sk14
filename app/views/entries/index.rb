@@ -2,11 +2,11 @@
 
 class Views::Entries::Index < Views::Base
   # Добавляем records и read_entry_ids в initialize
-  def initialize(page:, records:, afishas:, read_entry_ids:, top_advertisements: [])
+  def initialize(page:, records:, afishas:, read_entry_ids: nil, top_advertisements: [])
     @page = page
     @records = records
     @afishas = afishas
-    @read_entry_ids = read_entry_ids
+    @read_entry_ids = read_entry_ids || Set.new
     @top_advertisements = top_advertisements
   end
 

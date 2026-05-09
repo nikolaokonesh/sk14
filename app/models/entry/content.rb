@@ -21,7 +21,7 @@ module Entry::Content
   end
 
   # ПУБЛИЧНЫЙ МЕТОД: Используется в Phlex компонентах
-  def preview_variant(width: 400, height: 400)
+  def preview_variant(width: 200, height: 200)
     return nil unless preview_blob_id
 
     preview_blob.variant(

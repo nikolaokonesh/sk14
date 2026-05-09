@@ -81,6 +81,15 @@ module Post::Afisha
   end
 
   def event_date_cannot_be_in_the_past
-    errors.add(:event_date, "не может быть в прошлом") if event_date.to_datetime < Time.current
+    # Если запись уже в базе и дата по факту не изменилась (с точностью до минуты) — выходим
+    if persisted? && event_date_was.present?
+      return if event_date.to_i / 60 == event_date_was.to_i / 60
+    end
+
+    # Если дату реально меняют на новую:
+    # Проверяем на прошлое с запасом в 15 минут
+    if event_date.present? && event_date < 15.minutes.ago
+      errors.add(:event_date, "не может быть в прошлом")
+    end
   end
 end

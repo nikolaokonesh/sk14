@@ -31,4 +31,10 @@ class Advertisement < ApplicationRecord
   def paid_top?
     top_placement? && (paid_until.blank? || paid_until.future?)
   end
+
+  def is_afisha? = false
+  def afisha_status = nil
+  def afisha_state = nil
+  def event_date = nil
+  def duration_text = nil
 end

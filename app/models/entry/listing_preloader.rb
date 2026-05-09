@@ -3,21 +3,22 @@ module Entry::ListingPreloader
   extend ActiveSupport::Concern
 
   class_methods do
-    # app/models/entry/listing_preloader.rb
     def load_for_list(scope, current_user = nil, use_recent: true)
       scope = where(id: scope) if scope.is_a?(Array)
       res = scope
       res = res.recent if use_recent
 
-      # ОПТИМИЗАЦИЯ: добавляем variant_records для мгновенных ссылок на миниатюры
       records = res.includes(:user, :entryable, preview_blob: :variant_records).to_a
 
       if current_user
+        # Используем метод из модели User, который ты скидывал раньше.
+        # Он ОДИН раз за HTTP-запрос сходит в Solid Cache, заберет массив
+        # и превратит его в Set для мгновенного поиска.
         read_ids = current_user.read_entry_ids
+
         records.each do |e|
-          is_read = read_ids.include?(e.root_id || e.id)
-          e.instance_variable_set(:@read_by_user, is_read)
-          def e.read_by_user; instance_variable_get(:@read_by_user); end
+          target_id = e.root_id || e.id
+          e.read_by_user = read_ids.include?(target_id)
         end
       end
 
