@@ -19,9 +19,6 @@ default: &default
   cleanup_expired_posts_job:
     class: CleanupExpiredPostsJob
     schedule: every 1 hour
-  cleanup_expired_afishas_job:
-    class: CleanupExpiredAfishasJob
-    schedule: every 1 minute
   cleanup_expired_advertisements_job:
     class: CleanupExpiredAdvertisementsJob
     schedule: every 1 hour
