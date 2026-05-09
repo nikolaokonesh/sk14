@@ -16,7 +16,6 @@ class EntriesController < ApplicationController
     if @page.first?
       afisha_ids = Entry.active.joins(:post)
                         .merge(Post.afisha_active)
-                        .reorder("posts.event_date ASC")
                         .pluck(:id)
 
       ads_ids    = Entry.active.joins(:advertisement)
