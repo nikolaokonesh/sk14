@@ -22,6 +22,9 @@ default: &default
   cleanup_expired_advertisements_job:
     class: CleanupExpiredAdvertisementsJob
     schedule: every 1 hour
+  clean_soft_deleted_entries_job:
+    class: CleanSoftDeletedEntriesJob
+    schedule: every day at 4am  # Чистим глубокой ночью
 
 development:
   <<: *default

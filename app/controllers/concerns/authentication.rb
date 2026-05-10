@@ -29,6 +29,10 @@ module Authentication
     end
 
     def resume_session
+      # Если мы уже пытались найти сессию и не нашли, не пробуем снова
+      return Current.session if defined?(@session_attempted)
+
+      @session_attempted = true
       Current.session ||= find_session_by_cookie
     end
 

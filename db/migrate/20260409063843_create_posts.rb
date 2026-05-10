@@ -15,6 +15,7 @@ class CreatePosts < ActiveRecord::Migration[8.2]
     end
 
     add_index :posts, :is_afisha
+    add_index :posts, "json_extract(setting, '$.duration')", name: "idx_posts_duration"
     add_index :posts, :event_date
     add_index :posts, :finished_at
     add_index :posts, :afisha_status

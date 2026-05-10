@@ -91,6 +91,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.index ["parent_id"], name: "index_entries_on_parent_id"
     t.index ["preview_blob_id"], name: "index_entries_on_preview_blob_id"
     t.index ["root_id"], name: "index_entries_on_root_id"
+    t.index ["trash_data"], name: "idx_entries_on_trash_data", where: "trash = 1"
     t.index ["user_id"], name: "index_entries_on_user_id"
   end
 
@@ -140,6 +141,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.json "setting", default: {}, null: false
     t.json "tags_listing", default: {}, null: false
     t.datetime "updated_at", null: false
+    t.index "json_extract(setting, '$.duration')", name: "idx_posts_duration"
     t.index ["afisha_status"], name: "index_posts_on_afisha_status"
     t.index ["event_date"], name: "index_posts_on_event_date"
     t.index ["finished_at"], name: "index_posts_on_finished_at"

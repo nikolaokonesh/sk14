@@ -22,5 +22,6 @@ class CreateEntries < ActiveRecord::Migration[8.2]
 
     add_index :entries, :created_at
     add_index :entries, :preview_blob_id
+    add_index :entries, :trash_data, where: "trash = 1", name: "idx_entries_on_trash_data"
   end
 end
