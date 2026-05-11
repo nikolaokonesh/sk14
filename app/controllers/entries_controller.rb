@@ -56,8 +56,8 @@ class EntriesController < ApplicationController
 
   def show
     if turbo_frame_request_id == "read" && authenticated?
-      current_user.mark_entry_as_read!(@entry) # Бродкаст уйдет из модели автоматически
-      # Возвращаем badge (хотя стрим его тоже заменит, лучше вернуть для надежности)
+      current_user.mark_entry_as_read!(@entry)
+      # Это заглужка для оторажения.
       render Components::Entries::ReadBadge.new(entry: @entry, user: current_user), layout: false
       return
     end

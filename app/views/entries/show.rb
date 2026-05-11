@@ -16,7 +16,7 @@ class Views::Entries::Show < Views::Base
         span(class: "text-xs opacity-60") { render Components::Shared::CreatedAt.new(entry: @entry) }
 
         if show_read_state_badge?
-          turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0", loading: :lazy
+          turbo_frame_tag "read", src: entry_path(@entry), class: "opacity-0 w-0 h-0", loading: :lazy
         end
 
         render_management_dropdown if authenticated? && can?(:manage, @entry)
@@ -102,9 +102,6 @@ class Views::Entries::Show < Views::Base
     user = current_user
     return false unless user
     return false if @entry.user_id == user.id
-
-    # Теперь этот метод лезет в Solid Cache (через вашу обновленную модель User)
-    # Это работает очень быстро
     !user.post_read_for?(@entry)
   end
 
