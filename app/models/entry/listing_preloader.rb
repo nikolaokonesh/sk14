@@ -1,47 +1,66 @@
-# app/models/entry/listing_preloader.rb
+# frozen_string_literal: true
+
 module Entry::ListingPreloader
   extend ActiveSupport::Concern
 
   class_methods do
     def load_for_list(scope, current_user = nil, use_recent: true)
-      scope = where(id: scope) if scope.is_a?(Array)
-      res = scope
-      res = res.recent if use_recent
+      records = preload_listing_records(scope, use_recent: use_recent)
 
-      records = res.includes(:user, :entryable, preview_blob: :variant_records).to_a
+      mark_read_states(records, current_user) if current_user
+      attach_inverse_entryable_records(records)
 
-      if current_user
-        # Используем метод из модели User, который ты скидывал раньше.
-        # Он ОДИН раз за HTTP-запрос сходит в Solid Cache, заберет массив
-        # и превратит его в Set для мгновенного поиска.
-        read_ids = current_user.read_entry_ids
-
-        records.each do |e|
-          target_id = e.root_id || e.id
-          e.read_by_user = read_ids.include?(target_id)
-        end
-      end
-
-      records.each { |e| e.entryable.association(:entry).target = e if e&.entryable }
       records
     end
 
     def afisha_for_main(current_user = nil)
-      scope = active.joins("INNER JOIN posts ON entries.entryable_id = posts.id AND entries.entryable_type = 'Post'")
-                    .merge(Post.afisha_active)
-                    .reorder("posts.event_date ASC")
-
-      # Выключаем use_recent, чтобы работала сортировка афиши
-      load_for_list(scope, current_user, use_recent: false)
+      load_for_list(afisha_for_main_scope, current_user, use_recent: false)
     end
 
     def ads_for_main(current_user = nil)
-      scope = active.joins("INNER JOIN advertisements ON entries.entryable_id = advertisements.id AND entries.entryable_type = 'Advertisement'")
-                    .merge(Advertisement.on_top)
-                    .limit(20)
+      load_for_list(ads_for_main_scope, current_user, use_recent: false)
+    end
 
-      # Выключаем use_recent, чтобы работала сортировка рекламы
-      load_for_list(scope, current_user, use_recent: false)
+    private
+
+    def preload_listing_records(scope, use_recent: true)
+      relation = normalize_listing_scope(scope)
+      relation = relation.recent if use_recent
+      relation.includes(:user, :entryable, preview_blob: :variant_records).to_a
+    end
+
+    def normalize_listing_scope(scope)
+      scope.is_a?(Array) ? where(id: scope) : scope
+    end
+
+    def mark_read_states(records, current_user)
+      read_ids = current_user.read_entry_ids
+
+      records.each do |entry|
+        entry.read_by_user = read_ids.include?(read_target_id(entry))
+      end
+    end
+
+    def read_target_id(entry)
+      entry.root_id || entry.id
+    end
+
+    def attach_inverse_entryable_records(records)
+      records.each do |entry|
+        entry.entryable.association(:entry).target = entry if entry&.entryable
+      end
+    end
+
+    def afisha_for_main_scope
+      active.joins("INNER JOIN posts ON entries.entryable_id = posts.id AND entries.entryable_type = 'Post'")
+            .merge(Post.afisha_active)
+            .reorder("posts.event_date ASC")
+    end
+
+    def ads_for_main_scope
+      active.joins("INNER JOIN advertisements ON entries.entryable_id = advertisements.id AND entries.entryable_type = 'Advertisement'")
+            .merge(Advertisement.on_top)
+            .limit(20)
     end
   end
 end

@@ -4,13 +4,13 @@ module Post::SettingsCleanup
   extend ActiveSupport::Concern
 
   TAG_CONFIG = {
-    urgent:    { label: "Срочно!", color_bg: "bg-rose-500/20", color_text: "text-rose-500" },
+    urgent: { label: "Срочно!", color_bg: "bg-rose-500/20", color_text: "text-rose-500" },
     important: { label: "Важное", color_bg: "bg-yellow-500/20", color_text: "text-yellow-500" },
-    event:     { label: "Событие", color_bg: "bg-blue-500/20", color_text: "text-blue-500" },
-    question:  { label: "Вопрос", color_bg: "bg-teal-500/20", color_text: "text-teal-500" },
-    sell:      { label: "Продам", color_bg: "bg-green-500/20", color_text: "text-green-500" },
-    buy:       { label: "Куплю", color_bg: "bg-orange-500/20", color_text: "text-orange-500" },
-    help:      { label: "Помощь", color_bg: "bg-purple-500/20", color_text: "text-purple-500" }
+    event: { label: "Событие", color_bg: "bg-blue-500/20", color_text: "text-blue-500" },
+    question: { label: "Вопрос", color_bg: "bg-teal-500/20", color_text: "text-teal-500" },
+    sell: { label: "Продам", color_bg: "bg-green-500/20", color_text: "text-green-500" },
+    buy: { label: "Куплю", color_bg: "bg-orange-500/20", color_text: "text-orange-500" },
+    help: { label: "Помощь", color_bg: "bg-purple-500/20", color_text: "text-purple-500" }
   }.freeze
 
   included do
@@ -21,15 +21,27 @@ module Post::SettingsCleanup
 
   def sanitize_settings_logic
     if is_afisha?
-      self.duration = "forever"
-      TAG_CONFIG.each_key { |key| self.send("#{key}=", false) }
-      self.event_duration ||= 1
+      sanitize_afisha_settings
     else
-      self.event_date = nil
-      self.event_duration = 1
-      self.manual_finished = false
-      self.finished_at = nil
-      self.afisha_status = nil
+      sanitize_regular_post_settings
     end
+  end
+
+  def sanitize_afisha_settings
+    self.duration = "forever"
+    reset_tag_flags
+    self.event_duration ||= 1
+  end
+
+  def sanitize_regular_post_settings
+    self.event_date = nil
+    self.event_duration = 1
+    self.manual_finished = false
+    self.finished_at = nil
+    self.afisha_status = nil
+  end
+
+  def reset_tag_flags
+    TAG_CONFIG.each_key { |key| public_send("#{key}=", false) }
   end
 end

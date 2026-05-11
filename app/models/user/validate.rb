@@ -1,40 +1,40 @@
+# frozen_string_literal: true
+
 module User::Validate
   extend ActiveSupport::Concern
 
+  RESERVED_NAMES = %w[Админ Менеджер Автор Агент майл Майл Инфо инфо].freeze
+  NAME_FORMAT = /^[A-Za-zА-Яа-яЁё"\s-]+$/
+  SLUG_FORMAT = /^[a-z0-9-]+$/
+
   included do
     validates_length_of :email, maximum: 50
-    normalizes :email, with: ->(e) { e.strip.downcase }
+    normalizes :email, with: ->(email) { email.strip.downcase }
     validates :email, presence: true, uniqueness: true
-
-    noname = %w[Админ Менеджер Автор Агент майл Майл Инфо инфо]
 
     validates :name,
               presence: { message: "Напишите свое имя, фамилию, отчество" },
               format: {
-                with: /^[A-Za-zА-Яа-яЁё"\s-]+$/,
+                with: NAME_FORMAT,
                 multiline: true,
                 message: "Только буквы, цифры и дефис -"
               },
               exclusion: {
-                in: noname,
+                in: RESERVED_NAMES,
                 message: "%<value>s - запрещено использовать это имя."
               },
-              length: {
-                maximum: 50
-              },
+              length: { maximum: 50 },
               on: :update
 
     validates :slug,
               presence: true,
               uniqueness: true,
               format: {
-                with: /^[a-z0-9-]+$/,
+                with: SLUG_FORMAT,
                 multiline: true,
                 message: "Только англ.буквы и цифры с дефисом"
               },
-              length: {
-                maximum: 50
-              },
+              length: { maximum: 50 },
               on: :update
   end
 end
