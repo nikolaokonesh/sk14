@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   rolify
   has_person_name
 
   include ActionText::Attachable
-
   include Authentication
   include Name
   include Slug

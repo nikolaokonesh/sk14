@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Ability
   include CanCan::Ability
 
@@ -6,32 +8,46 @@ class Ability
 
     return if user.blank?
 
-    # Кэшируем имена ролей в массив строк, чтобы не дергать базу
-    user_roles = user.roles.map(&:name)
+    @user = user
+    @role_names = user.roles.map(&:name)
 
-    if user_roles.include?("admin")
-      can :manage, :all
-      can :view_trash, User
-      can :restore, Entry
-      can :hard_destroy, Entry
-    end
+    apply_admin_permissions if has_role?("admin")
+    apply_moderator_permissions if has_role?("moderator")
 
-    if user_roles.include?("moderator")
-      can :update, :all
-    end
+    return apply_banned_permissions if has_role?("ban")
 
-    if user_roles.include?("ban")
-      cannot :manage, :all
-      return # Если забанен, дальше проверки на владение ресурсами не нужны
-    end
+    apply_owner_permissions
+  end
 
-    # Права для владельца контента
+  private
+
+  attr_reader :user, :role_names
+
+  def has_role?(role_name)
+    role_names.include?(role_name)
+  end
+
+  def apply_admin_permissions
+    can :manage, :all
+    can :view_trash, User
+    can :restore, Entry
+    can :hard_destroy, Entry
+  end
+
+  def apply_moderator_permissions
+    can :update, :all
+  end
+
+  def apply_banned_permissions
+    cannot :manage, :all
+  end
+
+  def apply_owner_permissions
     can :view_trash, User, id: user.id
     can :restore, Entry, user_id: user.id
     can :manage, Entry, user_id: user.id
     can :hard_destroy, Entry, user_id: user.id
 
-    # Для Delegated Types (Post, Advertisement)
     can :manage, [Post, Advertisement] do |record|
       record.entry.user_id == user.id
     end

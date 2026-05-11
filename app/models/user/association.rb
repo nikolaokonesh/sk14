@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module User::Association
   extend ActiveSupport::Concern
 
@@ -7,10 +9,9 @@ module User::Association
 
     has_many :entries, dependent: :destroy
     has_many :posts, through: :entries, source: :entryable, source_type: "Post"
+    has_many :advertisements, through: :entries, source: :entryable, source_type: "Advertisement"
 
     has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
-
     has_many :entry_reads, dependent: :destroy
-    has_many :advertisements, through: :entries, source: :entryable, source_type: "Advertisement"
   end
 end
