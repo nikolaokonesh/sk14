@@ -52,6 +52,18 @@ class Views::Entries::Form < Views::Base
           # --- 2. ПОЛЯ АФИШИ (Скрыты по умолчанию) ---
           div(class: [ "m-2 mb-6", ("hidden" unless is_afisha) ], data_post_form_target: "afishaFields") do
             div(class: "bg-cyan-900/40 p-4 rounded-2xl border-2 border-cyan-500/30") do
+              # Описание логики работы
+              div(class: "p-3 mb-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20") do
+                div(class: "flex items-start gap-3") do
+                  plain raw lucide_icon("info", class: "size-4 text-cyan-400 mt-0.5")
+                  div do
+                    p(class: "text-[14px] font-bold text-cyan-100 leading-tight") do
+                      "Пост появится в общей ленте, а в «Афише» будет за неделю до старта. Не забудьте выбрать длительность!"
+                    end
+                  end
+                end
+              end
+
               div(class: "flex flex-col md:flex-row gap-4") do
                 # Блок Даты (занимает основное место)
                 div(class: "flex-1") do
@@ -59,7 +71,7 @@ class Views::Entries::Form < Views::Base
                   if @entry.entryable.errors[:event_date].any?
                     label(class: "label text-xs text-error uppercase") { @entry.entryable.errors[:event_date].first }
                   else
-                    label(class: "label font-black text-xs uppercase opacity-60") { "Начало события" }
+                    label(class: "label font-black text-xs uppercase") { "Начало события" }
                   end
                   plain fields.datetime_field :event_date,
                         step: 60, # Убирает секунды, оставляя только часы и минуты
@@ -84,18 +96,6 @@ class Views::Entries::Form < Views::Base
                         duration_options,
                         {},
                         { class: "select select-bordered border-cyan-500/50 w-full bg-base-300 rounded-xl text-sm font-bold" }
-                end
-              end
-
-              # Описание логики работы
-              div(class: "mt-4 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20") do
-                div(class: "flex items-start gap-3") do
-                  plain raw lucide_icon("info", class: "size-4 text-cyan-400 mt-0.5")
-                  div do
-                    p(class: "text-[11px] font-bold text-cyan-100 leading-tight") do
-                      "Пост появится в Афише автоматически за 7 дней до начала и исчезнет через выбранное количество дней после даты старта."
-                    end
-                  end
                 end
               end
             end
