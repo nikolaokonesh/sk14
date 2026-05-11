@@ -34,15 +34,15 @@ class EntriesController < ApplicationController
     # 5. Распределение по коллекциям (теперь на 2-й странице афиша и реклама будут пустыми массивами)
     @afisha_entries = afisha_ids.map { |id| indexed_records[id] }
                                 .compact
-                                .select { |e| e.entryable_type == "Post" }
+                                .select { |e| e.post? }
 
     @ad_entries     = ads_ids.map { |id| indexed_records[id] }
                             .compact
-                            .select { |e| e.entryable_type == "Advertisement" }
+                            .select { |e| e.advertisement? }
 
     @records        = recent_ids.map { |id| indexed_records[id] }
                                 .compact
-                                .select { |e| e.entryable_type == "Post" }
+                                .select { |e| e.post? }
 
     # 6. Рендерим Phlex-вьюху
     render Views::Entries::Index.new(
