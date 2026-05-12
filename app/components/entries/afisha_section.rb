@@ -29,17 +29,29 @@ class Components::Entries::AfishaSection < Components::Base
     # Используем afisha_state, который делегирован из Entry в Post
     state = entry.afisha_status&.to_sym || :upcoming
     is_finished = (state == :finished)
+    variant = entry.preview_variant
 
     a(href: entry_path(entry), class: [
           "snap-center shrink-0 w-56 bg-base-200 rounded-lg p-4 shadow-sm border relative overflow-hidden transition-all active:scale-95 hover:border-primary/50 group block",
           (is_finished ? "opacity-50 grayscale-[0.5] border-base-300" : "border-base-300")
         ]) do
+      if variant
+        img(
+          src: url_for(variant),
+          class: "absolute inset-0 w-full h-full object-cover opacity-35",
+          alt: "",
+          loading: "lazy",
+          decoding: "async"
+        )
+        div(class: "absolute inset-0 bg-base-100/35")
+      end
+
       div(class: "absolute top-0 right-0 z-20") do
         # Бейдж умеет работать с Post, поэтому передаем entry.entryable
         render Components::Entries::AfishaBadge.new(entry: entry.entryable, size: :sm)
       end
 
-      div(class: "flex flex-col gap-2") do
+      div(class: "relative z-10 flex flex-col gap-2") do
         div(class: "flex items-center justify-between mt-1") do
           div(class: [ "flex items-center gap-1", (is_finished ? "opacity-30" : "text-primary") ]) do
             plain raw lucide_icon("clock", size: 12)
