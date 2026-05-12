@@ -117,7 +117,7 @@ GEM
     active_link_to (1.0.5)
       actionpack
       addressable
-    activestorage-validator (0.5.0)
+    activestorage-validator (0.6.0)
       rails (>= 6.1.0)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
@@ -462,7 +462,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_link_to (~> 1.0)
-  activestorage-validator (~> 0.5.0)
+  activestorage-validator (~> 0.6.0)
   bcrypt (~> 3.1.7)
   bootsnap
   brakeman
@@ -524,7 +524,7 @@ CHECKSUMS
   activemodel (8.2.0.alpha)
   activerecord (8.2.0.alpha)
   activestorage (8.2.0.alpha)
-  activestorage-validator (0.5.0) sha256=1fc5e2b33ee271ee113c3bf769abfcdcabbb4e883a91943e6245e28d873ca5a7
+  activestorage-validator (0.6.0) sha256=a25a6901c2263fd18a27eeb3c7bc0e174b860bae6e2aa3e62f7b1a2aa9772a5b
   activesupport (8.2.0.alpha)
   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
