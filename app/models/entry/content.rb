@@ -13,11 +13,11 @@ module Entry::Content
     after_save_commit :cache_images_data
   end
 
-  def preview_variant(width: 200, height: 200)
+  def preview_variant(width: 50, height: 50)
     return nil unless preview_blob_id
 
     preview_blob.variant(
-      resize_to_fill: [width, height],
+      resize_to_fill: [ width, height ],
       format: :webp,
       saver: { quality: 50 }
     )

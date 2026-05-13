@@ -8,7 +8,7 @@ class Views::Entries::Show < Views::Base
   def view_template
     turbo_stream_from(@entry)
 
-    div(class: "py-4") do
+    div(class: "py-4 mb-10") do
       # --- БЛОК АВТОРА И МЕТА-ДАННЫХ ---
       div(class: "flex items-center text-lg px-2") do
         # username(:full) теперь подгружен через includes(user: :roles)
@@ -30,7 +30,7 @@ class Views::Entries::Show < Views::Base
       div(class: "relative") do
         render Components::Shared::BgGradient.new(opacity: "opacity-30")
 
-        div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden") do
+        div(class: "relative bg-base-200/70 rounded-2xl shadow-xl overflow-hidden mb-10") do
           render_afisha_status if @entry.entryable.is_afisha?
 
           div(class: "p-4") do
@@ -38,13 +38,12 @@ class Views::Entries::Show < Views::Base
             div(class: "lexxy-show text-lg leading-relaxed prose prose-stone max-w-none") do
               raw @entry.content.to_s
             end
-
-            if @entry.entryable.no_comments?
-              div(class: "divider opacity-10 mt-2")
-              p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
-            end
           end
         end
+      end
+
+      if @entry.entryable.no_comments?
+        p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
       end
     end
   end
