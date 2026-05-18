@@ -27,7 +27,7 @@ module Entry::ListingPreloader
     def preload_listing_records(scope, use_recent: true)
       relation = normalize_listing_scope(scope)
       relation = relation.recent if use_recent
-      relation.includes(:user, :entryable, preview_blob: :variant_records).to_a
+      relation.includes(:user, :entryable).to_a
     end
 
     def normalize_listing_scope(scope)

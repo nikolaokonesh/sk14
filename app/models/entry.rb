@@ -30,7 +30,7 @@ class Entry < ApplicationRecord
 
   belongs_to :post, foreign_key: :entryable_id, optional: true
   belongs_to :advertisement, foreign_key: :entryable_id, optional: true
-  belongs_to :preview_blob, class_name: "ActiveStorage::Blob", optional: true
+  attribute :preview_blob_ids, default: -> { [] }
 
   attribute :preview_blob_ids, default: -> { [] }
 
@@ -69,6 +69,10 @@ class Entry < ApplicationRecord
       blobs_by_id = preview_blobs_by_cached_id
       preview_blob_ids.filter_map { |id| blobs_by_id[id] }
     end
+  end
+
+  def preview_blob
+    preview_blobs_for_list.first
   end
 
   def preview_thumbnail_variant(blob, width: 48, height: 48)
