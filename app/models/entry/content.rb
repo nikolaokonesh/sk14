@@ -14,9 +14,7 @@ module Entry::Content
   end
 
   def preview_variant(width: 50, height: 50)
-    return nil unless preview_blob_id
-
-    preview_blob.variant(
+    preview_blob&.variant(
       resize_to_fill: [ width, height ],
       format: :webp,
       saver: { quality: 50 }
@@ -43,14 +41,13 @@ module Entry::Content
 
   def cache_images_data
     attachments = image_attachments
-    new_preview_blob_id = attachments.first&.blob_id
     new_preview_blob_ids = attachments.first(Entry::PREVIEW_IMAGES_LIMIT).map(&:blob_id)
     new_images_count = attachments.size
 
-    return unless cached_image_data_changed?(new_images_count, new_preview_blob_id, new_preview_blob_ids)
+    return unless cached_image_data_changed?(new_images_count, new_preview_blob_ids)
 
-    update_cached_image_columns(new_images_count, new_preview_blob_id, new_preview_blob_ids)
-    process_preview_variant(new_preview_blob_id)
+    update_cached_image_columns(new_images_count, new_preview_blob_ids)
+    process_preview_variant(new_preview_blob_ids.first)
   end
 
   def content_plain_text
@@ -67,22 +64,21 @@ module Entry::Content
     content.embeds.select(&:image?)
   end
 
-  def cached_image_data_changed?(new_images_count, new_preview_blob_id, new_preview_blob_ids)
-    images_count != new_images_count ||
-      preview_blob_id != new_preview_blob_id ||
-      preview_blob_ids != new_preview_blob_ids
+  def cached_image_data_changed?(new_images_count, new_preview_blob_ids)
+    images_count != new_images_count || preview_blob_ids != new_preview_blob_ids
   end
 
-  def update_cached_image_columns(new_images_count, new_preview_blob_id, new_preview_blob_ids)
+  def update_cached_image_columns(new_images_count, new_preview_blob_ids)
     update_columns(
       images_count: new_images_count,
-      preview_blob_id: new_preview_blob_id,
       preview_blob_ids: new_preview_blob_ids
     )
+
+    remove_instance_variable(:@preview_blobs_for_list) if defined?(@preview_blobs_for_list)
   end
 
-  def process_preview_variant(new_preview_blob_id)
-    preview_variant&.processed if new_preview_blob_id
+  def process_preview_variant(blob_id)
+    preview_variant&.processed if blob_id
   end
 
   def truncated_title_from(plain_text)
