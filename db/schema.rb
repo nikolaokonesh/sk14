@@ -80,6 +80,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.integer "parent_id"
     t.integer "position", default: 0
     t.bigint "preview_blob_id"
+    t.json "preview_blob_ids", default: [], null: false
     t.integer "root_id"
     t.string "title", limit: 500
     t.boolean "trash", default: false

@@ -4,6 +4,7 @@ class Entry < ApplicationRecord
   POST_TYPE = "Post".freeze
   ADVERTISEMENT_TYPE = "Advertisement".freeze
   TITLE_PREVIEW_LENGTH = 500
+  PREVIEW_IMAGES_LIMIT = 4
 
   broadcasts_refreshes
 
@@ -31,6 +32,8 @@ class Entry < ApplicationRecord
   belongs_to :advertisement, foreign_key: :entryable_id, optional: true
   belongs_to :preview_blob, class_name: "ActiveStorage::Blob", optional: true
 
+  attribute :preview_blob_ids, default: -> { [] }
+
   has_many :replies, class_name: "Entry", foreign_key: :parent_id
   has_many :descendants, class_name: "Entry", foreign_key: :root_id
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
@@ -53,7 +56,38 @@ class Entry < ApplicationRecord
     self[:images_count] || 0
   end
 
+  def preview_blob_ids
+    Array(self[:preview_blob_ids]).filter_map do |id|
+      id.to_i if id.present?
+    end
+  end
+
+  def preview_blobs_for_list
+    if defined?(@preview_blobs_for_list)
+      @preview_blobs_for_list
+    else
+      blobs_by_id = preview_blobs_by_cached_id
+      preview_blob_ids.filter_map { |id| blobs_by_id[id] }
+    end
+  end
+
+  def preview_thumbnail_variant(blob, width: 48, height: 48)
+    blob.variant(
+      resize_to_fill: [ width, height ],
+      format: :webp,
+      saver: { quality: 50 }
+    )
+  end
+
   private
+
+  def preview_blobs_by_cached_id
+    return {} if preview_blob_ids.empty?
+
+    ActiveStorage::Blob.where(id: preview_blob_ids)
+                       .includes(:variant_records)
+                       .index_by(&:id)
+  end
 
   def participant_users_scope
     User.where(id: descendants.select(:user_id)).or(User.where(id: user_id))

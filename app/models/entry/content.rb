@@ -44,11 +44,12 @@ module Entry::Content
   def cache_images_data
     attachments = image_attachments
     new_preview_blob_id = attachments.first&.blob_id
+    new_preview_blob_ids = attachments.first(Entry::PREVIEW_IMAGES_LIMIT).map(&:blob_id)
     new_images_count = attachments.size
 
-    return unless cached_image_data_changed?(new_images_count, new_preview_blob_id)
+    return unless cached_image_data_changed?(new_images_count, new_preview_blob_id, new_preview_blob_ids)
 
-    update_cached_image_columns(new_images_count, new_preview_blob_id)
+    update_cached_image_columns(new_images_count, new_preview_blob_id, new_preview_blob_ids)
     process_preview_variant(new_preview_blob_id)
   end
 
@@ -66,14 +67,17 @@ module Entry::Content
     content.embeds.select(&:image?)
   end
 
-  def cached_image_data_changed?(new_images_count, new_preview_blob_id)
-    images_count != new_images_count || preview_blob_id != new_preview_blob_id
+  def cached_image_data_changed?(new_images_count, new_preview_blob_id, new_preview_blob_ids)
+    images_count != new_images_count ||
+      preview_blob_id != new_preview_blob_id ||
+      preview_blob_ids != new_preview_blob_ids
   end
 
-  def update_cached_image_columns(new_images_count, new_preview_blob_id)
+  def update_cached_image_columns(new_images_count, new_preview_blob_id, new_preview_blob_ids)
     update_columns(
       images_count: new_images_count,
-      preview_blob_id: new_preview_blob_id
+      preview_blob_id: new_preview_blob_id,
+      preview_blob_ids: new_preview_blob_ids
     )
   end
 
