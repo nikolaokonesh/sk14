@@ -32,6 +32,8 @@ class Entry < ApplicationRecord
   belongs_to :advertisement, foreign_key: :entryable_id, optional: true
   attribute :preview_blob_ids, default: -> { [] }
 
+  attribute :preview_blob_ids, default: -> { [] }
+
   has_many :replies, class_name: "Entry", foreign_key: :parent_id
   has_many :descendants, class_name: "Entry", foreign_key: :root_id
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
