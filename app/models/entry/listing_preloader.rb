@@ -8,6 +8,7 @@ module Entry::ListingPreloader
       records = preload_listing_records(scope, use_recent: use_recent)
 
       mark_read_states(records, current_user) if current_user
+      attach_preview_blobs(records)
       attach_inverse_entryable_records(records)
 
       records
@@ -43,6 +44,26 @@ module Entry::ListingPreloader
 
     def read_target_id(entry)
       entry.root_id || entry.id
+    end
+
+    def attach_preview_blobs(records)
+      blobs_by_id = preview_blobs_by_id(records)
+
+      records.each do |entry|
+        entry.instance_variable_set(
+          :@preview_blobs_for_list,
+          entry.preview_blob_ids.filter_map { |id| blobs_by_id[id] }
+        )
+      end
+    end
+
+    def preview_blobs_by_id(records)
+      preview_blob_ids = records.flat_map(&:preview_blob_ids).uniq
+      return {} if preview_blob_ids.empty?
+
+      ActiveStorage::Blob.where(id: preview_blob_ids)
+                         .includes(:variant_records)
+                         .index_by(&:id)
     end
 
     def attach_inverse_entryable_records(records)
