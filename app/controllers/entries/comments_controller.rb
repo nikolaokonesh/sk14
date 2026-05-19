@@ -58,7 +58,7 @@ class Entries::CommentsController < ApplicationController
 
     def render_create_turbo_stream
       render turbo_stream: [
-        turbo_stream.prepend(
+        turbo_stream.append(
           helpers.dom_id(@root_entry, :comments),
           Components::Comments::Message.new(entry: @comment_entry, root_entry: @root_entry)
         ),

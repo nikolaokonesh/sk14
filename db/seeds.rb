@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 puts "--- Очистка базы данных ---"
-[ ActionText::RichText, Entry, Post, User ].each(&:delete_all)
+[ ActionText::RichText, Entry, Post, Comment, Advertisement, User ].each(&:delete_all)
 
-puts "--- Создание персонажей ---"
+puts "--- Создание пользователей ---"
 admin = User.create!(
   email: "nikolaokonesh@gmail.com",
   first_name: "Николай",
@@ -13,102 +13,141 @@ admin = User.create!(
 admin.add_role "admin"
 
 users_data = [
-  { f: "Дядя Вася", s: "vasya-mehanik" },
-  { f: "Мария", s: "masha-pro" },
-  { f: "Сан Саныч", s: "san-sanych" },
-  { f: "Елена", s: "elena-beauty" },
-  { f: "Виктор", s: "vitya-kolyma" }
+  { first_name: "Дядя Вася", slug: "vasya-mehanik" },
+  { first_name: "Мария", slug: "masha-pro" },
+  { first_name: "Сан Саныч", slug: "san-sanych" },
+  { first_name: "Елена", slug: "elena-beauty" },
+  { first_name: "Виктор", slug: "vitya-kolyma" }
 ]
 
 users = [ admin ]
-users_data.each do |u|
-  users << User.create!(email: "#{u[:s]}@example.com", first_name: u[:f], last_name: "Житель", slug: u[:s])
+users_data.each do |user_data|
+  users << User.create!(
+    email: "#{user_data[:slug]}@example.com",
+    first_name: user_data[:first_name],
+    last_name: "Житель",
+    slug: user_data[:slug]
+  )
 end
 
-puts "--- Создание 20 Афиш (с учетом часовой длительности) ---"
+puts "--- Создание афиш ---"
 now = Time.current
 
-# h: через сколько часов начнется
-# d: длительность В ЧАСАХ (теперь мы используем часы)
 afishas_raw = [
-  { t: "🎥 Кино: Чебурашка", h: 0, d: 2, c: "Семейный просмотр." },
-  { t: "💃 Дискотека 90-х", h: 4, d: 6, c: "Танцы до упаду." },
-  { t: "🏆 Шахматы", h: -2, d: 3, c: "Уже идет или только закончилось." }, # Прошлое
-  { t: "🎤 Концерт", h: 24, d: 4, c: "Живой звук!" },
-  { t: "🏀 Баскетбол", h: 48, d: 2, c: "Школа vs Сборная." },
-  { t: "🛒 Ярмарка", h: 72, d: 24, c: "Свежие продукты." }, # 1 день
-  { t: "📣 Собрание", h: 10, d: 1, c: "Важные вопросы." },
-  { t: "🎨 Выставка", h: 100, d: 72, c: "Длится 3 дня." }
+  { title: "🎥 Кино: Чебурашка", starts_in_hours: 0, duration: 2, content: "Семейный просмотр." },
+  { title: "💃 Дискотека 90-х", starts_in_hours: 4, duration: 6, content: "Танцы до упаду." },
+  { title: "🏆 Шахматы", starts_in_hours: -2, duration: 3, content: "Уже идет или только закончилось." },
+  { title: "🎤 Концерт", starts_in_hours: 24, duration: 4, content: "Живой звук!" },
+  { title: "🏀 Баскетбол", starts_in_hours: 48, duration: 2, content: "Школа vs Сборная." },
+  { title: "🛒 Ярмарка", starts_in_hours: 72, duration: 24, content: "Свежие продукты." },
+  { title: "📣 Собрание", starts_in_hours: 10, duration: 1, content: "Важные вопросы." },
+  { title: "🎨 Выставка", starts_in_hours: 100, duration: 72, content: "Длится 3 дня." }
 ]
 
-# Добьем до 20 штук случайными
-12.times { |i| afishas_raw << { t: "Событие №#{i}", h: (i + 5) * 10, d: [ 1, 2, 3, 6, 24 ].sample, c: "Описание..." } }
+12.times do |i|
+  afishas_raw << {
+    title: "Событие №#{i + 1}",
+    starts_in_hours: (i + 5) * 10,
+    duration: [ 1, 2, 3, 6, 24 ].sample,
+    content: "Описание события №#{i + 1}."
+  }
+end
 
-afishas_raw.each do |a|
-  # Создаем запись через Entry, чтобы сработали вложенные атрибуты
+afisha_entries = afishas_raw.map do |afisha|
   entry = Entry.new(
     user: users.sample,
-    entryable_type: "Post",
+    entryable_type: Entry::POST_TYPE,
     entryable_attributes: {
       is_afisha: true,
-      event_date: now + a[:h].hours,
-      event_duration: a[:d], # Передаем часы!
+      event_date: now + afisha[:starts_in_hours].hours,
+      event_duration: afisha[:duration],
       manual_finished: false
     },
-    content: "<h2>#{a[:t]}</h2><p>#{a[:c]}</p>"
+    content: "<h2>#{afisha[:title]}</h2><p>#{afisha[:content]}</p>"
   )
 
-  # Сохраняем, вызывая метод расчета finished_at вручную, так как это сиды
   post = entry.entryable
   post.calculate_afisha_expiry if post.respond_to?(:calculate_afisha_expiry)
 
   entry.save!(validate: false)
+  entry
 end
 
-puts "--- Создание 130 обычных постов ---"
-topics = [ "Где вода?", "Продам дрова", "Туман на реке", "Ищу попутку", "Медленный интернет" ]
+puts "--- Создание обычных постов ---"
+topics = [ "Где вода?", "Продам дрова", "Туман на реке", "Ищу попутку", "Медленный интернет", "Новости посёлка" ]
 
-1000.times do |i|
+posts = 130.times.map do |i|
   Entry.create!(
     user: users.sample,
-    entryable_type: "Post",
+    entryable_type: Entry::POST_TYPE,
     entryable_attributes: {
       is_afisha: false,
-      setting: { no_comments: (i % 15 == 0), duration: "forever" }
+      setting: { no_comments: (i % 15).zero?, duration: "forever" }
     },
     created_at: (i * 30).minutes.ago,
-    content: "<h3>#{topics.sample}</h3><p>Текст поста номер #{i}...</p>"
+    content: "<h3>#{topics.sample}</h3><p>Текст поста номер #{i + 1}. Подробности в комментариях.</p>"
   )
 end
 
-puts "\n--- Готово! Заполнил базу. Запусти 'rails c' и проверь Post.last.finished_at ---"
-
-puts "--- Создание 20 рекламных объявлений ---"
-
+puts "--- Создание рекламных объявлений ---"
 ads_data = [
-  { t: "Свежая рыба", c: "Привезли чира и омуля. Прямой вылов!", theme: "ocean" },
-  { t: "Услуги электрика", c: "Замена проводки, установка люстр. Быстро.", theme: "sunset" },
-  { t: "Пиломатериалы", c: "Доска, брус в наличии. Доставка.", theme: "forest" },
-  { t: "Такси Межгород", c: "Комфортные поездки в любое время.", theme: "night" }
+  { title: "Свежая рыба", content: "Привезли чира и омуля. Прямой вылов!", theme: "ocean" },
+  { title: "Услуги электрика", content: "Замена проводки, установка люстр. Быстро.", theme: "sunset" },
+  { title: "Пиломатериалы", content: "Доска, брус в наличии. Доставка.", theme: "forest" },
+  { title: "Такси Межгород", content: "Комфортные поездки в любое время.", theme: "night" }
 ]
 
-20.times do |i|
-  # Берем данные из примера или генерируем случайные
+ad_entries = 20.times.map do |i|
   data = ads_data[i % ads_data.length]
 
-  entry = Entry.create!(
+  Entry.create!(
     user: users.sample,
-    entryable_type: "Advertisement",
+    entryable_type: Entry::ADVERTISEMENT_TYPE,
     entryable_attributes: {
       theme: data[:theme],
       active: true,
-      # Сделаем первые 5 объявлений "топовыми"
-      top_placement: (i < 5),
+      top_placement: i < 5,
       paid_until: (i < 5) ? 1.month.from_now : nil
     },
     created_at: i.hours.ago,
-    content: "<h3>#{data[:t]}</h3><p>#{data[:c]} (Объявление №#{i})</p>"
+    content: "<h3>#{data[:title]}</h3><p>#{data[:content]} (Объявление №#{i + 1})</p>"
   )
 end
 
-puts "--- Реклама создана! ---"
+puts "--- Создание комментариев ---"
+comment_texts = [
+  "Ок",
+  "Спасибо!",
+  "Поддерживаю",
+  "Уточните адрес, пожалуйста",
+  "Буду",
+  "Классная новость",
+  "Актуально?",
+  "Готов купить",
+  "Написал в ЛС",
+  "Принято"
+]
+
+commentable_entries = (posts + afisha_entries + ad_entries).reject { |entry| entry.no_comments? }
+comment_count = 0
+
+commentable_entries.sample(50).each do |root_entry|
+  rand(2..8).times do
+    comment_user = users.sample
+    Entry.create!(
+      user: comment_user,
+      parent: root_entry,
+      root: root_entry,
+      entryable: Comment.new,
+      content: "<p>#{comment_texts.sample}</p>",
+      created_at: root_entry.created_at + rand(5..600).minutes
+    )
+    comment_count += 1
+  end
+end
+
+puts "--- Готово! ---"
+puts "Пользователей: #{User.count}"
+puts "Записей: #{Entry.count}"
+puts "Комментариев: #{comment_count}"
+puts "Постов: #{posts.size}, афиш: #{afisha_entries.size}, объявлений: #{ad_entries.size}"
