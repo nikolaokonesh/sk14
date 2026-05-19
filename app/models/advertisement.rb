@@ -10,6 +10,9 @@ class Advertisement < ApplicationRecord
 
   has_one :entry, as: :entryable, touch: true, dependent: :destroy
 
+  has_delegated_json :setting,
+                     no_comments: false
+
   delegate :user, to: :entry
   delegate :title, to: :entry
 
