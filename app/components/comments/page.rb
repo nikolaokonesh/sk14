@@ -8,12 +8,14 @@ class Components::Comments::Page < Components::Base
 
   def view_template
     if @page.first?
-      div(id: dom_id(@entry, :comments), class: "space-y-3") do
-        if @page.records.empty?
-          render_empty_state
-        else
-          render_records
-          render_next_page_frame
+      turbo_frame_tag comments_container_id do
+        div(id: dom_id(@entry, :comments), class: "space-y-3") do
+          if @page.records.empty?
+            render_empty_state
+          else
+            render_records
+            render_next_page_frame
+          end
         end
       end
     else
@@ -51,6 +53,10 @@ class Components::Comments::Page < Components::Base
         a(href: entry_comments_path(@entry, page: @page.next_param), class: "btn btn-ghost btn-xs") { "Загрузить ещё" }
       end
     end
+  end
+
+  def comments_container_id
+    ActionView::RecordIdentifier.dom_id(@entry, :comments_container)
   end
 
   def frame_id(num)

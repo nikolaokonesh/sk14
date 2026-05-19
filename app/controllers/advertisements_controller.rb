@@ -81,7 +81,7 @@ class AdvertisementsController < ApplicationController
     def entry_params
       params.expect(entry: [
         :content, :entryable_type, entryable_attributes: [
-          :id, :theme
+          :id, :theme, :no_comments
         ]
       ])
     end

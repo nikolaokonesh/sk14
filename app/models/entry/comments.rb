@@ -5,13 +5,13 @@ module Entry::Comments
 
   class_methods do
     def comments_for(root_entry)
-      where(root_id: root_entry.id, entryable_type: COMMENT_TYPE)
+      where(root_id: root_entry.id, entryable_type: Entry::COMMENT_TYPE)
         .includes(:user, :rich_text_content)
         .order(created_at: :asc)
     end
   end
 
   def comment?
-    entryable_type == COMMENT_TYPE
+    entryable_type == Entry::COMMENT_TYPE
   end
 end

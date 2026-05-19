@@ -19,10 +19,18 @@ class Views::Advertisements::Form < Views::Base
           plain form.rich_text_area :content, class: "lexxy-content", placeholder: "Добавьте текст, фото и документы"
         end
 
-        div do
-          form.fields_for :entryable do |fields|
+        form.fields_for :entryable do |fields|
+          div do
             fields.label :theme, "Тема карточки", class: "label font-bold"
             plain fields.select :theme, Advertisement::THEMES.keys.map { |theme| [ theme.titleize, theme ] }, {}, class: "select select-bordered w-full rounded-2xl"
+          end
+
+          div(class: "form-control bg-info/20 rounded-md p-2") do
+            label(class: "label cursor-pointer justify-start gap-4 py-2 bg-base-300/30 rounded-xl px-4") do
+              plain raw lucide_icon("messages-square", class: "size-4")
+              span(class: "label-text font-medium") { "Без комментариев" }
+              plain fields.check_box :no_comments, checked: @entry.entryable.no_comments?, class: "checkbox checkbox-primary"
+            end
           end
         end
 
