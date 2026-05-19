@@ -27,7 +27,13 @@ class Entries::CommentsController < ApplicationController
         format.html { redirect_to_entry("Комментарий добавлен") }
       end
     else
-      redirect_to_entry(@comment_entry.errors.full_messages.to_sentence, :alert)
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream:
+            turbo_stream.update("comment_create_error",
+              renderable: Components::Comments::Error.new(entry: @comment_entry), layout: false), status: :unprocessable_entity
+        }
+      end
     end
   end
 
