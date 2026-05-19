@@ -79,7 +79,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.integer "images_count", default: 0
     t.integer "parent_id"
     t.integer "position", default: 0
-    t.json "preview_blob_ids", default: [], null: false
+    t.bigint "preview_blob_id"
     t.integer "root_id"
     t.string "title", limit: 500
     t.boolean "trash", default: false
@@ -89,6 +89,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_02_090000) do
     t.index ["created_at"], name: "index_entries_on_created_at"
     t.index ["entryable_type", "entryable_id"], name: "index_entries_on_entryable"
     t.index ["parent_id"], name: "index_entries_on_parent_id"
+    t.index ["preview_blob_id"], name: "index_entries_on_preview_blob_id"
     t.index ["root_id"], name: "index_entries_on_root_id"
     t.index ["trash_data"], name: "idx_entries_on_trash_data", where: "trash = 1"
     t.index ["user_id"], name: "index_entries_on_user_id"
