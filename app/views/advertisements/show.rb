@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 class Views::Advertisements::Show < Views::Base
   def initialize(entry:)
     @entry = entry
   end
 
   def view_template
+    turbo_stream_from(@entry)
+
     article(class: "py-4 px-2") do
       # Кэшируем всё тело объявления. Если контент или тема не менялись,
       # Rails даже не заглянет в ActionText и Blobs.
@@ -23,6 +27,9 @@ class Views::Advertisements::Show < Views::Base
           end
         end
       end
+
+      render Components::Comments::Thread.new(entry: @entry)
+
     end
   end
 
@@ -37,6 +44,8 @@ class Views::Advertisements::Show < Views::Base
       form_with(model: @entry, method: :delete, class: "inline") do |form|
         plain form.submit "Удалить", class: "btn btn-sm btn-error", data: { turbo_confirm: "Удалить рекламу?" }
       end
+
+
     end
   end
 end

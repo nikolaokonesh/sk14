@@ -3,6 +3,7 @@
 class Entry < ApplicationRecord
   POST_TYPE = "Post".freeze
   ADVERTISEMENT_TYPE = "Advertisement".freeze
+  COMMENT_TYPE = "Comment".freeze
   TITLE_PREVIEW_LENGTH = 500
   PREVIEW_IMAGES_LIMIT = 4
 
@@ -11,18 +12,21 @@ class Entry < ApplicationRecord
   include Content
   include ListingPreloader # Подгружает для EntriesController#index
   include Threading
+  include Comments
 
   attr_accessor :read_by_user
 
-  delegated_type :entryable, types: [POST_TYPE, ADVERTISEMENT_TYPE], dependent: :destroy
+  delegated_type :entryable, types: [POST_TYPE, ADVERTISEMENT_TYPE, COMMENT_TYPE], dependent: :destroy
   accepts_nested_attributes_for :entryable
 
   delegate :urgent, :important, :event, :question, :sell, :buy, :help, to: :entryable, allow_nil: true
-  delegate :is_afisha?, :afisha_status, :event_date, :theme_gradient, to: :entryable, allow_nil: true
+  delegate :is_afisha?, :afisha_status, :event_date, :theme_gradient, :no_comments?, to: :entryable, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
   scope :active, -> { where(trash: false) }
   scope :inactive, -> { where(trash: true) }
+  scope :roots, -> { where(parent_id: nil) }
+  scope :comments, -> { where(entryable_type: COMMENT_TYPE) }
 
   belongs_to :user, touch: true
   belongs_to :parent, class_name: "Entry", optional: true
@@ -30,8 +34,6 @@ class Entry < ApplicationRecord
 
   belongs_to :post, foreign_key: :entryable_id, optional: true
   belongs_to :advertisement, foreign_key: :entryable_id, optional: true
-  attribute :preview_blob_ids, default: -> { [] }
-
   attribute :preview_blob_ids, default: -> { [] }
 
   has_many :replies, class_name: "Entry", foreign_key: :parent_id
