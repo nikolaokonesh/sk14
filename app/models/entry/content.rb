@@ -30,7 +30,7 @@ module Entry::Content
 
     if plain_text.blank?
       errors.add(:content, "должен содержать текст")
-    elsif plain_text.length < 10
+    elsif plain_text.length < 10 && !comment?
       errors.add(:content, "слишком короткий (минимум 10 символов текста)")
     end
   end
