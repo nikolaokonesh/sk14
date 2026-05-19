@@ -20,10 +20,8 @@ class Components::Comments::Thread < Components::Base
         div(class: "flex justify-center rounded-2xl bg-base-200/40 p-4") { span(class: "loading loading-dots text-primary") }
       end
 
-      if authenticated? && !@entry.entryable.no_comments?
+      if authenticated?
         render Components::Comments::Form.new(entry: @entry)
-      elsif @entry.entryable.no_comments?
-        p(class: "text-sm italic opacity-60 mt-3") { "Комментарии отключены" }
       end
     end
   end

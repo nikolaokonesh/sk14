@@ -7,7 +7,7 @@ class CreateAdvertisements < ActiveRecord::Migration[8.2]
       t.boolean :active, null: false, default: true
       t.boolean :top_placement, null: false, default: false
       t.datetime :paid_until
-      t.json :setting, null: false, default: {}
+      t.json :setting, default: {}, null: false
 
       t.timestamps
     end
@@ -16,6 +16,5 @@ class CreateAdvertisements < ActiveRecord::Migration[8.2]
     add_index :advertisements, :created_at
     add_index :advertisements, :top_placement
     add_index :advertisements, :paid_until
-    add_index :advertisements, "json_extract(setting, '$.no_comments')", name: "idx_advertisements_no_comments"
   end
 end

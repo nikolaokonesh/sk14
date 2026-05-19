@@ -40,5 +40,4 @@ class Advertisement < ApplicationRecord
   def afisha_state = nil
   def event_date = nil
   def duration_text = nil
-  def no_comments? = false
 end

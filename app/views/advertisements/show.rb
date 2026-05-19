@@ -28,12 +28,19 @@ class Views::Advertisements::Show < Views::Base
         end
       end
 
-      render Components::Comments::Thread.new(entry: @entry)
-
+      if @entry.entryable.no_comments?
+        p(class: "text-sm italic opacity-60 mt-3") { "Комментарии отключены" }
+      else
+        render_comments
+      end
     end
   end
 
   private
+
+  def render_comments
+    render Components::Comments::Thread.new(entry: @entry)
+  end
 
   def render_actions
     div(class: "mt-6 flex flex-wrap gap-2") do
@@ -44,8 +51,6 @@ class Views::Advertisements::Show < Views::Base
       form_with(model: @entry, method: :delete, class: "inline") do |form|
         plain form.submit "Удалить", class: "btn btn-sm btn-error", data: { turbo_confirm: "Удалить рекламу?" }
       end
-
-
     end
   end
 end

@@ -42,7 +42,11 @@ class Views::Entries::Show < Views::Base
         end
       end
 
-      render_comments
+      if @entry.entryable.no_comments?
+        p(class: "text-sm italic opacity-60 mt-3") { "Комментарии отключены" }
+      else
+        render_comments
+      end
     end
   end
 
