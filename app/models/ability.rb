@@ -48,7 +48,7 @@ class Ability
     can :manage, Entry, user_id: user.id
     can :hard_destroy, Entry, user_id: user.id
 
-    can :manage, [Post, Advertisement] do |record|
+    can :manage, [Post, Advertisement, Comment] do |record|
       record.entry.user_id == user.id
     end
   end

@@ -42,9 +42,7 @@ class Views::Entries::Show < Views::Base
         end
       end
 
-      if @entry.entryable.no_comments?
-        p(class: "text-sm italic opacity-50 text-center") { "Без комментариев" }
-      end
+      render_comments
     end
   end
 
@@ -95,6 +93,10 @@ class Views::Entries::Show < Views::Base
         end
       end
     end
+  end
+
+  def render_comments
+    render Components::Comments::Thread.new(entry: @entry)
   end
 
   def show_read_state_badge?

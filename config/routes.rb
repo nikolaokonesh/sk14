@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :entries do
+    resources :comments, only: %i[index create destroy], module: :entries
     resources :participants, only: :index, module: :entries
   end
 
