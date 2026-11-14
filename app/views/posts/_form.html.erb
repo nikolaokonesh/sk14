@@ -1,0 +1,21 @@
+<%# locals: (post:, url:, method: :post, submit_text: "Сохранить") %>
+
+<%= form_with model: post, url: url, method: method, class: "space-y-4" do |f| %>
+  
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text font-semibold">Текст объявления</span>
+    </label>
+    <%= f.rich_textarea :content, 
+        placeholder: "Напишите объявление, новость или благодарность...",
+        class: "lexxy-content" %>
+  </div>
+
+  <%= f.button submit_text, 
+      class: "btn btn-primary w-full",
+      data: { 
+        herb_set: "edit_modal_open=false",
+        turbo_submits_with: "Сохранение..." 
+      } %>
+
+<% end %>

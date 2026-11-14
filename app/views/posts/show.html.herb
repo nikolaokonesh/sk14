@@ -1,0 +1,157 @@
+<%# herb:slots client %>
+<%# herb:state (modal_open: false, modal_closed: modal_open == false, edit_open: false, edit_closed: edit_open == false, selected_name: @post.category&.name || "", selected_id: @post.category_id || 0) %>
+
+<% content_for(:title) { "Объявление ##{@post.id}" } %>
+<% owner = authenticated? && current_user == @post.user %>
+
+<div data-controller="post-edit"
+     class="max-w-2xl mx-auto
+            [&_[aria-pressed=true]]:badge-primary
+            [&_[aria-pressed=true]]:text-primary-content">
+
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to district_path(@post.district.slug), class: "btn btn-ghost btn-circle" do %>
+      <%= lucide_icon("arrow-left", class: "h-6 w-6") %>
+    <% end %>
+    <h1 class="text-xl font-bold">Объявление</h1>
+  </div>
+
+  <%# Контент поста %>
+  <div class="card bg-base-100 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="prose lexxy-show">
+        <div class="lexxy-content" data-post-edit-target="content">
+          <%= @post.content %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Бейджи и действия %>
+  <div class="flex flex-wrap items-center gap-2 mb-4"
+       data-controller="category"
+       data-category-url-value="<%= post_path(@post) %>"
+       data-category-csrf-value="<%= form_authenticity_token %>">
+
+    <span class="badge badge-info badge-lg">
+      <%= selected_name %>
+    </span>
+
+    <% if owner %>
+      <button type="button"
+              class="btn btn-circle btn-sm btn-info"
+              data-herb-set="modal_open=true"
+              title="Изменить категорию">
+        <%= lucide_icon("pencil", class: "h-4 w-4") %>
+      </button>
+    <% end %>
+
+    <% if @post.announcement? && @post.action_type %>
+      <span class="badge badge-secondary"><%= @post.action_type_human %></span>
+    <% end %>
+
+    <button type="button"
+            data-controller="share"
+            data-share-url-value="<%= request.original_url %>"
+            data-share-title-value="<%= j(@post.plain_text.truncate(50)) %>"
+            class="btn btn-circle btn-sm btn-ghost"
+            title="Поделиться">
+      <%= lucide_icon("share-2", class: "h-4 w-4") %>
+
+      <div data-share-target="toast"
+           class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 hidden opacity-0 translate-y-4 transition-all duration-300 pointer-events-none">
+        <div class="bg-base-content text-base-100 px-4 py-2 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2">
+          <%= lucide_icon("check", class: "h-4 w-4") %>
+          <span data-share-message>Ссылка скопирована!</span>
+        </div>
+      </div>
+    </button>
+
+    <% if owner %>
+      <button type="button"
+              class="btn btn-circle btn-sm bg-success/20 hover:text-success"
+              data-herb-set="edit_open=true"
+              title="Редактировать">
+        <%= lucide_icon("square-pen", class: "h-4 w-4") %>
+      </button>
+
+      <%= link_to post_path(@post, format: :html),
+          class: "btn btn-circle btn-sm bg-error/20 hover:text-error",
+          data: { turbo_method: :delete, turbo_confirm: "Точно хотите удалить?" } do %>
+        <%= lucide_icon("trash-2", class: "h-4 w-4") %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if owner %>
+    <%# ===== Модалка категории: чистый клиент ===== %>
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+         hidden="<%= modal_closed %>"
+         data-herb-set="modal_open=false"
+         data-turbo-permanent>
+      <div class="bg-base-100 border border-base-300 rounded-xl shadow-2xl w-80 p-5">
+        <div class="text-sm font-semibold text-base-content/70 mb-4">
+          📂 Выберите категорию:
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <% @categories&.each do |cat| %>
+            <%# herb:key cat.id %>
+            <%# herb:state (cat_id: cat.id) %>
+
+            <%= button_to post_path(@post), 
+              method: :patch, 
+              params: { post: { category_id: cat.id } },
+                    data: { 
+                      action: "click->category#pick",
+                      category_id_param: cat.id,
+                      herb_set: "
+                        modal_open=false
+                        selected_name='#{j(cat.name)}'
+                        selected_id=#{cat.id}"
+                    },
+                    aria_pressed: selected_id == cat_id,
+                    class: "badge badge-outline hover:badge-primary cursor-pointer" do %>
+              <%= cat.name %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# ===== Модалка редактирования ===== %>
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+         hidden="<%= edit_closed %>"
+         data-turbo-permanent>
+      <div class="bg-base-100 border border-base-300 rounded-xl shadow-2xl w-full max-w-lg p-6 mx-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold">Редактировать объявление</h3>
+          <button type="button"
+                  class="btn btn-sm btn-circle btn-ghost"
+                  data-herb-set="edit_open=false">✕</button>
+        </div>
+
+        <%= form_with model: @post, url: post_path(@post), method: :patch, data: { action: "submit->post-edit#updateView" } do |f| %>
+          <%= f.rich_textarea :content,
+              placeholder: "Текст объявления...",
+              class: "lexxy-content" %>
+          <%= f.button "Сохранить изменения",
+              class: "btn btn-primary w-full mt-3",
+              data: { herb_set: "edit_open=false", turbo_submits_with: "Сохранение..." } %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Время %>
+  <div class="flex items-center gap-2 text-sm opacity-70 mb-4">
+    <span>🕒</span>
+    <%= time_tag @post.published_at,
+        smart_time(@post),
+        datetime: @post.published_at.iso8601,
+        title: l(@post.published_at.in_time_zone(@post.district.time_zone), format: :full) %>
+    <span class="opacity-50">·</span>
+    <span><%= l @post.published_at.in_time_zone(@post.district.time_zone), format: :full %></span>
+  </div>
+
+</div>

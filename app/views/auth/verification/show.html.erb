@@ -1,0 +1,35 @@
+<% content_for(:title) { "Подтверждение" } %>
+
+<div class="max-w-md mx-auto mt-12 px-4">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold mb-2">📱 Введите код</h1>
+    <p class="text-base-content/70">
+      Код отправлен на<br>
+      <strong class="text-base-content"><%= @contact %></strong>
+    </p>
+  </div>
+
+  <%= form_with url: auth_verification_path, method: :post, local: true, class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :verification_code, "Код подтверждения", class: "block text-sm font-medium mb-2" %>
+      <%= f.text_field :verification_code, 
+          class: "input input-bordered w-full text-center text-3xl tracking-widest font-mono",
+          placeholder: "000000",
+          maxlength: 6,
+          pattern: "[0-9]{6}",
+          inputmode: "numeric",
+          autocomplete: "one-time-code",
+          autofocus: true,
+          required: true %>
+      <p class="text-xs text-base-content/60 mt-2">
+        Код действителен 5 минут
+      </p>
+    </div>
+
+    <%= f.submit "Подтвердить", class: "btn btn-primary w-full btn-lg" %>
+  <% end %>
+
+  <div class="mt-6 text-center">
+    <%= link_to "← Изменить контакт", auth_sign_path, class: "link link-primary" %>
+  </div>
+</div>

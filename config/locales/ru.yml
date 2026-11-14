@@ -1,0 +1,9 @@
+ru:
+  time:
+    formats:
+      full: "%d.%m.%Y в %H:%M"
+      short: "%d.%m.%Y %H:%M"
+  date:
+    formats:
+      default: "%d.%m.%Y"
+    month_names: [~, января, февраля, марта, апреля, мая, июня, июля, августа, сентября, октября, ноября, декабря]

@@ -1,0 +1,99 @@
+<% content_for(:title) { "#{@district.emoji} #{@district.name}" } %>
+
+<div class="max-w-2xl mx-auto">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <%= link_to root_path, class: "btn btn-ghost btn-circle" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    <% end %>
+    <h1 class="text-xl font-bold">
+      <%= @district.emoji %> <%= @district.name %>
+    </h1>
+    <%= link_to new_district_post_path(@district.slug), class: "btn btn-primary" do %>
+      + Добавить
+    <% end %>
+  </div>
+
+  <!-- 🆕 Переключатель видов на Stimulus -->
+  <div data-controller="view-toggle">
+    
+    <div class="flex bg-base-200 p-1 rounded-lg mb-6">
+      <button data-view-toggle-target="tab" 
+              data-mode="categories"
+              data-action="view-toggle#switch"
+              class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">
+        📂 По категориям
+      </button>
+      <button data-view-toggle-target="tab" 
+              data-mode="linear"
+              data-action="view-toggle#switch"
+              class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">
+        📜 Лента
+      </button>
+    </div>
+
+    <!-- Блок категорий -->
+    <div data-view-toggle-target="categories">
+      <% @categories.each do |category| %>
+        <% data = @posts_by_category[category.id] %>
+        <% next unless data %>
+        <% posts = data[:records] %>
+        <% page = data[:page] %>
+        
+        <% if posts.any? %>
+          <section class="mb-4">
+            <div class="bg-base-300 px-4 py-3 font-semibold rounded-t-lg">
+              <%= category.name %>
+            </div>
+            
+            <div class="relative">
+              <div class="absolute top-0 right-0 bottom-0 w-16 bg-gradient-to-l from-base-100 to-transparent pointer-events-none transition-opacity duration-300 z-10 opacity-100 fade-right"></div>
+              <div class="absolute top-0 left-0 bottom-0 w-16 bg-gradient-to-r from-base-100 to-transparent pointer-events-none transition-opacity duration-300 z-10 opacity-0 fade-left"></div>
+
+              <div id="category_<%= category.id %>_container"
+                   class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar rounded-b-lg bg-base-100"
+                   data-controller="horizontal-scroll"
+                   data-horizontal-scroll-next-url-value="<%= page.last? ? '' : district_category_posts_path(@district.slug, category.slug, page: page.next_param, format: :turbo_stream) %>"
+                   data-horizontal-scroll-frame-id-value="category_<%= category.id %>_pagination">
+                
+                <% posts.each do |post| %>
+                  <%= render "posts/post", post: post %>
+                <% end %>
+
+                <% unless page.last? %>
+                  <turbo-frame id="category_<%= category.id %>_pagination" class="flex-shrink-0" data-turbo-permanent="true">
+                    <div class="text-center text-sm opacity-70 py-4 px-4 flex items-center justify-center" style="min-width: 120px;">
+                      → Загрузка...
+                    </div>
+                  </turbo-frame>
+                <% end %>
+              </div>
+            </div>
+          </section>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- 🆕 Блок линейной ленты -->
+    <div data-view-toggle-target="linear" hidden>
+      <%= render "districts/linear_feed", 
+          district: @district, 
+          initial_posts: @linear_initial_posts, 
+          next_page: @linear_next_page %>
+    </div>
+
+  </div>
+
+  <!-- Пустое состояние -->
+  <% if @categories.empty? && @linear_initial_posts.empty? %>
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">🏔️</div>
+      <p class="text-lg mb-2">Пока нет объявлений.</p>
+      <p class="text-sm opacity-70">Станьте первым!</p>
+    </div>
+  <% end %>
+
+</div>

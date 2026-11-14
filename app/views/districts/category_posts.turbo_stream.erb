@@ -1,0 +1,20 @@
+<%# 1. Добавляем новые посты в конец контейнера %>
+<%= turbo_stream.append "category_#{@category.id}_container" do %>
+  <% @posts.each do |post| %>
+    <%= render "posts/post", post: post %>
+  <% end %>
+<% end %>
+
+<%# 2. Если есть следующая страница, заменяем фрейм-триггер на новый (с тем же ID!) %>
+<% if @next_page %>
+  <%= turbo_stream.replace "category_#{@category.id}_pagination" do %>
+    <%= turbo_frame_tag "category_#{@category.id}_pagination", class: "flex-shrink-0", data: { turbo_permanent: true } do %>
+      <div class="text-center text-sm opacity-70 py-4 px-4 flex items-center justify-center" style="min-width: 120px;">
+        → Загрузка...
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <%# 3. Если страниц больше нет, удаляем фрейм-триггер %>
+  <%= turbo_stream.remove "category_#{@category.id}_pagination" %>
+<% end %>

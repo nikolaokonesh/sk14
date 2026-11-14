@@ -1,0 +1,115 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+.turbo-progress-bar {
+  visibility: hidden;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+.lexxy-show { 
+  .lexxy-content {
+    --lexxy-editor-rows: 0h;
+    ul,
+    ol {
+      list-style: revert;
+      margin: revert;
+      padding: 0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-size: revert;
+      font-weight: revert;
+    }
+    p { 
+      margin: revert;
+      padding: 0;
+    }
+    strong {
+      font-weight: revert;
+    }
+    em {
+      font-style: revert;
+    }
+    color: revert;
+    background-color: revert;
+    table, th, td {
+      background-color: revert !important;
+    }
+  }
+}
+
+/* Контейнер с горизонтальным скроллом */
+.scroll-container {
+  position: relative;
+  overflow: hidden; /* Важно: скрываем переполнение */
+}
+
+/* Внутренний контейнер с прокруткой */
+.scroll-container-inner {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
+}
+
+/* Скрываем scrollbar */
+.scroll-container-inner::-webkit-scrollbar {
+  display: none;
+}
+.scroll-container-inner {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Туман справа */
+.scroll-fade-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.9));
+  pointer-events: none; /* Не блокирует клики */
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+/* Скрываем туман, когда доскроллили до конца */
+.scroll-container.at-end .scroll-fade-right {
+  opacity: 0;
+}
+
+/* Туман слева (опционально, появляется когда скроллим вправо) */
+.scroll-fade-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.9));
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  z-index: 10;
+}
+
+/* Показываем левый туман, когда скроллим вправо */
+.scroll-container.scrolled .scroll-fade-left {
+  opacity: 1;
+}

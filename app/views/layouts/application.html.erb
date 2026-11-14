@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Sk14" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Sk14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <meta name="turbo-refresh-method" content="morph">
+    <meta name="turbo-refresh-scroll" content="preserve">
+    <%= stylesheet_link_tag :lexxy %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <div class="navbar bg-base-100 shadow-sm">
+      <div class="flex-1">
+        <%= link_to root_path, class: "btn btn-ghost text-xl" do %>
+          🏔️ Доска Якутии
+        <% end %>
+      </div>
+      <div class="flex-none">
+        <% if current_user %>
+          <div class="flex items-center gap-3">
+            <span class="text-sm opacity-70">
+              <%= link_to current_user.username, user_path(current_user), class: "btn btn-ghost btn-sm" %>
+            </span>
+            <%= button_to "Выйти", auth_sign_path, method: :delete, class: "btn btn-ghost btn-sm" %>
+          </div>
+        <% else %>
+          <div class="flex gap-2">
+            <%= link_to "Войти", auth_sign_path, class: "btn btn-ghost btn-sm" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%#= render "shared/topbar_district", district: @district, post: @post %>
+
+    <main class="container mx-auto px-4 py-6">
+      <%= yield %>
+    </main>
+  </body>
+</html>

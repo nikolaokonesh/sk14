@@ -1,0 +1,61 @@
+<% content_for(:title) { "Вход" } %>
+
+<div class="max-w-md mx-auto mt-12 px-4">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold mb-2">🏔️ Добро пожаловать</h1>
+    <p class="text-base-content/70">Доска объявлений Арктических улусов</p>
+  </div>
+
+  <%= form_with url: auth_sign_path, 
+                method: :post, 
+                local: true, 
+                class: "space-y-4",
+                data: { controller: "contact-validation" } do |f| %>
+    
+    <%# HONEYPOT %>
+    <div style="position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden;" aria-hidden="true">
+      <%= label_tag :honeypot, "Leave this field blank", tabindex: -1, autocomplete: "off" %>
+      <%= text_field_tag :honeypot, nil, tabindex: -1, autocomplete: "off" %>
+    </div>
+
+    <div>
+      <%= f.label :contact, "Телефон или email", class: "block text-sm font-medium mb-2" %>
+      
+      <%= f.text_field :contact, 
+          data: { 
+            contact_validation_target: "input",
+            action: "input->contact-validation#validate"
+          },
+          class: "input input-bordered w-full text-lg transition-colors duration-200",
+          placeholder: "+79991234567 или email@example.com",
+          autocomplete: "contact",
+          autofocus: true,
+          required: true %>
+      
+      <%# Сообщение об ошибке %>
+      <div data-contact-validation-target="error" class="hidden mt-2 flex items-center gap-2 text-error text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span data-contact-validation-target="error-text">Неверный формат</span>
+      </div>
+
+      <%# Сообщение об успехе %>
+      <div data-contact-validation-target="success" class="hidden mt-2 flex items-center gap-2 text-success text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span data-contact-validation-target="success-text">Формат верный ✓</span>
+      </div>
+    </div>
+
+    <%= f.submit "Получить код", 
+        data: { contact_validation_target: "submit" },
+        class: "btn btn-primary w-full btn-lg transition-all duration-200" %>
+  <% end %>
+
+  <div class="mt-8 text-center text-sm text-base-content/60">
+    <p>Если аккаунт новый — регистрируется автоматически.</p>
+    <p class="mt-1">Код придёт на телефон (SMS) или на почту (email)</p>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<%= link_to post_path(post_vertical), 
+    class: "card bg-base-100 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 border border-base-200 block" do %>
+  
+  <div class="card-body p-4">
+    <div class="flex items-start justify-between gap-3">
+      
+      <div class="flex-1 min-w-0">
+        <div class="flex flex-wrap gap-1.5 mb-2">
+          <% if post_vertical.category %>
+            <span class="badge badge-info badge-sm">
+              <%= post_vertical.category.name %>
+            </span>
+          <% end %>
+          
+          <% if post_vertical.announcement? && post_vertical.action_type %>
+            <span class="badge badge-secondary badge-sm">
+              <%= post_vertical.action_type_human %>
+            </span>
+          <% end %>
+        </div>
+        
+        <div class="text-base leading-relaxed text-base-content/90 line-clamp-3">
+          <%= post_vertical.plain_text.presence || "Без текста" %>
+        </div>
+      </div>
+      
+      <div class="flex-shrink-0 flex flex-col items-end gap-2">
+        <%= time_badge(post_vertical, css: "badge badge-sm") %>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+      
+    </div>
+  </div>
+<% end %>

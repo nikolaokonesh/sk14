@@ -1,0 +1,26 @@
+<%= link_to post_path(post), class: "card bg-base-200 rounded-none flex-shrink-0 w-32 md:w-40 hover:border-primary/30 transition-all duration-200 border border-base-200" do %>
+  <div class="card-body p-2">
+
+    <!-- Текст поста -->
+    <div class="text-xs md:text-sm leading-relaxed line-clamp-5 md:line-clamp-4 mb-2">
+      <%= post.plain_text.truncate(100) %>
+    </div>
+
+    <!-- Бейджи -->
+    <div class="flex flex-wrap gap-1.5 mt-auto">
+      <%# if post.category %>
+        <%# <div class="badge badge-info badge-sm"> %>
+          <%#= post.category.name %>
+        <%# </div> %>
+      <%# end %>
+
+      <% if post.announcement? && post.action_type %>
+        <div class="badge badge-secondary badge-xs">
+          <%= post.action_type_human %>
+        </div>
+      <% end %>
+      <%= time_badge(post) %>
+    </div>
+
+  </div>
+<% end %>

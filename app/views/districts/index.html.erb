@@ -1,0 +1,24 @@
+<% content_for(:title) { "Доска объявлений Якутии" } %>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-3xl font-bold text-center mb-8">
+    🏔️ Доска объявлений Якутии
+  </h1>
+
+  <div class="grid gap-4">
+    <% @districts.each do |district| %>
+      <%= link_to district_path(district.slug), class: "card bg-base-100 shadow-sm hover:shadow-md transition-shadow" do %>
+        <div class="card-body flex-row items-center gap-4">
+          <span class="text-4xl"><%= district.emoji %></span>
+          <div class="flex-1">
+            <h2 class="card-title text-lg"><%= district.name %></h2>
+            <p class="text-sm opacity-70">
+              <%= district.posts.count %> постов
+            </p>
+          </div>
+          <div class="badge badge-ghost">→</div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

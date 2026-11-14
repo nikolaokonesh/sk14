@@ -1,0 +1,53 @@
+<%# locals: (district:, post:) %>
+
+<!-- 🆕 Топбар с навигацией по улусам -->
+<div class="bg-base-100 border-b border-base-300">
+  <div class="max-w-2xl mx-auto px-4 py-3">
+    
+    <!-- Хлебные крошки -->
+    <div class="breadcrumbs text-sm">
+      <ul>
+        <li>
+          <%= link_to "Все улусы", root_path, class: "hover:underline" %>
+        </li>
+        
+        <% if district.present? %>
+          <li>
+            <%= link_to "#{district.emoji} #{district.name}", district_path(district.slug), class: "hover:underline" %>
+          </li>
+        <% end %>
+        
+        <% if post.present? && post.district.present? %>
+          <li>
+            <span class="opacity-70">Объявление #<%= post.id %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <!-- Быстрый доступ к улусам (выпадающий список) -->
+    <% if district.present? %>
+      <div class="mt-2">
+        <details class="dropdown">
+          <summary class="btn btn-ghost btn-sm gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Сменить улус
+          </summary>
+          <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg mt-2">
+            <% District.order(:position).each do |district| %>
+              <li>
+                <%= link_to district_path(district.slug), class: "flex items-center gap-2" do %>
+                  <span><%= district.emoji %></span>
+                  <span><%= district.name %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </details>
+      </div>
+    <% end %>
+
+  </div>
+</div>

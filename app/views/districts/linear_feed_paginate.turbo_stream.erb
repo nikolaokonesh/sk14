@@ -1,0 +1,21 @@
+<%# 1. Добавляем новые посты ПЕРЕД фреймом-триггером %>
+<%= turbo_stream.before "linear-feed-pagination" do %>
+  <%= render partial: "posts/post_vertical", collection: @posts %>
+<% end %>
+
+<%# 2. Заменяем триггер пагинации %>
+<%= turbo_stream.replace "linear-feed-pagination" do %>
+  <% if @next_page %>
+    <turbo-frame id="linear-feed-pagination" 
+                 class="w-full flex justify-center py-6"
+                 data-next-url="<%= district_linear_feed_paginate_path(@district.slug, page: @next_page, format: :turbo_stream) %>"
+                 data-controller="vertical-scroll"
+                 data-vertical-scroll-frame-id-value="linear-feed-pagination">
+      <span class="loading loading-spinner loading-sm text-primary"></span>
+    </turbo-frame>
+  <% else %>
+    <div class="text-center text-sm opacity-50 py-6 border-t border-base-300 mt-4">
+      🏔️ Это все посты в этом улусе
+    </div>
+  <% end %>
+<% end %>

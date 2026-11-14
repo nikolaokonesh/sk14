@@ -1,0 +1,102 @@
+<%# herb:slots client %>
+<%# herb:state (editing_name: false, editing_closed: editing_name == false, current_username: @user.username) %>
+
+<% content_for(:title) { current_username } %>
+<% can_edit = authenticated? && current_user == @user %>
+
+<div class="max-w-2xl mx-auto">
+
+  <div class="card bg-base-100 shadow-sm mb-6">
+    <div class="card-body flex-row items-center gap-4">
+
+      <div class="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center text-xl font-bold shrink-0">
+        <%= @user.avatar_text %>
+      </div>
+
+      <div class="min-w-0 flex-1">
+
+        <%# ===== ПРОСМОТР ===== %>
+        <div class="flex items-center gap-2" hidden="<%= editing_name %>">
+          <h2 class="text-lg font-bold truncate"><%= current_username %></h2>
+
+          <% if can_edit %>
+            <button type="button"
+                    class="btn btn-circle btn-ghost btn-xs shrink-0"
+                    data-herb-set="editing_name=true"
+                    title="Изменить имя">
+              <%= lucide_icon("pencil", class: "h-4 w-4") %>
+            </button>
+          <% end %>
+        </div>
+
+        <%# ===== РЕДАКТИРОВАНИЕ ===== %>
+        <% if can_edit %>
+          <div hidden="<%= editing_closed %>">
+            <%= form_with model: @user,
+                url: user_path(@user),
+                method: :patch,
+                data: { herb_set: "editing_name=false" },
+                class: "flex items-center gap-2" do |f| %>
+
+              <%= f.text_field :name,
+                  value: (@user.name_present? ? @user.name.full : ""),
+                  data: { herb_set: "current_username=$value"},
+                  placeholder: "Имя и фамилия",
+                  maxlength: 30,
+                  autocomplete: "name",
+                  autofocus: true,
+                  required: true,
+                  class: "input input-bordered input-sm text-lg font-bold flex-1 min-w-0" %>
+
+              <%# Галочка = submit %>
+              <%= f.button type: :submit,
+                  class: "btn btn-circle btn-success btn-sm shrink-0",
+                  title: "Сохранить" do %>
+                <%= lucide_icon("check", class: "h-4 w-4") %>
+              <% end %>
+
+              <%# Отмена %>
+              <button type="button"
+                      class="btn btn-circle btn-ghost btn-sm shrink-0"
+                      data-herb-set="editing_name=false"
+                      title="Отмена">
+                <%= lucide_icon("x", class: "h-4 w-4") %>
+              </button>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Мета-строки %>
+        <p class="text-sm opacity-70 mt-1">
+          На сайте с <%= l(@user.created_at.to_date, format: :long) %>
+        </p>
+        <p class="text-sm opacity-70">
+          Объявлений: <%= @posts_count %>
+        </p>
+
+      </div>
+    </div>
+  </div>
+
+  <h3 class="font-semibold mb-3">Объявления</h3>
+
+  <% if @posts.any? %>
+    <div class="space-y-3">
+      <%= render partial: "posts/post_vertical", collection: @posts %>
+    </div>
+
+    <% unless @page.last? %>
+      <div class="text-center py-6">
+        <%= link_to "Показать ещё",
+            user_path(@user, page: @page.next_param),
+            class: "btn btn-ghost btn-sm" %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-12 opacity-70">
+      <div class="text-5xl mb-3">🏔️</div>
+      <p>Пока нет объявлений</p>
+    </div>
+  <% end %>
+
+</div>
